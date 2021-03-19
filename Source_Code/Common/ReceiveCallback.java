@@ -1,5 +1,7 @@
 package Common;
 
+import Common.Messages.Message;
+
 /**
  * No function pointers in Java, so we pass an interface with an overridden function instead
  *

@@ -1,6 +1,6 @@
 package Common;
 
-import Common.Message;
+import Common.Messages.Message;
 
 import java.io.*;
 import java.net.Socket;
@@ -8,6 +8,12 @@ import java.net.SocketException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Generic send/receive socket. Used by the client and server
+ *
+ * @author Kit Kindred
+ *
+ */
 public class SocketComms
 {
 
@@ -32,7 +38,6 @@ public class SocketComms
      */
     ObjectInputStream Recv;
 
-
     /**
      * Receive thread. Might not actually need to keep track of this
      */
@@ -44,10 +49,19 @@ public class SocketComms
     private Thread st;
 
     /**
+     * This is used in the server to differentiate sockets
+     */
+    private int UniqueID;
+
+    /**
      * Are we among the living?
      */
     private boolean isAlive;
 
+    /**
+     * If we want to do something when the socket is closed, pass in a DisconnectCallback
+     */
+    private DisconnectCallback DisconnectCallback;
 
     /**
      * Initialize the actual sockets that we send and receive on. Server and client are identical except
@@ -61,7 +75,9 @@ public class SocketComms
     public SocketComms(Socket socket,
                        ArrayBlockingQueue<Message> sendQueue,
                        ArrayBlockingQueue<Message> recvQueue,
-                       boolean server)
+                       DisconnectCallback disconnectCallback,
+                       boolean server,
+                       int uid)
     {
         try
         {
@@ -69,6 +85,8 @@ public class SocketComms
 
             SendQueue = sendQueue;
             RecvQueue = recvQueue;
+
+            UniqueID = uid;  // Assigned in server; unused in client
 
             // Socket is connected; initialize i/o streams
             // ORDER MATTERS! Trying to initialize send-send or recv-recv creates a deadlock!
@@ -85,6 +103,8 @@ public class SocketComms
 
             isAlive = true;  // It's alive...
 
+            DisconnectCallback = disconnectCallback;
+
             (st = new Thread(this::sendThreadFunc)).start();  // Let's start looking for sends
             (rt = new Thread(this::recvThreadFunc)).start();  // And start looking for receives
         }
@@ -95,6 +115,13 @@ public class SocketComms
         }
     }
 
+    public SocketComms(Socket socket,
+                       ArrayBlockingQueue<Message> sendQueue,
+                       ArrayBlockingQueue<Message> recvQueue,
+                       boolean server)
+    {
+        this(socket, sendQueue, recvQueue, null, server, -1);
+    }
 
     /**
      * This thread just blocks waiting for receives
@@ -106,13 +133,17 @@ public class SocketComms
             try
             {
                 Message m = (Message)Recv.readObject();  // Block until we get a message
+                m.UniqueID = UniqueID;
                 RecvQueue.put(m);  // We got something. Application will error check\
             }
             // EOF - Server died
             // Socket - Someone called close
             catch(EOFException | SocketException e)  // Socket was disconnected. Shut down the whole socket
             {
-                System.out.println("SC Recv Thread: Connection closed!");
+                if(DisconnectCallback != null)
+                {
+                    DisconnectCallback.onDisconnect(UniqueID);
+                }
                 isAlive = false;
                 return;
             }
@@ -165,6 +196,15 @@ public class SocketComms
         return isAlive;
     }
 
+    public int getUniqueID()
+    {
+        return UniqueID;
+    }
+
+    public void setUniqueID(int uid)
+    {
+        UniqueID = uid;
+    }
 
     /**
      * We might be the server where a client just dropped
