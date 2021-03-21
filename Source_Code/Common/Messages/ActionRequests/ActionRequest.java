@@ -1,6 +1,4 @@
-package Common.Messages.ActionRequests;
-
-import Common.Messages.Message;
+package Common;
 
 /**
  * Stub
@@ -10,8 +8,16 @@ import Common.Messages.Message;
  */
 public class ActionRequest extends Message
 {
+
+    public int PlayerID;
     public ActionRequest()
     {
-        super();  // Just make a generic message for now
+        super(MessageType.ActionRequest);  // Just make a generic message labelled as an AR for now
+    }
+
+    public ActionRequest(int pid)
+    {
+        super(MessageType.ActionRequest);  // Just make a generic message labelled as an AR for now
+        this.PlayerID = pid
     }
 }
