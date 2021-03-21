@@ -73,6 +73,12 @@ public class ClueLessClient extends Thread
             // without 
             if( clientApplication.activeGame )
             {
+               System.out.println("\n****Enter a command****");
+               System.out.println("Move Left: 1");
+               System.out.println("Move Right: 2");
+               System.out.println("Move Up: 3");  // To test sending multiple
+               System.out.println("Move Down: 4");
+               System.out.println("Exit: -1");
                break;
             }
             
@@ -118,6 +124,8 @@ public class ClueLessClient extends Thread
                                e.printStackTrace();
                             }
                             
+                            input = scan.nextInt();
+                            
                         }
                 case -1 ->
                         {
@@ -137,9 +145,11 @@ public class ClueLessClient extends Thread
          */
         do
         {
-            input = scan.nextInt();
-            switch (input)
-            {
+           // Quick turn validation to make sure it's the player's turn
+           if( clientApplication.UserPlayer.PlayerTurn )
+           {
+              switch (input)
+              {
                 case 1 ->
                         {
                             System.out.println("Sending move left request...\n");
@@ -169,7 +179,15 @@ public class ClueLessClient extends Thread
                         {
                             System.out.println("Sorry, that option isn't currently supported. Please try again\n");
                         }
-            }
+              }
+           }
+           
+           else
+           {
+              System.out.println("It is not your turn, please wait.");
+           }
+            
+            input = scan.nextInt();
         }
         while(input != -1 && clientApplication.activeGame );
         
@@ -281,12 +299,12 @@ public class ClueLessClient extends Thread
         {
             if(((GameStart) statUp).GameStarting)
             {
-                System.out.println("[Server] Game starting!");
+                System.out.println("[Server] Game starting!\n");
                 activeGame = true;
             }
             else
             {
-                System.out.println("[Server] Game ending!");
+                System.out.println("[Server] Game ending!\n");
                 activeGame = false;
             }
         }
@@ -295,7 +313,7 @@ public class ClueLessClient extends Thread
             if(((TurnUpdate) statUp).activeTurn )
             {
                UserPlayer.PlayerTurn = true; // Set the turn status to true 
-               System.out.println( "[Server] It is now your turn.");
+               System.out.println( "\n[Server] It is now your turn.");
                System.out.println("\n\n****Enter a command****");
                System.out.println("Move Left: 1");
                System.out.println("Move Right: 2");
