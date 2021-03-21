@@ -5,6 +5,7 @@ import Common.Messages.*;
 import Common.Messages.ActionRequests.ActionRequest;
 import Common.Messages.ActionRequests.ConnectRequest;
 import Common.Messages.ActionRequests.GameStartRequest;
+import Common.Messages.ActionRequests.MoveRequest;
 import Common.Messages.StatusUpdates.*;
 
 import java.util.ArrayList;
@@ -145,6 +146,13 @@ public class ClueLessServer extends Thread
      * What ID we'll give the next player to join
      */
     private int NextPlayerNumber;
+    
+    
+    /**
+     * The index of the player who's turn it is currently. This index corresponds to the
+     * PlayerList ArrayList.
+     */
+    private int CurrentPlayerIndex;
 
     /**
      * Initialize the ClueLessServer. Set up game state
@@ -275,6 +283,11 @@ public class ClueLessServer extends Thread
         {
             processGameStartRequest((GameStartRequest) actionRequest);
         }
+        
+        if(actionRequest instanceof MoveRequest)
+        {
+           processMoveRequest((MoveRequest) actionRequest);
+        }
         // TODO: Actual in-game action requests
     }
 
@@ -337,6 +350,10 @@ public class ClueLessServer extends Thread
                 {
                     ServState = ServerState.ActiveGame;
                     sendToAllPlayers(new GameStart());
+                    
+                    sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
+                    
+
                 }
                 else
                 {
@@ -352,6 +369,30 @@ public class ClueLessServer extends Thread
         {
             sendToClient(gsr.UniqueID, new Notification("Game in-progress!"));
         }
+    }
+    
+
+    public void processMoveRequest( MoveRequest mr )
+    {
+       /* First check to see if the action request is from the player who holds the
+        * active turn status...
+        */
+       if( PlayerList.get( CurrentPlayerIndex ).PlayerNumber == mr.PlayerID)
+       {
+          
+          // TODO: update player location
+          
+          // Announce the move to all players
+          sendToAllPlayers( new Notification("Player " + mr.PlayerID 
+             + " moved " + mr.moveDirection) );
+          
+          
+          // Update player turn status, and move to next player
+          sendToPlayer( PlayerList.get( CurrentPlayerIndex ).PlayerNumber, new TurnUpdate( false ) );
+          nextPlayer();
+          sendToPlayer( PlayerList.get( CurrentPlayerIndex ).PlayerNumber, new TurnUpdate( true ) );
+       }
+       
     }
 
     /**
@@ -408,6 +449,24 @@ public class ClueLessServer extends Thread
         return retVal;
     }
 
+    
+    /**
+     * Smarter way to increment the current player index so that we don't run
+     * into out of bounds errors.
+     */
+    public void nextPlayer()
+    {
+       if( CurrentPlayerIndex >= PlayerList.size() - 1 )
+       {
+          CurrentPlayerIndex = 0;
+       }
+       
+       else
+       {
+          CurrentPlayerIndex ++;
+       }
+    }
+    
     /**
      * Alright, game's over. Kill the server
      */
@@ -416,4 +475,53 @@ public class ClueLessServer extends Thread
         ssc.close();  // Kill server comms
         interrupt();  // Then kill our action processing
     }
+    
+    
+    
+    /**
+     * Inner class where the game logic can be isolated. I haven't come up with a
+     * great way to incorporate this yet.
+     */
+//    class GameDriver
+//    {
+//       
+//       /**
+//        * Boolean to keep track of when the game is over. If the game logic gets too
+//        * complicated, we could always default to using break statements.
+//        */
+//       private boolean ongoingGame;
+//       
+//       /**
+//        * The index of the player who's turn it is currently. This index corresponds to the
+//        * PlayerList ArrayList.
+//        */
+//       private int CurrentPlayerIndex;
+//       
+//       
+//       
+//       public GameDriver( ArrayList<Player> Players )
+//       {
+//          this.ongoingGame = true;
+//          startGame( Players );
+//       }
+//       
+//       
+//       /**
+//        * Game driving logic goes here for the most part
+//        */
+//       public void startGame( ArrayList<Player> Players )
+//       {
+//          while( ongoingGame )
+//          {
+//             sendToClient( Players.get( this.CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
+//             
+//             this.CurrentPlayerIndex ++;
+//          }
+//     
+//       }
+//    } 
+
 }
+
+
+
