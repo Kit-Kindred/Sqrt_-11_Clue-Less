@@ -1,4 +1,6 @@
-package Common;
+package Common.Messages.StatusUpdates;
+
+import Common.Messages.Message;
 
 /**
  * Stub
@@ -10,6 +12,6 @@ public class StatusUpdate extends Message
 {
     public StatusUpdate()
     {
-        super(MessageType.StatusUpdate);  // Just make a generic message labelled as a SU for now
+        super();  // Just make a generic message for now
     }
 }

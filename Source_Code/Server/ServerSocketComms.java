@@ -1,6 +1,7 @@
 package Server;
 
-import Common.Message;
+import Common.DisconnectCallback;
+import Common.Messages.Message;
 import Common.ReceiveCallback;
 import Common.SocketComms;
 
@@ -36,6 +37,8 @@ public class ServerSocketComms extends Thread
      */
     private static final int MessageQueueSize = 10;
 
+    private int ClientID;
+
     /**
      * Thread two from the class description
      */
@@ -46,6 +49,8 @@ public class ServerSocketComms extends Thread
      */
     private ReceiveCallback recvCallback;
 
+    private DisconnectCallback DisconnectCallback;
+
     /**
      * Try to bind the server to a port then kick off our threads
      *
@@ -53,12 +58,14 @@ public class ServerSocketComms extends Thread
      * @param recvCallback - What to do when we get a message
      *
      */
-    public ServerSocketComms(int port, ReceiveCallback recvCallback)
+    public ServerSocketComms(int port, ReceiveCallback recvCallback, DisconnectCallback disconnectCallback)
     {
         try
         {
             ServSock = new ServerSocket(port);  // Bind to the desired port
             this.recvCallback = recvCallback;
+            this.DisconnectCallback = disconnectCallback;
+            ClientID = 0;
             start();
 
         }
@@ -88,16 +95,21 @@ public class ServerSocketComms extends Thread
 
                 // Wait for a client to connect, create a new SocketThread, and add it to the list
                 Socket socket = ServSock.accept();
+                SocketComms newClient = new SocketComms(socket,
+                                        new ArrayBlockingQueue<Message>(MessageQueueSize),
+                                        new ArrayBlockingQueue<Message>(MessageQueueSize),
+                                        DisconnectCallback,
+                                 true,  // Means that we are connecting this socket from the server-side,
+                                               // not that the socket is a server socket
+                                        ClientID);
+
                 synchronized (ClientList)  // We add and remove from different threads. Lock this so we do one at a time
                 {
-                    ClientList.add(new SocketComms(socket,
-                            new ArrayBlockingQueue<Message>(MessageQueueSize),
-                            new ArrayBlockingQueue<Message>(MessageQueueSize),
-                            true));
+                    ClientList.add(newClient);
                 }
 
-                System.out.println("SSC: Accepted connection on port " + ServSock.getLocalPort());
-
+                //System.out.println("SSC: Accepted connection on port " + ServSock.getLocalPort());
+                ClientID++;
             }
             catch(SocketException e)
             {
@@ -170,25 +182,28 @@ public class ServerSocketComms extends Thread
     /**
      * Add something to a specified client's send queue (puts it at the end of the send line)
      *
-     * @param client - Which client in the list do we want to send to?
+     * @param clientID - Which client in the list do we want to send to?
      * @param msg - The message we're sending
      * @return - Did we add it to the send queue?
      *
      */
-    public boolean sendToClient(int client, Message msg)
+    public boolean sendToClient(int clientID, Message msg)
     {
-        if(client < ClientList.size())  // Is this even a possible client?
+        for(SocketComms client : ClientList)  // Find the client
         {
-            if(ClientList.get(client).isAlive())  // Is this client alive?
+            if(client.getUniqueID() == clientID)
             {
-                try
+                if (client.isAlive())  // Is this client alive?
                 {
-                    ClientList.get(client).SendQueue.put(msg);  // Give it a go
-                    return true;  // TODO: Doesn't actually verify send; just queue addition
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();  // Log it
+                    try
+                    {
+                        client.SendQueue.put(msg);  // Give it a go
+                        return true;  // TODO: Doesn't actually verify send; just queue addition
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();  // Log it
+                    }
                 }
             }
         }
@@ -197,6 +212,7 @@ public class ServerSocketComms extends Thread
 
     /**
      * Add a message to every client's send queue. Wraps sendToClient
+     * Really just debug since the server will only send to active player clients
      *
      * @param msg - What we're sending
      * @return - True if added to every queue, false otherwise
@@ -225,6 +241,22 @@ public class ServerSocketComms extends Thread
             }
         }
         return status;
+    }
+
+    public boolean disconnectClient(int uid)
+    {
+        synchronized(ClientList)
+        {
+            for(SocketComms servSock : ClientList)
+            {
+                if(servSock.getUniqueID() == uid)
+                {
+                    servSock.kill();
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

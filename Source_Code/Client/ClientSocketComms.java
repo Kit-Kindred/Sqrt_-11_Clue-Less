@@ -1,6 +1,6 @@
 package Client;
 
-import Common.Message;
+import Common.Messages.Message;
 import Common.ReceiveCallback;
 import Common.SocketComms;
 
