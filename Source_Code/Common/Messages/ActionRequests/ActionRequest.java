@@ -1,4 +1,6 @@
-package Common;
+package Common.Messages.ActionRequests;
+
+import Common.Messages.Message;
 
 /**
  * Stub
