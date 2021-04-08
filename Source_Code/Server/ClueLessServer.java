@@ -1,6 +1,9 @@
 package Server;
 
 import Common.*;
+import Common.WeaponCard.WeaponType;
+import Common.CharacterCard.CharacterName;
+import Common.RoomCard.RoomName;
 import Common.Messages.*;
 import Common.Messages.ActionRequests.ActionRequest;
 import Common.Messages.ActionRequests.ConnectRequest;
@@ -9,6 +12,8 @@ import Common.Messages.ActionRequests.MoveRequest;
 import Common.Messages.StatusUpdates.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -466,6 +471,17 @@ public class ClueLessServer extends Thread
           CurrentPlayerIndex ++;
        }
     }
+    
+    
+    
+    public void shuffleAndAssignCards()
+    {
+       List< WeaponType > weapons = Arrays.asList( WeaponCard.WeaponType.values() );
+       List< CharacterName > characters = Arrays.asList( CharacterCard.CharacterName.values() );
+       List< RoomName > room = Arrays.asList( RoomCard.RoomName.values() );
+    }
+    ArrayList.
+    
     
     /**
      * Alright, game's over. Kill the server
