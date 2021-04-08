@@ -3,7 +3,7 @@ package Common;
 public class RoomCard extends Card
 {
 
-   enum RoomName
+   public enum RoomName
    {
       BALL_ROOM, BILLIARD_ROOM, CONSERVATORY, DINING_ROOM, HALL, KITCHEN,
       LIBRARY, LOUNGE, STUDY;
@@ -19,7 +19,7 @@ public class RoomCard extends Card
     * @param roomName
     *        Name of the room
     */
-   RoomCard( RoomName roomName )
+   public RoomCard( RoomName roomName )
    {
 
       try

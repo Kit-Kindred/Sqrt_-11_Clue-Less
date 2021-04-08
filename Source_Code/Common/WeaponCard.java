@@ -3,7 +3,7 @@ package Common;
 public class WeaponCard extends Card
 {
 
-   protected enum WeaponType
+   public enum WeaponType
    {
       ROPE, LEAD_PIPE, KNIFE, WRENCH, CANDLESTICK, REVOLVER;
    }
@@ -18,7 +18,7 @@ public class WeaponCard extends Card
     * @param weaponType
     *        Name of the weapon
     */
-   WeaponCard( WeaponType weaponType )
+   public WeaponCard( WeaponType weaponType )
    {
 
       try
