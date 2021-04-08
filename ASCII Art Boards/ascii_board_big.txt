@@ -1,0 +1,30 @@
+====================================================================
+====================================================================
+||   study    |xxxxxxxxxxxx|    hall    |xxxxxxxxxxxx|   lounge   ||
+||            |============|            |============|            ||
+||                                           [MS]                 ||
+||            |============|            |============|            ||
+||====    ====|xxxxxxxxxxxx|====    ====|xxxxxxxxxxxx|====    ====||
+||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||
+||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||
+||xxx|[PP]|xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|[CM]|xxx||
+||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||
+||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||
+||====    ====|xxxxxxxxxxxx|====    ====|xxxxxxxxxxxx|====    ====||
+||  library   |xxxxxxxxxxxx|  billyard  |xxxxxxxxxxxx|   dining   ||
+||            |============|            |============|            ||
+||                                                                ||
+||            |============|            |============|            ||
+||====    ====|xxxxxxxxxxxx|====    ====|xxxxxxxxxxxx|====    ====||
+||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||
+||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||
+||xxx|[MP]|xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||
+||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||
+||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||
+||====    ====|xxxxxxxxxxxx|====    ====|xxxxxxxxxxxx|====    ====||
+||            |xxxxxxxxxxxx|            |xxxxxxxxxxxx|            ||
+||            |============|            |============|            ||
+||                 [MG]                      [MW]                 ||
+||conservatory|============|  ballroom  |============|   kitchen  ||
+||============|xxxxxxxxxxxx|============|xxxxxxxxxxxx|============||
+====================================================================
