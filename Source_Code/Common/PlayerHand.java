@@ -18,8 +18,12 @@ public class PlayerHand
    protected ArrayList<RoomCard> room;
    
    
+   // Initalize the arrayLists in the constructor
    public PlayerHand()
    {  
+      weapon = new ArrayList<WeaponCard>();
+      character = new ArrayList<CharacterCard>();
+      room = new ArrayList<RoomCard>();
    }
    
    
@@ -28,19 +32,77 @@ public class PlayerHand
     *
     */
    
-   public ArrayList<WeaponCard> getWeapon()
+   public ArrayList<WeaponCard> getWeapons()
    {
-      return this.weapon;
+      if ( this.weapon.size() > 0 )
+      {
+         return this.weapon;
+      }
+      
+      else
+      {
+         return null;
+      }
    }
    
-   public ArrayList<CharacterCard> getCharacter()
+   public ArrayList<CharacterCard> getCharacters()
    {
-      return this.character;
+      if ( this.character.size() > 0 )
+      {
+         return this.character;
+      }
+      
+      else
+      {
+         return null;
+      }
    }
    
-   public ArrayList<RoomCard> getRoom()
+   public ArrayList<RoomCard> getRooms()
    {
-      return this.room;
+      if ( this.room.size() > 0 )
+      {
+         return this.room;
+      }
+      
+      else
+      {
+         return null;
+      }
+   }
+   
+   
+   /**
+    * Generic Card setter. Adds the passed card to the correct list in the hand
+    * object.
+    * @param card The card to be added to the hand.
+    */
+   public void setCard( Card card )
+   {
+
+      if( card instanceof CharacterCard )
+      {
+         System.out.println("Adding... " + ((CharacterCard) card).getCharacterName() );
+         this.setCharacter( (CharacterCard) card );
+      }
+         
+      else if( card instanceof RoomCard )
+      {
+         System.out.println("Adding... " + ((RoomCard) card).getRoomName());
+         this.setRoom( (RoomCard) card );
+      }
+      
+      else if( card instanceof WeaponCard )
+      {
+         System.out.println("Adding... " + ((WeaponCard) card).getWeaponType() );
+         this.setWeapon( (WeaponCard) card );
+      }
+      
+      else
+      {
+         System.out.println("Could not add the card to the player's hand.");
+      }
+
    }
    
    
@@ -75,5 +137,33 @@ public class PlayerHand
    }
    
    
+   /**
+    * To string method returning a string of all the cards in the hand instance.
+    */
+   public String toString()
+   {
+      String outString = "";
+      
+      for( CharacterCard c : this.character )
+      {
+         outString += c.getCharacterName() + ", ";
+         
+      }
+
+      for( RoomCard r: this.room )
+      {
+         outString += r.getRoomName() + ", ";
+      }
+
+      for( WeaponCard w : this.weapon )
+      {
+         outString += w.getWeaponType() + ", ";
+      }
+      
+      // Remove trailing comma and space
+      outString = outString.substring( 0, outString.length() - 2 );
+      
+      return outString;
+   }
    
 }

@@ -82,7 +82,7 @@ public class WeaponCard extends Card
     */
    public String getWeaponType()
    {
-      return this.weaponType.toString();
+      return String.valueOf( this.weaponType );
 
    }
 

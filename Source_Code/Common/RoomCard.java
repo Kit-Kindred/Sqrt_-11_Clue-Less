@@ -83,7 +83,7 @@ public class RoomCard extends Card
     */
    public String getRoomName()
    {
-      return this.roomName.toString();
+      return String.valueOf( this.roomName );
 
    }
 
