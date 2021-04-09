@@ -8,12 +8,12 @@ package Common.Messages.StatusUpdates;
  */
 public class PlayerConnection extends StatusUpdate
 {
-    public int PlayerID;
+    public String PlayerName;
     public boolean Connected;  // True if connect; false if disconnect
 
-    public PlayerConnection(int pid, boolean connected)
+    public PlayerConnection(String name, boolean connected)
     {
-        PlayerID = pid;
+        PlayerName = name;
         Connected = connected;
     }
 }

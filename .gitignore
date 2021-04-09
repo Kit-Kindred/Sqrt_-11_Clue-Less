@@ -1,4 +1,6 @@
+*.class
 out/
 .idea/
 /bin/
 META-INF/
+

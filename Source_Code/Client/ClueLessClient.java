@@ -28,18 +28,22 @@ public class ClueLessClient extends Thread
         // TODO: Error-check these
         Scanner scan = new Scanner(System.in);
         String server;
+        String name;
         int port;
-        if(args.length != 2)
+        if(args.length != 3)
         {
             System.out.println("Enter server IP:");
             server = scan.nextLine();
-            System.out.println("Enter server port");
-            port = scan.nextInt();
+            System.out.println("Enter server port:");
+            port = Integer.parseInt(scan.nextLine());
+            System.out.println("Enter player name:");
+            name = scan.nextLine();
         }
         else
         {
             server = args[0];
             port = Integer.parseInt(args[1]);
+            name = args[2];
         }
 
         ClueLessClient clientApplication = new ClueLessClient(server, port);  // Create the server
@@ -54,8 +58,8 @@ public class ClueLessClient extends Thread
         {
             e.printStackTrace();
         }
-        clientApplication.csc.send(new ConnectRequest(clientApplication.UserPlayer.PlayerNumber));
-
+        //clientApplication.csc.send(new ConnectRequest(clientApplication.UserPlayer.PlayerNumber));
+        clientApplication.setPlayerName(name);
         // BEGIN TEMPORARY - Just to let us test out the interface
         // Read user input from CLI and perform appropriate action
         int input;
@@ -98,7 +102,7 @@ public class ClueLessClient extends Thread
                             if(!clientApplication.ConnectionRequested)
                             {
                                 System.out.println("Sending connect request...\n");
-                                clientApplication.csc.send(new ConnectRequest(clientApplication.UserPlayer.PlayerNumber));
+                                clientApplication.csc.send(new ConnectRequest(clientApplication.UserPlayer.PlayerName));
                                 clientApplication.ConnectionRequested = true;
                             }
                             else
@@ -137,12 +141,11 @@ public class ClueLessClient extends Thread
                         }
             }
         }
-        while(input != -1 && clientApplication.activeGame != true );
+        while(input != -1 && !clientApplication.activeGame);
         
         
-        /**
-         * Present the user with actions and wait for them to take their turn
-         */
+
+        // Present the user with actions and wait for them to take their turn
         do
         {
            // Quick turn validation to make sure it's the player's turn
@@ -153,23 +156,23 @@ public class ClueLessClient extends Thread
                 case 1 ->
                         {
                             System.out.println("Sending move left request...\n");
-                            clientApplication.csc.send(new MoveRequest(clientApplication.UserPlayer.PlayerNumber, "left"));
+                            clientApplication.csc.send(new MoveRequest(clientApplication.UserPlayer.PlayerName, MoveRequest.Move.LEFT));
                         }
                 case 2 ->
                         {
                            System.out.println("Sending move right request...\n");
-                           clientApplication.csc.send(new MoveRequest(clientApplication.UserPlayer.PlayerNumber, "right"));
+                           clientApplication.csc.send(new MoveRequest(clientApplication.UserPlayer.PlayerName, MoveRequest.Move.RIGHT));
                         }
                 case 3 ->
                         {
                            System.out.println("Sending move up request...\n");
-                           clientApplication.csc.send(new MoveRequest(clientApplication.UserPlayer.PlayerNumber, "up"));
+                           clientApplication.csc.send(new MoveRequest(clientApplication.UserPlayer.PlayerName, MoveRequest.Move.UP));
 
                         }
                 case 4 ->
                         {
                            System.out.println("Sending move down request...\n");
-                           clientApplication.csc.send(new MoveRequest(clientApplication.UserPlayer.PlayerNumber, "down"));
+                           clientApplication.csc.send(new MoveRequest(clientApplication.UserPlayer.PlayerName, MoveRequest.Move.DOWN));
                         }
                 case -1 ->
                         {
@@ -215,7 +218,7 @@ public class ClueLessClient extends Thread
     private final String ServerIP;
     private final int ServerPort;
 
-    private Player UserPlayer;
+    private final Player UserPlayer;
 
     private boolean ConnectionRequested;  // Wait for a response before asking to connect again
 
@@ -270,24 +273,24 @@ public class ClueLessClient extends Thread
         {
             if(((PlayerConnection) statUp).Connected)
             {
-                System.out.println("[Server] Player " + ((PlayerConnection) statUp).PlayerID + " joined the game!");
+                System.out.println("[Server] " + ((PlayerConnection) statUp).PlayerName + " joined the game!");
             }
             else
             {
-                System.out.println("[Server] Player " + ((PlayerConnection) statUp).PlayerID + " left the game!");
+                System.out.println("[Server] " + ((PlayerConnection) statUp).PlayerName + " left the game!");
             }
         }
         else if(statUp instanceof ConnectRequestStatus)  // Response to our join request
         {
             if(((ConnectRequestStatus) statUp).Joined)
             {
-                UserPlayer.PlayerNumber = ((ConnectRequestStatus) statUp).PlayerID;
-                System.out.println("[Server] You are now Player " + UserPlayer.PlayerNumber + "!");
+                UserPlayer.PlayerName = ((ConnectRequestStatus) statUp).PlayerName;  // Think these should always already match
+                System.out.println("[Server] You are now connected as " + UserPlayer.PlayerName + "!");
             }
             else
             {
                 System.out.println("[Server] Join request refused");
-                csc.send(new ConnectRequestStatus(false, UserPlayer.PlayerNumber));  // Send refusal acknowledgement
+                csc.send(new ConnectRequestStatus(false, UserPlayer.PlayerName));  // Send refusal acknowledgement
             }
             ConnectionRequested = false;  // We got a response, so we can ask again if we want
         }
@@ -310,16 +313,17 @@ public class ClueLessClient extends Thread
         }
         else if( statUp instanceof TurnUpdate)
         {
+            activeGame = true;  // In case of disconnect and reconnect
             if(((TurnUpdate) statUp).activeTurn )
             {
-               UserPlayer.PlayerTurn = true; // Set the turn status to true 
-               System.out.println( "\n[Server] It is now your turn.");
-               System.out.println("\n\n****Enter a command****");
-               System.out.println("Move Left: 1");
-               System.out.println("Move Right: 2");
-               System.out.println("Move Up: 3");  // To test sending multiple
-               System.out.println("Move Down: 4");
-               System.out.println("Exit: -1");
+                UserPlayer.PlayerTurn = true; // Set the turn status to true
+                System.out.println( "\n[Server] It is now your turn.");
+                System.out.println("\n\n****Enter a command****");
+                System.out.println("Move Left: 1");
+                System.out.println("Move Right: 2");
+                System.out.println("Move Up: 3");  // To test sending multiple
+                System.out.println("Move Down: 4");
+                System.out.println("Exit: -1");
             }
             
             else
@@ -360,6 +364,10 @@ public class ClueLessClient extends Thread
         }
     }
     
+    public void setPlayerName(String name)
+    {
+        UserPlayer.PlayerName = name;
+    }
 
     /**
      * Kill the client

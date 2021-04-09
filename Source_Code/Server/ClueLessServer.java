@@ -242,7 +242,7 @@ public class ClueLessServer extends Thread
                 if(dc != null)
                 {
                     PlayerList.remove(dc);
-                    sendToAllPlayers(new PlayerConnection(dc.PlayerNumber, false));  // Let everyone know
+                    sendToAllPlayers(new PlayerConnection(dc.PlayerName, false));  // Let everyone know
                 }
             }
         }
@@ -255,7 +255,7 @@ public class ClueLessServer extends Thread
                     if(p.ClientID == uid)  // Yup
                     {
                         p.PlayerConnected = false;
-                        sendToAllPlayers(new PlayerConnection(p.PlayerNumber, false));  // Let everyone know
+                        sendToAllPlayers(new PlayerConnection(p.PlayerName, false));  // Let everyone know
                     }
                 }
             }
@@ -299,40 +299,43 @@ public class ClueLessServer extends Thread
      */
     public void processConnectRequest(ConnectRequest cr)
     {
-        if(cr.PlayerID != -1)  // Potentially reconnecting client; allowed any time
+        if(!cr.PlayerName.equals(""))
         {
             synchronized (PlayerList)
             {
-                for (Player p : PlayerList)
+                for (Player p : PlayerList)  // Is this a reconnecting player?
                 {
-                    if(cr.PlayerID == p.PlayerNumber)  // If a connected player resends this, just update anyway
+                    if(cr.PlayerName.equals(p.PlayerName))
                     {
-                        p.ClientID = cr.UniqueID;  // Assign the new client to the existing player
-                        p.PlayerConnected = true;  // Player is connected again
-                        sendToPlayer(p.PlayerNumber, new ConnectRequestStatus(true, p.PlayerNumber));  // Let player know they're in
+                        if(!p.PlayerConnected)
+                        {
+                            p.ClientID = cr.UniqueID;  // Assign the new client to the existing player
+                            p.PlayerConnected = true;  // Player is connected again
+                            sendToPlayer(p.PlayerName, new ConnectRequestStatus(true, p.PlayerName));  // Let player know they're in
+                            // TODO: Update the player on the current status of the game
+                        }
+                        else
+                        {
+                            sendToClient(p.ClientID, new Notification("You're already connected!"));
+                        }
                         return;
                     }
                 }
             }
-        }
-        else  // New connection attempt
-        {
-            if (ServState == ServerState.Lobby && PlayerList.size() < MaxPlayers)  // Can join right now
+            if (ServState == ServerState.Lobby && PlayerList.size() < MaxPlayers)  // Not an existing player; can join
             {
                 synchronized (PlayerList)
                 {
                     // Yay, new player!
-                    sendToAllPlayers(new PlayerConnection(NextPlayerNumber, true));  // Notify existing players
-                    PlayerList.add(new Player(NextPlayerNumber, cr.UniqueID));
-                    sendToPlayer(NextPlayerNumber, new ConnectRequestStatus(true, NextPlayerNumber));  // Let player know they're in
+                    sendToAllPlayers(new PlayerConnection(cr.PlayerName, true));  // Notify existing players
+                    PlayerList.add(new Player(cr.PlayerName, cr.UniqueID));
+                    sendToClient(cr.UniqueID, new ConnectRequestStatus(true, cr.PlayerName));  // Let player know they're in
                     NextPlayerNumber++;
+                    return;
                 }
             }
-            else  // Can't join; reject the request
-            {
-                sendToClient(cr.UniqueID, new ConnectRequestStatus(false, -1));
-            }
         }
+        sendToClient(cr.UniqueID, new ConnectRequestStatus(false, ""));  // Couldn't join
     }
 
     /**
@@ -362,7 +365,7 @@ public class ClueLessServer extends Thread
             }
             else
             {
-                sendToClient(gsr.UniqueID, new Notification("Only player " + PlayerList.get(0).PlayerNumber + " can start the game"));
+                sendToClient(gsr.UniqueID, new Notification("Only " + PlayerList.get(0).PlayerName + " can start the game"));
             }
         }
         else
@@ -377,20 +380,20 @@ public class ClueLessServer extends Thread
        /* First check to see if the action request is from the player who holds the
         * active turn status...
         */
-       if( PlayerList.get( CurrentPlayerIndex ).PlayerNumber == mr.PlayerID)
+       if( PlayerList.get( CurrentPlayerIndex ).PlayerName.equals(mr.PlayerName))
        {
           
           // TODO: update player location
           
           // Announce the move to all players
-          sendToAllPlayers( new Notification("Player " + mr.PlayerID 
+          sendToAllPlayers( new Notification("Player " + mr.PlayerName
              + " moved " + mr.moveDirection) );
           
           
           // Update player turn status, and move to next player
-          sendToPlayer( PlayerList.get( CurrentPlayerIndex ).PlayerNumber, new TurnUpdate( false ) );
+          sendToPlayer( PlayerList.get( CurrentPlayerIndex ).PlayerName, new TurnUpdate( false ) );
           nextPlayer();
-          sendToPlayer( PlayerList.get( CurrentPlayerIndex ).PlayerNumber, new TurnUpdate( true ) );
+          sendToPlayer( PlayerList.get( CurrentPlayerIndex ).PlayerName, new TurnUpdate( true ) );
        }
        
     }
@@ -398,15 +401,15 @@ public class ClueLessServer extends Thread
     /**
      * Send a message to a specific player
      *
-     * @param player - The playerID to message
+     * @param player - The player to message
      * @param msg - What we're sending
      * @return Whether or not the send was successful
      */
-    public boolean sendToPlayer(int player, Message msg)
+    public boolean sendToPlayer(String player, Message msg)
     {
         for (Player p : PlayerList)  // Find the player
         {
-            if(player == p.PlayerNumber && p.PlayerConnected)  // Don't try to send to someone not connected
+            if(player.equals(p.PlayerName) && p.PlayerConnected)  // Don't try to send to someone not connected
             {
                 return ssc.sendToClient(p.ClientID, msg);
             }

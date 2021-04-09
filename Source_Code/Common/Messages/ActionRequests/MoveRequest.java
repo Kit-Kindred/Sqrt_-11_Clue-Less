@@ -3,21 +3,32 @@ package Common.Messages.ActionRequests;
 
 public class MoveRequest extends ActionRequest
 {
-   
+   public Move moveDirection;
+
    /**
-    * Using a string to keep track of where the player wants to move. This seemed the
-    * most flexible until we figure out if we want to use room names to dictate 
-    * movement, or if we want to use directions.
+    * Enumerate valid moves for a player - these will be interpreted by 
+    * action request listener
     */
-   public String moveDirection;
-   
-   public int PlayerID;
-   
-   public MoveRequest( int PlayerID, String moveDirection )
+   public enum Move
    {
+      UP, DOWN, LEFT, RIGHT, STAY, SHORTCUT;
+   }   
+   
+   public MoveRequest( String PlayerName, Move moveDirection )
+   {     
       super();
-      this.PlayerID = PlayerID;
+      this.PlayerName = PlayerName;
       this.moveDirection = moveDirection;
    }
+
+   /**
+    * example use case of move request with enumarated move set 
+    *
+    * @param args
+    */
+   //public static void main(String[] args)
+   //{
+   //   MoveRequest move = new MoveRequest(1, Move.UP);
+   //}
 
 }

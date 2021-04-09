@@ -10,12 +10,12 @@ package Common.Messages.StatusUpdates;
 public class ConnectRequestStatus extends StatusUpdate
 {
     public boolean Joined;
-    public int PlayerID;
+    public String PlayerName;
 
-    public ConnectRequestStatus(boolean joined, int playerID)
+    public ConnectRequestStatus(boolean joined, String playerName)
     {
         super();
         Joined = joined;
-        PlayerID = playerID;
+        PlayerName = playerName;
     }
 }
