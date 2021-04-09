@@ -365,6 +365,13 @@ public class ClueLessServer extends Thread
                     
                     sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
                     
+                    
+                    // Send the player hands to their respective clients
+                    for( Player p : PlayerList )
+                    {
+                       //System.out.println( p.PlayerName + " " + p.getHand().toString() );
+                       sendToClient( p.ClientID, new PlayerHandUpdate( p.getHand() ) );
+                    }
 
                 }
                 else

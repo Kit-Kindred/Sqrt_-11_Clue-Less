@@ -109,6 +109,17 @@ public class Player
     
     
     /**
+     * Getter for the player-specific hand object
+     * @return The PlayerHand object associated to the player.
+     */
+    public PlayerHand getHand()
+    {
+       return this.hand;
+    }
+    
+    
+    
+    /**
      * Setter for a single card in the player's hand. Used to add cards to the 
      * player's hand.
      * @param card The card to add to the player's hand.
