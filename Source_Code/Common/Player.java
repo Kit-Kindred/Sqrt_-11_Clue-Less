@@ -12,7 +12,8 @@ public class Player
     public boolean PlayerConnected;  // true if the player is connected; false otherwise
     public boolean PlayerTurn; // True is it's the player's turn. This should be set by the server.
     
-    public int PlayerNumber;  // Unique playerID assigned by the server. Could probably allow the user to set this and make it a string
+    //public int PlayerNumber;  // Unique playerID assigned by the server. Could probably allow the user to set this and make it a string
+    public String PlayerName;  // A client puts its name in the connection request. Server handles whether or not they get to join
     public int ClientID; // Maps players to clients (Since a player persists in the server after the client disconnects)
 
     public int xPos; // x position of player on the board
@@ -20,12 +21,12 @@ public class Player
     
     public Player()
     {
-        this(-1, -1);
+        this("", -1);
     }
 
-    public Player(int playerNumber, int clientID)
+    public Player(String playerName, int clientID)
     {
-        PlayerNumber = playerNumber;
+        PlayerName = playerName;
         ClientID = clientID;
         PlayerActive = true;
         PlayerConnected = true;

@@ -3,23 +3,21 @@ package Common.Messages.ActionRequests;
 
 public class MoveRequest extends ActionRequest
 {
-
-   public int PlayerID;
    public Move moveDirection;
 
    /**
     * Enumerate valid moves for a player - these will be interpreted by 
     * action request listener
     */
-   enum Move
+   public enum Move
    {
       UP, DOWN, LEFT, RIGHT, STAY, SHORTCUT;
    }   
    
-   public MoveRequest( int PlayerID, Move moveDirection )
+   public MoveRequest( String PlayerName, Move moveDirection )
    {     
       super();
-      this.PlayerID = PlayerID;
+      this.PlayerName = PlayerName;
       this.moveDirection = moveDirection;
    }
 
@@ -28,9 +26,9 @@ public class MoveRequest extends ActionRequest
     *
     * @param args
     */
-   public static void main(String[] args) 
-   {
-      MoveRequest move = new MoveRequest(1, Move.UP);
-   }
+   //public static void main(String[] args)
+   //{
+   //   MoveRequest move = new MoveRequest(1, Move.UP);
+   //}
 
 }

@@ -8,16 +8,14 @@ package Common.Messages.ActionRequests;
  */
 public class ConnectRequest extends ActionRequest
 {
-    public int PlayerID;
     public ConnectRequest()
     {
         super();
-        PlayerID = -1;
     }
 
-    public ConnectRequest(int pid)
+    public ConnectRequest(String pn)
     {
         this();
-        PlayerID = pid;
+        PlayerName = pn;
     }
 }

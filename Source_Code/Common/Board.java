@@ -25,38 +25,38 @@ public class Board
     int currY = player.getyPos();
 
     // new player x,y positions
-    int newX;
-    int newY;
+    int newX = currX;  // Make sure these have some kind of sensible value no matter what
+    int newY = currY;
 
     // set prospective player location
-    switch(move)
+    switch(move.moveDirection)
     {
-      case MoveRequest.UP:
+      case UP:
         // toggle one space up
         newX = currX;
         newY = currY - 1;
         break;
-      case MoveRequest.DOWN:
+      case DOWN:
         // toggle one space down
         newX = currX;
         newY = currY + 1;
         break;
-      case MoveRequest.LEFT:
+      case LEFT:
         // toggle one space to the left
         newX = currX - 1;
         newY = currY;
         break;
-      case MoveRequest.RIGHT:
+      case RIGHT:
         // toggle one space to the right
         newX = currX + 1;
         newY = currY;
         break;
-      case MoveRequest.STAY:
+      case STAY:
         // do nothing
         newX = currX;
         newY = currY;
         break;
-      case MoveRequest.SHORTCUT:
+      case SHORTCUT:
         // move player diagonally across the board when they are in a corner
         if ((currX == 0) && (currY == 0))
         {
@@ -88,7 +88,7 @@ public class Board
     // if room is an occupied hallway, player cannot move there
     if (board[currX][currY] instanceof BoardHallway)
     {
-      if (board[currX][currY].isOccupied())
+      if (((BoardHallway)board[currX][currY]).isOccupied())
       {
         throw new IllegalArgumentException("Hallway is occupied!");
       }
