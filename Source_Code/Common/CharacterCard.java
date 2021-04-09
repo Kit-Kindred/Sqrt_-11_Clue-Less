@@ -3,10 +3,11 @@ package Common;
 public class CharacterCard extends Card
 {
 
-   enum CharacterName
+   public enum CharacterName
    {
       COLONEL_MUSTARD, MISS_SCARLET, PROFESSOR_PLUM, MR_GREEN, MRS_WHITE,
       MRS_PEACOCK;
+      
    }
 
 
@@ -19,7 +20,7 @@ public class CharacterCard extends Card
     * @param characterName
     *        Name of the character
     */
-   CharacterCard( CharacterName characterName )
+   public CharacterCard( CharacterName characterName )
    {
 
       try
@@ -83,7 +84,7 @@ public class CharacterCard extends Card
     */
    public String getCharacterName()
    {
-      return this.characterName.toString();
+      return String.valueOf( this.characterName );
 
    }
 

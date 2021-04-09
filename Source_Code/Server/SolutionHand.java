@@ -15,12 +15,17 @@ public class SolutionHand extends PlayerHand
 
    SolutionHand()
    {
+      super();
    }
    
    
    // Constructor that takes Card Objects
    SolutionHand( CharacterCard character, RoomCard room, WeaponCard weapon )
    {
+      super();
+      System.out.println( character );
+      
+      
       this.character.add( character );
       this.room.add( room );
       this.weapon.add( weapon );
