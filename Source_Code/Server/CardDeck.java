@@ -46,10 +46,7 @@ public class CardDeck
 
       /*
        * Grab all the names and types of each card Had to do some list
-       * manipulation to get the enums into a modifiable list. Strings may be
-       * easier to handle, but that depends on how we implement the
-       * customization feature later. TODO: Explore using strings here
-       * instead.
+       * manipulation to get the enums into a modifiable list.
        */
       List< WeaponType >    weaponEnums    = new ArrayList< WeaponType >(
          Arrays.asList( WeaponCard.WeaponType.values() ) );
@@ -117,15 +114,9 @@ public class CardDeck
        * Loops through the cards and players, assigning the cards to players
        * one by one.
        */
-      for( int i = 0; i < deck.size() - 1; i++ )
+      for( Card card : deck )
       {
-
-         // Resets the player counter back to the start of the list.
-         if( counter > players.size() - 1 )
-         {
-            counter = 0;
-         }
-         players.get( counter ).setCard( deck.get( i ) );
+         players.get( counter % players.size() ).setCard( card );
          counter++;
       }
 
