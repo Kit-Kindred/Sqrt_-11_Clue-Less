@@ -389,7 +389,7 @@ public class ClueLessClient extends Thread
         //Notify this player who refuted and what card they showed
         else if( statUp instanceof RefuteSuggestion)
         {
-            System.out.println((RefuteSuggestion) statUp)
+            System.out.println((RefuteSuggestion) statUp);
         }
 
         //Notify all players that a given player was unable to refute

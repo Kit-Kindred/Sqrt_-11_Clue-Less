@@ -1,6 +1,10 @@
 package Common.Messages.StatusUpdates;
 
 import Common.Card;
+import Common.CharacterCard;
+import Common.RoomCard;
+import Common.WeaponCard;
+
 
 public class RefuteSuggestion extends StatusUpdate
 {
@@ -23,23 +27,23 @@ public class RefuteSuggestion extends StatusUpdate
     {
         String outString = "";
         outString += this.PlayerName;
-        outString += " refuted your suggestion with "
+        outString += " refuted your suggestion with ";
         if (this.Refutation instanceof CharacterCard)
         {
-            outString += this.Refutation.getCharacterName();
+            outString += ((CharacterCard) this.Refutation).getCharacterName();
         }
-        else if (this.refutation instanceof RoomCard)
+        else if (this.Refutation instanceof RoomCard)
         {
-            outString += this.Refutation.getRoomName();
+            outString += ((RoomCard) this.Refutation).getRoomName();
         }
-        else if (this.refutation instanceof WeaponCard)
+        else if (this.Refutation instanceof WeaponCard)
         {
-            outString += this.Refutation.getWeaponType();
+            outString += ((WeaponCard) this.Refutation).getWeaponType();
         }
         else
         {
-            outString += "?SOMETHING?"
+            outString += "?SOMETHING?";
         }
-        return outString
+        return outString;
     }
 }
