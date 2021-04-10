@@ -428,29 +428,29 @@ public class ClueLessServer extends Thread
         if( PlayerList.get( CurrentPlayerIndex ).PlayerName.equals(sr.PlayerName))
         {
             // TODO - Extend to give players choice of which card to use to refute
+            // right now we are just sending back the first refutation
 
             sendToAllPlayers( new SuggestNotification( sr ) );
 
             // TODO - update to start at the next player in the list
             for (Player p : PlayerList )
             {
-
-                if ( p.getCharacterCards().contains(sr.Hand.getCharacters() ) )
+                PlayerHand possibleRefutations = sr.checkRefutations( p.getHand() );
+                if ( ! possibleRefutations.isEmpty() )
                 {
-                    sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, sr.Hand.getCharacters().get(0) ) );
                     sendToAllPlayers( new SuggestionWrong( sr.PlayerName, p.PlayerName ) );
-                    break;
-                }
-                else if ( p.getRoomCards().contains(sr.Hand.getRooms() ) )
-                {
-                    sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, sr.Hand.getRooms().get(0) ) );
-                    sendToAllPlayers( new SuggestionWrong( sr.PlayerName, p.PlayerName ) );
-                    break;
-                }
-                else if ( p.getWeaponCards().contains(sr.Hand.getWeapons() ) )
-                {
-                    sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, sr.Hand.getWeapons().get(0) ) );
-                    sendToAllPlayers( new SuggestionWrong( sr.PlayerName, p.PlayerName ) );
+                    if ( ! possibleRefutations.getCharacters().isEmpty() )
+                    {
+                        sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getCharacters().get( 0 ) ) );
+                    }
+                    else if ( ! possibleRefutations.getRooms().isEmpty() )
+                    {
+                        sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getRooms().get( 0 ) ) );
+                    }
+                    else if ( ! possibleRefutations.getWeapons().isEmpty() )
+                    {
+                        sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getWeapons().get( 0 ) ) );
+                    }
                     break;
                 }
                 else
