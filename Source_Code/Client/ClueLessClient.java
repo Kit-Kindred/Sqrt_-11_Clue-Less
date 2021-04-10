@@ -1,11 +1,15 @@
 package Client;
 
 import Common.*;
+import Common.CharacterCard.CharacterName;
+import Common.RoomCard.RoomName;
+import Common.WeaponCard.WeaponType;
 import Common.Messages.*;
 import Common.Messages.ActionRequests.ActionRequest;
 import Common.Messages.ActionRequests.ConnectRequest;
 import Common.Messages.ActionRequests.GameStartRequest;
 import Common.Messages.ActionRequests.MoveRequest;
+import Common.Messages.ActionRequests.SuggestRequest;
 import Common.Messages.StatusUpdates.*;
 
 import java.util.Scanner;
@@ -174,6 +178,36 @@ public class ClueLessClient extends Thread
                            System.out.println("Sending move down request...\n");
                            clientApplication.csc.send(new MoveRequest(clientApplication.UserPlayer.PlayerName, MoveRequest.Move.DOWN));
                         }
+                case 5 ->
+                        {
+                            System.out.println("Which character would you like to suggest?");
+                            int index = 1;
+                            for ( CharacterName character : CharacterName.values() )
+                            {
+                                System.out.println(character + " : " + index);
+                                index += 1;
+                            }
+                            int suggestCharacterIndex = scan.nextInt();
+
+                            index = 1;
+                            for ( RoomName room : RoomName.values() )
+                            {
+                                System.out.println(room + " : " + index);
+                                index += 1;
+                            }
+                            int suggestRoomIndex = scan.nextInt();
+
+                            index = 1;
+                            for ( WeaponType weapon : WeaponType.values() )
+                            {
+                                System.out.println(weapon + " : " + index);
+                                index += 1;
+                            }
+                            int suggestWeaponIndex = scan.nextInt();
+
+                            SolutionHand suggestHand = new SolutionHand(CharacterName.values()[ suggestCharacterIndex - 1 ], RoomName.values()[ suggestRoomIndex - 1 ], WeaponType.values()[ suggestWeaponIndex - 1 ]);
+                            clientApplication.csc.send(new SuggestRequest(clientApplication.UserPlayer.PlayerName, suggestHand));
+                        }
                 case -1 ->
                         {
                             System.out.println("Exiting...\n");
@@ -323,6 +357,7 @@ public class ClueLessClient extends Thread
                 System.out.println("Move Right: 2");
                 System.out.println("Move Up: 3");  // To test sending multiple
                 System.out.println("Move Down: 4");
+                System.out.println("Suggest: 5");
                 System.out.println("Exit: -1");
             }
 
@@ -348,38 +383,13 @@ public class ClueLessClient extends Thread
         //Notify all players of a suggestion (who, and what they are suggestion)
         else if( statUp instanceof SuggestNotification)
         {
-            System.out.print(((SuggestNotification) statUp).PlayerName);
-            System.out.print(" guessed that ");
-            System.out.print(((SuggestNotification) statUp).Hand.getCharacters().get( 0 ) );
-            System.out.print(" did it in the ");
-            System.out.print(((SuggestNotification) statUp).Hand.getRooms().get( 0 ) );
-            System.out.print(" with the ");
-            System.out.print(((SuggestNotification) statUp).Hand.getWeapons().get( 0 ) );
-            System.out.println("");
+            System.out.println((SuggestNotification) statUp);
         }
 
         //Notify this player who refuted and what card they showed
         else if( statUp instanceof RefuteSuggestion)
         {
-            //This type checking is less than ideal, but we have to check for
-            //which type of card refutes, so we can call the correc enum
-            if( ((RefuteSuggestion) statUp).Refutation instanceof CharacterCard)
-            {
-                System.out.println(((RefuteSuggestion) statUp).PlayerName + " refuted the suggestion with " + ((CharacterCard) ((RefuteSuggestion) statUp).Refutation).getCharacterName());
-            }
-            else if( ((RefuteSuggestion) statUp).Refutation instanceof RoomCard)
-            {
-                System.out.println(((RefuteSuggestion) statUp).PlayerName + " refuted the suggestion with " + ((RoomCard) ((RefuteSuggestion) statUp).Refutation).getRoomName());
-            }
-            else if( ((RefuteSuggestion) statUp).Refutation instanceof WeaponCard)
-            {
-                System.out.println(((RefuteSuggestion) statUp).PlayerName + " refuted the suggestion with " + ((WeaponCard) ((RefuteSuggestion) statUp).Refutation).getWeaponType());
-            }
-            else // something went very wrong
-            {
-                System.out.println("Someone refuted you?");
-            }
-
+            System.out.println((RefuteSuggestion) statUp)
         }
 
         //Notify all players that a given player was unable to refute
