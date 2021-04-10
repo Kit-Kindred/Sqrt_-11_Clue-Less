@@ -1,6 +1,9 @@
 package Server;
 
 import Common.*;
+import Common.WeaponCard.WeaponType;
+import Common.CharacterCard.CharacterName;
+import Common.RoomCard.RoomName;
 import Common.Messages.*;
 import Common.Messages.ActionRequests.ActionRequest;
 import Common.Messages.ActionRequests.ConnectRequest;
@@ -9,6 +12,9 @@ import Common.Messages.ActionRequests.MoveRequest;
 import Common.Messages.StatusUpdates.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -354,8 +360,18 @@ public class ClueLessServer extends Thread
                     ServState = ServerState.ActiveGame;
                     sendToAllPlayers(new GameStart());
                     
+                    // Update player objects with all the cards in the deck
+                    CardDeck.shuffleAndAssignCards( PlayerList );
+                    
                     sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
                     
+                    
+                    // Send the player hands to their respective clients
+                    for( Player p : PlayerList )
+                    {
+                       //System.out.println( p.PlayerName + " " + p.getHand().toString() );
+                       sendToClient( p.ClientID, new PlayerHandUpdate( p.getHand() ) );
+                    }
 
                 }
                 else
@@ -469,6 +485,8 @@ public class ClueLessServer extends Thread
           CurrentPlayerIndex ++;
        }
     }
+
+    
     
     /**
      * Alright, game's over. Kill the server

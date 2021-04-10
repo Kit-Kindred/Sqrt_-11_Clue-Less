@@ -326,6 +326,8 @@ public class ClueLessClient extends Thread
                 System.out.println("Exit: -1");
             }
             
+            
+            
             else
             {
                UserPlayer.PlayerTurn = false; // Set the turn status to false
@@ -333,6 +335,17 @@ public class ClueLessClient extends Thread
             }
             
         }
+        
+        
+        else if( statUp instanceof PlayerHandUpdate)
+        {
+            //UserPlayer.setHand( ((PlayerHandUpdate) statUp).getHandUpdate() );
+            //System.out.println( UserPlayer.getAllCardsString() + "\n");
+           System.out.println( ((PlayerHandUpdate) statUp).getHandUpdate() + "\n");
+            
+        }
+        
+        
         
         else  // Something else. Eventually this'll be an error case, but it's fine for now
         {
