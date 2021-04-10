@@ -348,7 +348,14 @@ public class ClueLessClient extends Thread
         //Notify all players of a suggestion (who, and what they are suggestion)
         else if( statUp instanceof SuggestNotification)
         {
-            System.out.prinln(((SuggestNotification) statUp).PlayerName + "guessed that " + ((CharacterCard) ((SuggestNotification) statUp).Hand.getCharacters()) + " did it in the " + ((SuggestNotification) statUp).Hand.getRooms().toString() + " with the " + ((SuggestNotification) statUp).Hand.getWeapons().toString());
+            System.out.print(((SuggestNotification) statUp).PlayerName);
+            System.out.print(" guessed that ");
+            System.out.print(((SuggestNotification) statUp).Hand.getCharacters().get( 0 ) );
+            System.out.print(" did it in the ");
+            System.out.print(((SuggestNotification) statUp).Hand.getRooms().get( 0 ) );
+            System.out.print(" with the ");
+            System.out.print(((SuggestNotification) statUp).Hand.getWeapons().get( 0 ) );
+            System.out.println("");
         }
 
         //Notify this player who refuted and what card they showed

@@ -5,20 +5,21 @@ import Common.CharacterCard.CharacterName;
 import Common.RoomCard.RoomName;
 import Common.WeaponCard.WeaponType;
 
+
 /**
  *  Solution hand class contains a character, weapon, and room.
  */
 public class SolutionHand extends PlayerHand
 {
 
-   SolutionHand()
+   public SolutionHand()
    {
       super();
    }
 
 
    // Constructor that takes Card Objects
-   SolutionHand( CharacterCard character, RoomCard room, WeaponCard weapon )
+   public SolutionHand( CharacterCard character, RoomCard room, WeaponCard weapon )
    {
       super();
       this.character.add( character );
@@ -28,7 +29,7 @@ public class SolutionHand extends PlayerHand
 
 
    // Constructor that takes types and names
-   SolutionHand( CharacterName character, RoomName room, WeaponType weapon )
+   public SolutionHand( CharacterName character, RoomName room, WeaponType weapon )
    {
       this( new CharacterCard( character ), new RoomCard( room ), new WeaponCard( weapon ) );
    }

@@ -1,4 +1,4 @@
-package Common.Messages.ActionRequest;
+package Common.Messages.ActionRequests;
 
 import Common.SolutionHand;
 import Common.Messages.ActionRequests.ActionRequest;

@@ -437,25 +437,25 @@ public class ClueLessServer extends Thread
 
                 if ( p.getCharacterCards().contains(sr.Hand.getCharacters() ) )
                 {
-                    sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, sr.Hand.getCharacters() ) );
+                    sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, sr.Hand.getCharacters().get(0) ) );
                     sendToAllPlayers( new SuggestionWrong( sr.PlayerName, p.PlayerName ) );
                     break;
                 }
                 else if ( p.getRoomCards().contains(sr.Hand.getRooms() ) )
                 {
-                    sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, sr.Hand.getRooms() ) );
+                    sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, sr.Hand.getRooms().get(0) ) );
                     sendToAllPlayers( new SuggestionWrong( sr.PlayerName, p.PlayerName ) );
                     break;
                 }
                 else if ( p.getWeaponCards().contains(sr.Hand.getWeapons() ) )
                 {
-                    sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, sr.Hand.getWeapons() ) );
+                    sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, sr.Hand.getWeapons().get(0) ) );
                     sendToAllPlayers( new SuggestionWrong( sr.PlayerName, p.PlayerName ) );
                     break;
                 }
                 else
                 {
-                    sendToAllPlayers( SuggestionPassed( sr.PlayerName, p.PlayerName ) );
+                    sendToAllPlayers(new SuggestionPassed( p.PlayerName ));
                 }
             }
         }
