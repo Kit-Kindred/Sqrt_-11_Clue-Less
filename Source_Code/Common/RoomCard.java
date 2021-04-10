@@ -3,6 +3,8 @@ package Common;
 public class RoomCard extends Card
 {
 
+   private static final long serialVersionUID = 7704989267257720833L;
+
    public enum RoomName
    {
       BALL_ROOM, BILLIARD_ROOM, CONSERVATORY, DINING_ROOM, HALL, KITCHEN,

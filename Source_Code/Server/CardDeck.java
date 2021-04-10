@@ -57,7 +57,7 @@ public class CardDeck
       List< RoomName >      roomEnums      = new ArrayList< RoomName >(
          Arrays.asList( RoomCard.RoomName.values() ) );
 
-      System.out.println( characterEnums.size() );
+      //System.out.println( characterEnums.size() );
 
       // Card equivalents of the enums
       ArrayList< CharacterCard > characters = new ArrayList< CharacterCard >();
@@ -84,7 +84,7 @@ public class CardDeck
       Collections.shuffle( characters );
       Collections.shuffle( rooms );
 
-      System.out.println( characters.get( 0 ).getCharacterName() );
+      //System.out.println( characters.get( 0 ).getCharacterName() );
 
       // Remove the top card from each card type and store as solution cards
       try

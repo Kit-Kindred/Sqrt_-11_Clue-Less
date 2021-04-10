@@ -379,6 +379,9 @@ public class ClueLessServer extends Thread
                        sendToClient( p.ClientID, new PlayerHandUpdate( p.getHand() ) );
                     }
 
+                    // Send the first player a turn update to begin the game
+                    sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
+
                 }
                 else
                 {

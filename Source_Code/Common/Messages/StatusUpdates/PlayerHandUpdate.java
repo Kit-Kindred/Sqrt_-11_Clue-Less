@@ -4,19 +4,23 @@ import Common.*;
 
 public class PlayerHandUpdate extends StatusUpdate
 {
-   private String playerHand;
    
+   /**
+    * Sends the serializable object PlayerHand
+    */
+   private static final long serialVersionUID = -1385435942123491943L;
+   private PlayerHand playerHand;
    
    
    public PlayerHandUpdate( PlayerHand hand )
    {
       super();
-      this.playerHand = hand.toString();
+      this.playerHand = hand;
    }
    
    
    
-   public String getHandUpdate()
+   public PlayerHand getHandUpdate()
    {
       return this.playerHand;
    }
