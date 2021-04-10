@@ -71,18 +71,18 @@ public class ClueLessClient extends Thread
             System.out.println("Send Connect Request: 3");  // To test sending multiple
             System.out.println("Request Start Game: 4");
             System.out.println("Exit: -1");
+            System.out.print("\n>> ");
             input = scan.nextInt();
             
             // Clients not going first need a way to break from this while loop 
-            // without 
             if( clientApplication.activeGame )
             {
-               System.out.println("\n****Enter a command****");
-               System.out.println("Move Left: 1");
-               System.out.println("Move Right: 2");
-               System.out.println("Move Up: 3");  // To test sending multiple
-               System.out.println("Move Down: 4");
-               System.out.println("Exit: -1");
+//               System.out.println("****Enter a command****");
+//               System.out.println("Move Left: 1");
+//               System.out.println("Move Right: 2");
+//               System.out.println("Move Up: 3");  // To test sending multiple
+//               System.out.println("Move Down: 4");
+//               System.out.println("Exit: -1");
                break;
             }
             
@@ -113,7 +113,7 @@ public class ClueLessClient extends Thread
                         }
                 case 4 ->
                         {
-                            System.out.println("Sending game start request...\n");
+                            System.out.println("Sending game start request...");
                             clientApplication.csc.send(new GameStartRequest());
                             
                             // Using a sleep here to wait for the active game status to be updated.
@@ -121,7 +121,7 @@ public class ClueLessClient extends Thread
                             // TODO: reduce the sleep time if possible
                             try
                             {
-                               Thread.sleep( 1000 );
+                               Thread.sleep( 500 );
                             } 
                             catch( InterruptedException e )
                             {
@@ -181,6 +181,7 @@ public class ClueLessClient extends Thread
                 default ->
                         {
                             System.out.println("Sorry, that option isn't currently supported. Please try again\n");
+                            System.out.print(">> ");
                         }
               }
            }
@@ -189,8 +190,9 @@ public class ClueLessClient extends Thread
            {
               System.out.println("It is not your turn, please wait.");
            }
-            
-            input = scan.nextInt();
+           
+           
+           input = scan.nextInt();
         }
         while(input != -1 && clientApplication.activeGame );
         
@@ -263,7 +265,7 @@ public class ClueLessClient extends Thread
     }
 
     /**
-     * Process status updates sent to the clien
+     * Process status updates sent to the client
      *
      * @param statUp - Received status update
      */
@@ -302,7 +304,7 @@ public class ClueLessClient extends Thread
         {
             if(((GameStart) statUp).GameStarting)
             {
-                System.out.println("[Server] Game starting!\n");
+                System.out.println("\n[Server] Game starting!\n");
                 activeGame = true;
             }
             else
@@ -317,13 +319,15 @@ public class ClueLessClient extends Thread
             if(((TurnUpdate) statUp).activeTurn )
             {
                 UserPlayer.PlayerTurn = true; // Set the turn status to true
-                System.out.println( "\n[Server] It is now your turn.");
-                System.out.println("\n\n****Enter a command****");
+                System.out.println( "[Server] It is now your turn.");
+                System.out.println("\n****Enter a command****");
                 System.out.println("Move Left: 1");
                 System.out.println("Move Right: 2");
                 System.out.println("Move Up: 3");  // To test sending multiple
                 System.out.println("Move Down: 4");
-                System.out.println("Exit: -1");
+                System.out.println("Exit: -1\n");
+                System.out.println( UserPlayer.getAllCardsString() );
+                System.out.print("\n>> ");
             }
             
             
@@ -339,9 +343,9 @@ public class ClueLessClient extends Thread
         
         else if( statUp instanceof PlayerHandUpdate)
         {
-            //UserPlayer.setHand( ((PlayerHandUpdate) statUp).getHandUpdate() );
-            //System.out.println( UserPlayer.getAllCardsString() + "\n");
-           System.out.println( ((PlayerHandUpdate) statUp).getHandUpdate() + "\n");
+           UserPlayer.setHand( ((PlayerHandUpdate) statUp).getHandUpdate() );
+           System.out.println( UserPlayer.getAllCardsString() + "\n");
+           //System.out.println( ((PlayerHandUpdate) statUp).getHandUpdate() + "\n");
             
         }
         

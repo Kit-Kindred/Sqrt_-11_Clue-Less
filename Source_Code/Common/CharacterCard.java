@@ -3,6 +3,8 @@ package Common;
 public class CharacterCard extends Card
 {
 
+   private static final long serialVersionUID = 60228553259945900L;
+
    public enum CharacterName
    {
       COLONEL_MUSTARD, MISS_SCARLET, PROFESSOR_PLUM, MR_GREEN, MRS_WHITE,

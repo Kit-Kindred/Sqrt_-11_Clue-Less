@@ -1,5 +1,6 @@
 package Common;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -9,16 +10,22 @@ import java.util.ArrayList;
  * @author DavidC
  *
  */
-public class PlayerHand
+public class PlayerHand implements Serializable
 {
 
+   
+   /**
+    * An auto-generated Serializable UID. I believe this just needs to be
+    * unique compared to all the Serializable objects in the program.
+    */
+   private static final long serialVersionUID = -3215083740550944062L;
    
    protected ArrayList<WeaponCard> weapon;
    protected ArrayList<CharacterCard> character;
    protected ArrayList<RoomCard> room;
    
    
-   // Initalize the arrayLists in the constructor
+   // Initialize the arrayLists in the constructor
    public PlayerHand()
    {  
       weapon = new ArrayList<WeaponCard>();
@@ -82,19 +89,19 @@ public class PlayerHand
 
       if( card instanceof CharacterCard )
       {
-         System.out.println("Adding... " + ((CharacterCard) card).getCharacterName() );
+         //System.out.println("Adding... " + ((CharacterCard) card).getCharacterName() );
          this.setCharacter( (CharacterCard) card );
       }
          
       else if( card instanceof RoomCard )
       {
-         System.out.println("Adding... " + ((RoomCard) card).getRoomName());
+         //System.out.println("Adding... " + ((RoomCard) card).getRoomName());
          this.setRoom( (RoomCard) card );
       }
       
       else if( card instanceof WeaponCard )
       {
-         System.out.println("Adding... " + ((WeaponCard) card).getWeaponType() );
+         //System.out.println("Adding... " + ((WeaponCard) card).getWeaponType() );
          this.setWeapon( (WeaponCard) card );
       }
       
@@ -146,22 +153,30 @@ public class PlayerHand
       
       for( CharacterCard c : this.character )
       {
-         outString += c.getCharacterName() + ", ";
-         
+         if( !this.character.isEmpty() )
+         {
+            outString += c.getCharacterName() + ", ";
+         }
       }
 
       for( RoomCard r: this.room )
       {
-         outString += r.getRoomName() + ", ";
+         if( !this.room.isEmpty() )
+         {
+            outString += r.getRoomName() + ", ";
+         }
       }
-
+      
       for( WeaponCard w : this.weapon )
       {
-         outString += w.getWeaponType() + ", ";
+         if( !this.weapon.isEmpty() )
+            {
+               outString += w.getWeaponType() + ", ";
+            }
       }
       
       // Remove trailing comma and space
-      outString = outString.substring( 0, outString.length() - 2 );
+      outString = outString.substring( 0, outString.lastIndexOf( ", " ) );
       
       return outString;
    }
