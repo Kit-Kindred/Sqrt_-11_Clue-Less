@@ -3,6 +3,8 @@ package Common;
 public class WeaponCard extends Card
 {
 
+   private static final long serialVersionUID = 1234167749488657323L;
+
    public enum WeaponType
    {
       ROPE, LEAD_PIPE, KNIFE, WRENCH, CANDLESTICK, REVOLVER;

@@ -363,9 +363,6 @@ public class ClueLessServer extends Thread
                     // Update player objects with all the cards in the deck
                     CardDeck.shuffleAndAssignCards( PlayerList );
                     
-                    sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
-                    
-                    
                     // Send the player hands to their respective clients
                     for( Player p : PlayerList )
                     {
@@ -373,6 +370,9 @@ public class ClueLessServer extends Thread
                        sendToClient( p.ClientID, new PlayerHandUpdate( p.getHand() ) );
                     }
 
+                    // Send the first player a turn update to begin the game
+                    sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
+                    
                 }
                 else
                 {
