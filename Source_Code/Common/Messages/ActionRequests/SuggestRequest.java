@@ -4,20 +4,20 @@ import Common.CharacterCard;
 import Common.RoomCard;
 import Common.WeaponCard;
 import Common.PlayerHand;
-import Common.SolutionHand;
+import Common.SuggestHand;
 import Common.Messages.ActionRequests.ActionRequest;
 
 public class SuggestRequest extends ActionRequest
 {
     public String PlayerName;
-    public SolutionHand Hand;
+    public SuggestHand Hand;
 
     public SuggestRequest()
     {
         super();
     }
 
-    public SuggestRequest(String name, SolutionHand h)
+    public SuggestRequest(String name, SuggestHand h)
     {
         this.PlayerName = name;
         this.Hand = h;
@@ -29,7 +29,7 @@ public class SuggestRequest extends ActionRequest
         outString += this.PlayerName;
         outString += "wants to suggest that ";
         outString += this.Hand.getCharacterName();
-        outString += " dit it in the ";
+        outString += " did it in the ";
         outString += this.Hand.getRoomName();
         outString += " with the ";
         outString += this.Hand.getWeaponType();
@@ -70,4 +70,5 @@ public class SuggestRequest extends ActionRequest
 
         return outHand;
     }
+    
 }
