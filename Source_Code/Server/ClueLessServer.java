@@ -502,7 +502,7 @@ public class ClueLessServer extends Thread
             // Tell everyone what happend
             sendToAllPlayers( accuseNotification );
             // Tell the player who accused the correct answer
-            sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new EnvelopePeakNotification( this.EnvelopeHand ) )
+            sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new EnvelopePeakNotification( this.EnvelopeHand ) );
             // Tell the player who accused (incorrectly) that their "Out"
             sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new OutNotification( PlayerList.get ( CurrentPlayerIndex ).PlayerName ) );
         }

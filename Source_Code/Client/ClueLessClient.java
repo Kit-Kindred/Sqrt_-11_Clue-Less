@@ -406,12 +406,12 @@ public class ClueLessClient extends Thread
         // Notify players about an accusation
         else if (statUp instanceof AccuseNotification)
         {
-            processAccuseNotification((AccuseNotification) statUp)
+            processAccuseNotification((AccuseNotification) statUp);
         }
         //This is sent to the player when they accuse
         else if (statUp instanceof EnvelopePeakNotification)
         {
-            System.out.println((EnvelopePeakNotification) statUp)
+            System.out.println((EnvelopePeakNotification) statUp);
         }
         // This is sent to a player to let them know they are out of the game.
         // Do we have to do anything else here?
