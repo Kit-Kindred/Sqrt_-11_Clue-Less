@@ -406,7 +406,7 @@ public class ClueLessClient extends Thread
 
     public void processGameStart(GameStart gs)
     {
-        if(((GameStart) statUp).GameStarting && !activeGame )
+        if(gs.GameStarting && !activeGame )
         {
             System.out.println("[Server] Game starting!\n");
 
