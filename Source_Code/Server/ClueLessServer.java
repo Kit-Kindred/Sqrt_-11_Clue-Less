@@ -148,12 +148,8 @@ public class ClueLessServer extends Thread
      * Current state of the server (Lobby/Active)
      */
     private ServerState ServState;
-
-    /**
-     * What ID we'll give the next player to join
-     */
-    private int NextPlayerNumber;
-
+    
+    private final TurnTracker turnTracker;
 
     /**
      * The index of the player who's turn it is currently. This index corresponds to the
@@ -168,7 +164,8 @@ public class ClueLessServer extends Thread
     {
         ServerPort = port;
         ServState = ServerState.Lobby;  // When server starts, it's in the lobby state
-        NextPlayerNumber = 1;  // One-index players
+        turnTracker = new TurnTracker();
+        CurrentPlayerIndex = 0;
     }
 
 
@@ -286,14 +283,20 @@ public class ClueLessServer extends Thread
         {
             processConnectRequest((ConnectRequest) actionRequest);
         }
-        if(actionRequest instanceof GameStartRequest)
+        for(Player p : PlayerList)  // Only process connection requests from non-players
         {
-            processGameStartRequest((GameStartRequest) actionRequest);
-        }
-
-        if(actionRequest instanceof MoveRequest)
-        {
-           processMoveRequest((MoveRequest) actionRequest);
+            if(actionRequest.UniqueID == p.ClientID)
+            {
+                if(actionRequest instanceof GameStartRequest)
+                {
+                    processGameStartRequest((GameStartRequest) actionRequest);
+                }
+                else if(actionRequest instanceof MoveRequest)
+                {
+                   processMoveRequest((MoveRequest) actionRequest);
+                }
+                break;
+            }
         }
 
         if(actionRequest instanceof SuggestRequest)
@@ -342,7 +345,6 @@ public class ClueLessServer extends Thread
                     sendToAllPlayers(new PlayerConnection(cr.PlayerName, true));  // Notify existing players
                     PlayerList.add(new Player(cr.PlayerName, cr.UniqueID));
                     sendToClient(cr.UniqueID, new ConnectRequestStatus(true, cr.PlayerName));  // Let player know they're in
-                    NextPlayerNumber++;
                     return;
                 }
             }
@@ -379,8 +381,8 @@ public class ClueLessServer extends Thread
                        sendToClient( p.ClientID, new PlayerHandUpdate( p.getHand() ) );
                     }
 
-                    // Send the first player a turn update to begin the game
-                    sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
+                    // Notify the players of the first turn
+                    sendToAllPlayers( new TurnUpdate(PlayerList.get( CurrentPlayerIndex ).PlayerName) );
 
                 }
                 else
@@ -416,9 +418,7 @@ public class ClueLessServer extends Thread
 
 
           // Update player turn status, and move to next player
-          sendToPlayer( PlayerList.get( CurrentPlayerIndex ).PlayerName, new TurnUpdate( false ) );
           nextPlayer();
-          sendToPlayer( PlayerList.get( CurrentPlayerIndex ).PlayerName, new TurnUpdate( true ) );
        }
 
     }
@@ -517,23 +517,20 @@ public class ClueLessServer extends Thread
 
 
     /**
-     * Smarter way to increment the current player index so that we don't run
-     * into out of bounds errors.
+     * Increment the turn counter and let players know who's turn it is
      */
     public void nextPlayer()
     {
-       if( CurrentPlayerIndex >= PlayerList.size() - 1 )
-       {
-          CurrentPlayerIndex = 0;
-       }
-
-       else
-       {
-          CurrentPlayerIndex ++;
-       }
+        CurrentPlayerIndex = (++CurrentPlayerIndex % PlayerList.size());
+        if(PlayerList.get( CurrentPlayerIndex ).PlayerConnected && PlayerList.get( CurrentPlayerIndex ).PlayerActive)
+        {
+            sendToAllPlayers(new TurnUpdate( PlayerList.get( CurrentPlayerIndex ).PlayerName ) );
+        }
+        else  // If a player is out or DC'd, skip them
+        {
+            nextPlayer();
+        }
     }
-
-
 
     /**
      * Alright, game's over. Kill the server
@@ -543,50 +540,4 @@ public class ClueLessServer extends Thread
         ssc.close();  // Kill server comms
         interrupt();  // Then kill our action processing
     }
-
-
-
-    /**
-     * Inner class where the game logic can be isolated. I haven't come up with a
-     * great way to incorporate this yet.
-     */
-//    class GameDriver
-//    {
-//
-//       /**
-//        * Boolean to keep track of when the game is over. If the game logic gets too
-//        * complicated, we could always default to using break statements.
-//        */
-//       private boolean ongoingGame;
-//
-//       /**
-//        * The index of the player who's turn it is currently. This index corresponds to the
-//        * PlayerList ArrayList.
-//        */
-//       private int CurrentPlayerIndex;
-//
-//
-//
-//       public GameDriver( ArrayList<Player> Players )
-//       {
-//          this.ongoingGame = true;
-//          startGame( Players );
-//       }
-//
-//
-//       /**
-//        * Game driving logic goes here for the most part
-//        */
-//       public void startGame( ArrayList<Player> Players )
-//       {
-//          while( ongoingGame )
-//          {
-//             sendToClient( Players.get( this.CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
-//
-//             this.CurrentPlayerIndex ++;
-//          }
-//
-//       }
-//    }
-
 }

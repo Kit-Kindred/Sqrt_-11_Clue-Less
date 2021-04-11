@@ -356,7 +356,7 @@ public class ClueLessClient extends Thread
         else if( statUp instanceof TurnUpdate)
         {
             activeGame = true;  // In case of disconnect and reconnect
-            if(((TurnUpdate) statUp).activeTurn )
+            if(((TurnUpdate) statUp).TurnPlayer.equals(UserPlayer.PlayerName))
             {
                 UserPlayer.PlayerTurn = true; // Set the turn status to true
                 System.out.println( "\n[Server] It is now your turn.");
@@ -368,13 +368,10 @@ public class ClueLessClient extends Thread
                 System.out.println("Suggest: 5");
                 System.out.println("Exit: -1");
             }
-
-
-
             else
             {
                UserPlayer.PlayerTurn = false; // Set the turn status to false
-               System.out.println( "[Server] Ended turn.");
+               System.out.println( "[Server] It's " + ((TurnUpdate) statUp).TurnPlayer + "'s turn.");
             }
 
         }
