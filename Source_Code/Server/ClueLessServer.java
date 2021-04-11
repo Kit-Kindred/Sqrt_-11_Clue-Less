@@ -1,15 +1,11 @@
 package Server;
 
 import Common.*;
+import Common.Messages.ActionRequests.*;
 import Common.WeaponCard.WeaponType;
 import Common.CharacterCard.CharacterName;
 import Common.RoomCard.RoomName;
 import Common.Messages.*;
-import Common.Messages.ActionRequests.ActionRequest;
-import Common.Messages.ActionRequests.ConnectRequest;
-import Common.Messages.ActionRequests.GameStartRequest;
-import Common.Messages.ActionRequests.MoveRequest;
-import Common.Messages.ActionRequests.SuggestRequest;
 import Common.Messages.StatusUpdates.*;
 
 import java.util.ArrayList;
@@ -148,12 +144,8 @@ public class ClueLessServer extends Thread
      * Current state of the server (Lobby/Active)
      */
     private ServerState ServState;
-
-    /**
-     * What ID we'll give the next player to join
-     */
-    private int NextPlayerNumber;
-
+    
+    private final TurnTracker turnTracker;
 
     /**
      * The index of the player who's turn it is currently. This index corresponds to the
@@ -168,7 +160,8 @@ public class ClueLessServer extends Thread
     {
         ServerPort = port;
         ServState = ServerState.Lobby;  // When server starts, it's in the lobby state
-        NextPlayerNumber = 1;  // One-index players
+        turnTracker = new TurnTracker();
+        CurrentPlayerIndex = 0;
     }
 
 
@@ -286,21 +279,32 @@ public class ClueLessServer extends Thread
         {
             processConnectRequest((ConnectRequest) actionRequest);
         }
-        if(actionRequest instanceof GameStartRequest)
+        for(Player p : PlayerList)  // Only process non-connection requests from players
         {
-            processGameStartRequest((GameStartRequest) actionRequest);
+            if(actionRequest.UniqueID == p.ClientID)
+            {
+                if(actionRequest instanceof GameStartRequest)
+                {
+                    processGameStartRequest((GameStartRequest) actionRequest);
+                }
+                if(PlayerList.get( CurrentPlayerIndex ).PlayerName.equals(p.PlayerName))  // Only the player who's turn it is can do these
+                {
+                    if(actionRequest instanceof MoveRequest)
+                    {
+                       processMoveRequest((MoveRequest) actionRequest);
+                    }
+                    else if(actionRequest instanceof SuggestRequest)
+                    {
+                        processSuggestRequest((SuggestRequest) actionRequest);
+                    }
+                    else if(actionRequest instanceof EndTurn || turnTracker.isTurnOver())  // isTurnOver is basically always false since nobody's accusing most of the time
+                    {
+                        nextPlayer();
+                    }
+                    break;
+                }
+            }
         }
-
-        if(actionRequest instanceof MoveRequest)
-        {
-           processMoveRequest((MoveRequest) actionRequest);
-        }
-
-        if(actionRequest instanceof SuggestRequest)
-        {
-            processSuggestRequest((SuggestRequest) actionRequest);
-        }
-        // TODO: Actual in-game action requests
     }
 
 
@@ -342,7 +346,6 @@ public class ClueLessServer extends Thread
                     sendToAllPlayers(new PlayerConnection(cr.PlayerName, true));  // Notify existing players
                     PlayerList.add(new Player(cr.PlayerName, cr.UniqueID));
                     sendToClient(cr.UniqueID, new ConnectRequestStatus(true, cr.PlayerName));  // Let player know they're in
-                    NextPlayerNumber++;
                     return;
                 }
             }
@@ -379,8 +382,8 @@ public class ClueLessServer extends Thread
                        sendToClient( p.ClientID, new PlayerHandUpdate( p.getHand() ) );
                     }
 
-                    // Send the first player a turn update to begin the game
-                    sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
+                    // Notify the players of the first turn
+                    sendToAllPlayers( new TurnUpdate(PlayerList.get( CurrentPlayerIndex ).PlayerName) );
 
                 }
                 else
@@ -402,52 +405,49 @@ public class ClueLessServer extends Thread
 
     public void processMoveRequest( MoveRequest mr )
     {
-       /* First check to see if the action request is from the player who holds the
-        * active turn status...
-        */
-       if( PlayerList.get( CurrentPlayerIndex ).PlayerName.equals(mr.PlayerName))
-       {
-
-          // TODO: update player location
-
-          // Announce the move to all players
-          sendToAllPlayers( new Notification("Player " + mr.PlayerName
-             + " moved " + mr.moveDirection) );
-
-
-          // Update player turn status, and move to next player
-          sendToPlayer( PlayerList.get( CurrentPlayerIndex ).PlayerName, new TurnUpdate( false ) );
-          nextPlayer();
-          sendToPlayer( PlayerList.get( CurrentPlayerIndex ).PlayerName, new TurnUpdate( true ) );
-       }
-
+        // processAction now checks if the sending player is allowed to move
+        if(turnTracker.CanMove)
+        {
+            // TODO: update player location. Only update the turn tracker on valid moves
+            turnTracker.move();
+            // Announce the move to all players
+            sendToAllPlayers(new Notification("Player " + mr.PlayerName
+                    + " moved " + mr.moveDirection));
+        }
+        else
+        {
+            sendToClient(mr.UniqueID, new Notification("You've already moved this turn!"));
+        }
     }
 
     public void processSuggestRequest( SuggestRequest sr )
     {
-        if( PlayerList.get( CurrentPlayerIndex ).PlayerName.equals(sr.PlayerName))
+        if(turnTracker.CanSuggest)
         {
+            turnTracker.suggest();
+            // processAction now checks if the sending player is allowed to move
             // TODO - Extend to give players choice of which card to use to refute
             // right now we are just sending back the first refutation
 
             sendToAllPlayers( new SuggestNotification( sr ) );
 
-            // TODO - update to start at the next player in the list
-            for (Player p : PlayerList )
+            for (int i = 1; i < PlayerList.size(); i++)  // Start at 1 to start with the next player. Don't check the current player
             {
+                Player p = PlayerList.get((CurrentPlayerIndex + i) % PlayerList.size());
                 PlayerHand possibleRefutations = sr.checkRefutations( p.getHand() );
-                if ( ! ( possibleRefutations.isEmpty() ) )
+
+                if (!possibleRefutations.isEmpty() )
                 {
                     sendToAllPlayers( new SuggestionWrong( sr.PlayerName, p.PlayerName ) );
-                    if ( ! ( possibleRefutations.getCharacters() == null ) )
+                    if ( !possibleRefutations.getCharacters().isEmpty() )
                     {
                         sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getCharacters().get( 0 ) ) );
                     }
-                    else if ( ! ( possibleRefutations.getRooms() == null ) )
+                    else if ( ! ( possibleRefutations.getRooms().isEmpty()) )
                     {
                         sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getRooms().get( 0 ) ) );
                     }
-                    else if ( ! ( possibleRefutations.getWeapons() == null ) )
+                    else if ( ! ( possibleRefutations.getWeapons().isEmpty()) )
                     {
                         sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getWeapons().get( 0 ) ) );
                     }
@@ -458,6 +458,12 @@ public class ClueLessServer extends Thread
                     sendToAllPlayers(new SuggestionPassed( p.PlayerName ));
                 }
             }
+            // If it comes back to us, do we lie or do nothing? I think do nothing is better?
+            //sendToAllPlayers(new SuggestionPassed( PlayerList.get(CurrentPlayerIndex).PlayerName));
+        }
+        else
+        {
+            sendToClient(sr.UniqueID, new Notification("You've already suggested this turn!"));
         }
     }
 
@@ -517,23 +523,21 @@ public class ClueLessServer extends Thread
 
 
     /**
-     * Smarter way to increment the current player index so that we don't run
-     * into out of bounds errors.
+     * Increment the turn counter and let players know who's turn it is
      */
     public void nextPlayer()
     {
-       if( CurrentPlayerIndex >= PlayerList.size() - 1 )
-       {
-          CurrentPlayerIndex = 0;
-       }
-
-       else
-       {
-          CurrentPlayerIndex ++;
-       }
+        CurrentPlayerIndex = (++CurrentPlayerIndex % PlayerList.size());
+        if(PlayerList.get( CurrentPlayerIndex ).PlayerConnected && PlayerList.get( CurrentPlayerIndex ).PlayerActive)
+        {
+            sendToAllPlayers(new TurnUpdate( PlayerList.get( CurrentPlayerIndex ).PlayerName ) );
+            turnTracker.reset();
+        }
+        else  // If a player is out or DC'd, skip them
+        {
+            nextPlayer();
+        }
     }
-
-
 
     /**
      * Alright, game's over. Kill the server
@@ -543,50 +547,4 @@ public class ClueLessServer extends Thread
         ssc.close();  // Kill server comms
         interrupt();  // Then kill our action processing
     }
-
-
-
-    /**
-     * Inner class where the game logic can be isolated. I haven't come up with a
-     * great way to incorporate this yet.
-     */
-//    class GameDriver
-//    {
-//
-//       /**
-//        * Boolean to keep track of when the game is over. If the game logic gets too
-//        * complicated, we could always default to using break statements.
-//        */
-//       private boolean ongoingGame;
-//
-//       /**
-//        * The index of the player who's turn it is currently. This index corresponds to the
-//        * PlayerList ArrayList.
-//        */
-//       private int CurrentPlayerIndex;
-//
-//
-//
-//       public GameDriver( ArrayList<Player> Players )
-//       {
-//          this.ongoingGame = true;
-//          startGame( Players );
-//       }
-//
-//
-//       /**
-//        * Game driving logic goes here for the most part
-//        */
-//       public void startGame( ArrayList<Player> Players )
-//       {
-//          while( ongoingGame )
-//          {
-//             sendToClient( Players.get( this.CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
-//
-//             this.CurrentPlayerIndex ++;
-//          }
-//
-//       }
-//    }
-
 }

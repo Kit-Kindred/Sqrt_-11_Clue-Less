@@ -13,12 +13,12 @@ import Common.Player;
 public class TurnUpdate extends StatusUpdate
 {
    
-   public boolean activeTurn;
+   public String TurnPlayer;
    
-   public TurnUpdate( boolean turnToggle )
+   public TurnUpdate( String turnPlayer )
    {
       super();  
-      this.activeTurn = turnToggle;
+      this.TurnPlayer = turnPlayer;
    }
    
    

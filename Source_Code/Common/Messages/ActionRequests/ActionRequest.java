@@ -14,7 +14,12 @@ public class ActionRequest extends Message
 
     public ActionRequest()
     {
-        super();  // Just make a generic message for now
-        PlayerName = "";
+        this("");
+    }
+
+    public ActionRequest(String playerName)
+    {
+        super();
+        PlayerName = playerName;
     }
 }

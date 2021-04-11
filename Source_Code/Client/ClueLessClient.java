@@ -2,14 +2,10 @@ package Client;
 
 import Common.*;
 import Common.CharacterCard.CharacterName;
+import Common.Messages.ActionRequests.*;
 import Common.RoomCard.RoomName;
 import Common.WeaponCard.WeaponType;
 import Common.Messages.*;
-import Common.Messages.ActionRequests.ActionRequest;
-import Common.Messages.ActionRequests.ConnectRequest;
-import Common.Messages.ActionRequests.GameStartRequest;
-import Common.Messages.ActionRequests.MoveRequest;
-import Common.Messages.ActionRequests.SuggestRequest;
 import Common.Messages.StatusUpdates.*;
 
 import java.util.Scanner;
@@ -79,7 +75,7 @@ public class ClueLessClient extends Thread
 
             // Clients not going first need a way to break from this while loop
             // without
-            if( clientApplication.activeGame )
+            /*if( clientApplication.activeGame )
             {
                System.out.println("\n****Enter a command****");
                System.out.println("Move Left: 1");
@@ -88,7 +84,7 @@ public class ClueLessClient extends Thread
                System.out.println("Move Down: 4");
                System.out.println("Exit: -1");
                break;
-            }
+            }*/
 
             switch (input)
             {
@@ -146,8 +142,6 @@ public class ClueLessClient extends Thread
             }
         }
         while(input != -1 && !clientApplication.activeGame);
-
-
 
         // Present the user with actions and wait for them to take their turn
         do
@@ -215,6 +209,11 @@ public class ClueLessClient extends Thread
 
                             SolutionHand suggestHand = new SolutionHand( suggestCharacter, suggestRoom, suggestWeapon );
                             clientApplication.csc.send(new SuggestRequest(clientApplication.UserPlayer.PlayerName, suggestHand));
+                        }
+                case 6 ->
+                        {
+                            System.out.println("Ending turn...\n");
+                            clientApplication.csc.send(new EndTurn(clientApplication.UserPlayer.PlayerName));
                         }
                 case -1 ->
                         {
@@ -315,79 +314,19 @@ public class ClueLessClient extends Thread
     {
         if(statUp instanceof PlayerConnection)  // Another player joined/left the game
         {
-            if(((PlayerConnection) statUp).Connected)
-            {
-                System.out.println("[Server] " + ((PlayerConnection) statUp).PlayerName + " joined the game!");
-            }
-            else
-            {
-                System.out.println("[Server] " + ((PlayerConnection) statUp).PlayerName + " left the game!");
-            }
+            processPlayerConnection((PlayerConnection) statUp);
         }
         else if(statUp instanceof ConnectRequestStatus)  // Response to our join request
         {
-            if(((ConnectRequestStatus) statUp).Joined)
-            {
-                UserPlayer.PlayerName = ((ConnectRequestStatus) statUp).PlayerName;  // Think these should always already match
-                System.out.println("[Server] You are now connected as " + UserPlayer.PlayerName + "!");
-            }
-            else
-            {
-                System.out.println("[Server] Join request refused");
-                csc.send(new ConnectRequestStatus(false, UserPlayer.PlayerName));  // Send refusal acknowledgement
-            }
-            ConnectionRequested = false;  // We got a response, so we can ask again if we want
-        }
-        else if(statUp instanceof Notification)  // Generic server print essentially
-        {
-            System.out.println("[Server] " + ((Notification) statUp).NotificationText);
+            processConnectionRequestStatus((ConnectRequestStatus) statUp);
         }
         else if(statUp instanceof GameStart)  // Starting/ending the game
         {
-            if(((GameStart) statUp).GameStarting && !activeGame )
-            {
-                System.out.println("[Server] Game starting!\n");
-                
-                // Only instantiate the board after the game starts
-                this.board = new Board();
-                activeGame = true;
-            }
-            
-            else if( activeGame )
-            {
-               System.out.println("[Server] Game has already been started!\n");
-            }
-            
-            else
-            {
-                System.out.println("[Server] Game ending!\n");
-                activeGame = false;
-            }
+            processGameStart((GameStart) statUp);
         }
         else if( statUp instanceof TurnUpdate)
         {
-            activeGame = true;  // In case of disconnect and reconnect
-            if(((TurnUpdate) statUp).activeTurn )
-            {
-                UserPlayer.PlayerTurn = true; // Set the turn status to true
-                System.out.println( "\n[Server] It is now your turn.");
-                System.out.println("\n\n****Enter a command****");
-                System.out.println("Move Left: 1");
-                System.out.println("Move Right: 2");
-                System.out.println("Move Up: 3");  // To test sending multiple
-                System.out.println("Move Down: 4");
-                System.out.println("Suggest: 5");
-                System.out.println("Exit: -1");
-            }
-
-
-
-            else
-            {
-               UserPlayer.PlayerTurn = false; // Set the turn status to false
-               System.out.println( "[Server] Ended turn.");
-            }
-
+            processTurnUpdate((TurnUpdate) statUp);
         }
 
 
@@ -399,45 +338,114 @@ public class ClueLessClient extends Thread
 
         }
 
+        // These just print stuff, so I guess just leave them
+
+        else if(statUp instanceof Notification)  // Generic server print essentially
+        {
+            System.out.println("[Server] " + ((Notification) statUp).NotificationText);
+        }
         //Notify all players of a suggestion (who, and what they are suggestion)
         else if( statUp instanceof SuggestNotification)
         {
             System.out.println((SuggestNotification) statUp);
         }
-
         //Notify this player who refuted and what card they showed
         else if( statUp instanceof RefuteSuggestion)
         {
             System.out.println((RefuteSuggestion) statUp);
         }
-
         //Notify all players that a given player was unable to refute
         else if( statUp instanceof SuggestionPassed)
         {
             System.out.println(((SuggestionPassed) statUp).PlayerName + " was not able to refute the suggestion");
         }
-
         //Notify all players that a given player was able to refute (WITHOUT THE SPECIFIC CARD)
         else if( statUp instanceof SuggestionWrong)
         {
             System.out.println(((SuggestionWrong) statUp).RefuterName + " was able to refute the suggestion");
         }
-        
-        
+
         // Update the Board object based on updates received from the server
         else if( statUp instanceof BoardUpdate)
         {
             this.board = ((BoardUpdate) statUp).getBoard();
         }
-        
-        
-
-
         else  // Something else. Eventually this'll be an error case, but it's fine for now
         {
             System.out.println("[Server] Update Status: Received StatusUpdate");
         }
         numUpdatesReceived++;
+    }
+
+    public void processPlayerConnection(PlayerConnection pc)
+    {
+        if(pc.Connected)
+        {
+            System.out.println("[Server] " + pc.PlayerName + " joined the game!");
+        }
+        else
+        {
+            System.out.println("[Server] " + pc.PlayerName + " left the game!");
+        }
+    }
+
+    public void processConnectionRequestStatus(ConnectRequestStatus crs)
+    {
+        if(crs.Joined)
+        {
+            UserPlayer.PlayerName = crs.PlayerName;  // Think these should always already match
+            System.out.println("[Server] You are now connected as " + UserPlayer.PlayerName + "!");
+        }
+        else
+        {
+            System.out.println("[Server] Join request refused");
+            csc.send(new ConnectRequestStatus(false, UserPlayer.PlayerName));  // Send refusal acknowledgement
+        }
+        ConnectionRequested = false;  // We got a response, so we can ask again if we want
+    }
+
+    public void processGameStart(GameStart gs)
+    {
+        if(((GameStart) statUp).GameStarting && !activeGame )
+        {
+            System.out.println("[Server] Game starting!\n");
+
+            // Only instantiate the board after the game starts
+            this.board = new Board();
+            activeGame = true;
+        }
+        else if( activeGame )
+        {
+           System.out.println("[Server] Game has already been started!\n");
+        }
+        else
+        {
+            System.out.println("[Server] Game ending!\n");
+            activeGame = false;
+        }
+    }
+
+    public void processTurnUpdate(TurnUpdate tu)
+    {
+        activeGame = true;  // In case of disconnect and reconnect
+        if(tu.TurnPlayer.equals(UserPlayer.PlayerName))
+        {
+            UserPlayer.PlayerTurn = true; // Set the turn status to true
+            System.out.println( "\n[Server] It is now your turn.");
+            System.out.println("\n\n****Enter a command****");
+            System.out.println("Move Left: 1");
+            System.out.println("Move Right: 2");
+            System.out.println("Move Up: 3");  // To test sending multiple
+            System.out.println("Move Down: 4");
+            System.out.println("Suggest: 5");
+            System.out.println("End turn: 6");
+            System.out.println("Exit: -1");
+        }
+        else
+        {
+            UserPlayer.PlayerTurn = false; // Set the turn status to false
+            System.out.println( "[Server] It's " + tu.TurnPlayer + "'s turn.");
+        }
     }
 
     /**
