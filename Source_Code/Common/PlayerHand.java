@@ -41,41 +41,17 @@ public class PlayerHand implements Serializable
 
    public ArrayList<WeaponCard> getWeapons()
    {
-      if ( this.weapon.size() > 0 )
-      {
-         return this.weapon;
-      }
-
-      else
-      {
-         return null;
-      }
+      return this.weapon;
    }
 
    public ArrayList<CharacterCard> getCharacters()
    {
-      if ( this.character.size() > 0 )
-      {
-         return this.character;
-      }
-
-      else
-      {
-         return null;
-      }
+      return this.character;
    }
 
    public ArrayList<RoomCard> getRooms()
    {
-      if ( this.room.size() > 0 )
-      {
-         return this.room;
-      }
-
-      else
-      {
-         return null;
-      }
+      return this.room;
    }
 
 
@@ -146,19 +122,7 @@ public class PlayerHand implements Serializable
    // returns True if we have no cards
    public boolean isEmpty()
    {
-       if (this.character.size() > 0)
-       {
-           return false;
-       }
-       else if (this.room.size() > 0)
-       {
-           return false;
-       }
-       else if (this.weapon.size() > 0)
-       {
-           return false;
-       }
-       return true;
+      return (character.isEmpty() && room.isEmpty() && weapon.isEmpty());
    }
 
    /**
