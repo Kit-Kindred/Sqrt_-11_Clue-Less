@@ -306,15 +306,15 @@ public class ClueLessServer extends Thread
                     {
                         nextPlayer();
                     }
+                    else if (actionRequest instanceof AccuseRequest)
+                    {
+                        processAccuseRequest((AccuseRequest) actionRequest);
+                    }
                     break;
                 }
             }
         }
 
-        if (actionRequest instanceof AccuseRequest)
-        {
-            processAccuseRequest((AccuseRequest) actionRequest);
-        }
         // TODO: Actual in-game action requests
     }
 
@@ -494,11 +494,16 @@ public class ClueLessServer extends Thread
         }
         else
         {
-            // If incorrect. tell everyone, set player "out"
+            // If incorrect
             accuseNotification.setCorrect(false);
-            // TODO - looks like setting this to false doesn't actually prevent them from making moves
+            // Set player to out
             PlayerList.get(CurrentPlayerIndex).PlayerActive = false;
+
+            // Tell everyone what happend
             sendToAllPlayers( accuseNotification );
+            // Tell the player who accused the correct answer
+            sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new EnvelopePeakNotification( this.EnvelopeHand ) )
+            // Tell the player who accused (incorrectly) that their "Out"
             sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new OutNotification( PlayerList.get ( CurrentPlayerIndex ).PlayerName ) );
         }
     }

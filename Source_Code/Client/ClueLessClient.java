@@ -406,24 +406,12 @@ public class ClueLessClient extends Thread
         // Notify players about an accusation
         else if (statUp instanceof AccuseNotification)
         {
-            // Just recast it because we are going to use so much
-            AccuseNotification accuseNotification = (AccuseNotification) statUp;
-            // Tell them about the accusation
-            System.out.println( accuseNotification );
-
-            // If they (or you) are correct
-            if ( accuseNotification.Correct )
-            {
-                // Tell everyone and end the game
-                System.out.println("That was correct!");
-            }
-
-            // If inccorect
-            else
-            {
-                System.out.println("That was incorrect!");
-                System.out.println(accuseNotification.PlayerName + " was wrong! They are out of the game!");
-            }
+            processAccuseNotification((AccuseNotification) statUp)
+        }
+        //This is sent to the player when they accuse
+        else if (statUp instanceof EnvelopePeakNotification)
+        {
+            System.out.println((EnvelopePeakNotification) statUp)
         }
         // This is sent to a player to let them know they are out of the game.
         // Do we have to do anything else here?
@@ -509,6 +497,23 @@ public class ClueLessClient extends Thread
         {
             UserPlayer.PlayerTurn = false; // Set the turn status to false
             System.out.println( "[Server] It's " + tu.TurnPlayer + "'s turn.");
+        }
+    }
+
+    public void processAccuseNotification(AccuseNotification accuseNotification)
+    {
+        // Tell them about the accusation
+        System.out.println( accuseNotification );
+        // If they (or you) are correct
+        if ( accuseNotification.Correct )
+        {
+            System.out.println("That was correct!");
+        }
+        // If inccorect
+        else
+        {
+            System.out.println("That was incorrect!");
+            System.out.println(accuseNotification.PlayerName + " was wrong! They are out of the game!");
         }
     }
 

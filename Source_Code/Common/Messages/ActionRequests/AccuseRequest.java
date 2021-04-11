@@ -4,7 +4,6 @@ import Common.SolutionHand;
 
 public class AccuseRequest extends ActionRequest
 {
-    public String PlayerName;
     public SolutionHand AccuseHand;
 
     public AccuseRequest()
