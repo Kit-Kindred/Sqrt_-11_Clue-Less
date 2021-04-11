@@ -292,7 +292,7 @@ public class ClueLessClient extends Thread
     private final int ServerPort;
 
     private final Player UserPlayer;
-
+    
     private Board board;
 
     private boolean ConnectionRequested;  // Wait for a response before asking to connect again
