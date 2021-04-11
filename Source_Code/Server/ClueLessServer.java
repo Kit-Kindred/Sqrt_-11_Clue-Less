@@ -144,7 +144,7 @@ public class ClueLessServer extends Thread
      * Current state of the server (Lobby/Active)
      */
     private ServerState ServState;
-    
+
     private final TurnTracker turnTracker;
 
     /**
@@ -152,6 +152,11 @@ public class ClueLessServer extends Thread
      * PlayerList ArrayList.
      */
     private int CurrentPlayerIndex;
+
+    /**
+    * The solution sealed in the envelope before the start of the Game
+    */
+    private SolutionHand EnvelopeHand;
 
     /**
      * Initialize the ClueLessServer. Set up game state
@@ -305,6 +310,12 @@ public class ClueLessServer extends Thread
                 }
             }
         }
+
+        if (actionRequest instanceof AccuseRequest)
+        {
+            processAccuseRequest((AccuseRequest) actionRequest);
+        }
+        // TODO: Actual in-game action requests
     }
 
 
@@ -370,7 +381,7 @@ public class ClueLessServer extends Thread
                     sendToAllPlayers(new GameStart());
 
                     // Update player objects with all the cards in the deck
-                    CardDeck.shuffleAndAssignCards( PlayerList );
+                    EnvelopeHand = CardDeck.shuffleAndAssignCards( PlayerList );
 
                     // sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
 
@@ -464,6 +475,30 @@ public class ClueLessServer extends Thread
         else
         {
             sendToClient(sr.UniqueID, new Notification("You've already suggested this turn!"));
+        }
+    }
+
+    public void processAccuseRequest( AccuseRequest acccuseRequest )
+    {
+        // prep the AccuseUpdate here with who and what they are guessing.
+        AccuseUpdate accuseUpdate = new AccuseUpdate(accuseRequest.PlayerName, accuseRequest.Hand);
+
+        // Check to see if the person is correct
+        if (EnvelopeHand.isEqual(accuseRequest.Hand))
+        {
+            // If correct, tell everyone, end game
+            accuseUpdate.setCorrect(true);
+            sendToAllPlayers( accuseUpdate );
+            sendToAllPlayers( new GameEnd() )
+            ServState == ServerState.Lobby;
+        }
+        else
+        {
+            // If incorrect. tell everyone, set player "out"
+            accuseUpdate.setCorrect(false);
+            // TODO - looks like setting this to false doesn't actually prevent them from making moves
+            PlayerList[CurrentPlayerIndex].PlayerActive = false;
+            sendToAllPlayers( accuseUpdate );
         }
     }
 
