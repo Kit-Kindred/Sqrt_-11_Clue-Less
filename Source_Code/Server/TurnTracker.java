@@ -51,6 +51,12 @@ public class TurnTracker
         }
     }
 
+    // If there's anything that can still be done, this returns false
+    public boolean isTurnOver()
+    {
+        return !(CanAccuse || CanMove || CanSuggest);
+    }
+
     public void reset()
     {
         CanAccuse = true;

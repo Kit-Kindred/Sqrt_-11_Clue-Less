@@ -1,15 +1,11 @@
 package Server;
 
 import Common.*;
+import Common.Messages.ActionRequests.*;
 import Common.WeaponCard.WeaponType;
 import Common.CharacterCard.CharacterName;
 import Common.RoomCard.RoomName;
 import Common.Messages.*;
-import Common.Messages.ActionRequests.ActionRequest;
-import Common.Messages.ActionRequests.ConnectRequest;
-import Common.Messages.ActionRequests.GameStartRequest;
-import Common.Messages.ActionRequests.MoveRequest;
-import Common.Messages.ActionRequests.SuggestRequest;
 import Common.Messages.StatusUpdates.*;
 
 import java.util.ArrayList;
@@ -283,7 +279,7 @@ public class ClueLessServer extends Thread
         {
             processConnectRequest((ConnectRequest) actionRequest);
         }
-        for(Player p : PlayerList)  // Only process connection requests from non-players
+        for(Player p : PlayerList)  // Only process non-connection requests from players
         {
             if(actionRequest.UniqueID == p.ClientID)
             {
@@ -291,19 +287,24 @@ public class ClueLessServer extends Thread
                 {
                     processGameStartRequest((GameStartRequest) actionRequest);
                 }
-                else if(actionRequest instanceof MoveRequest)
+                if(PlayerList.get( CurrentPlayerIndex ).PlayerName.equals(p.PlayerName))  // Only the player who's turn it is can do these
                 {
-                   processMoveRequest((MoveRequest) actionRequest);
+                    if(actionRequest instanceof MoveRequest)
+                    {
+                       processMoveRequest((MoveRequest) actionRequest);
+                    }
+                    else if(actionRequest instanceof SuggestRequest)
+                    {
+                        processSuggestRequest((SuggestRequest) actionRequest);
+                    }
+                    else if(actionRequest instanceof EndTurn || turnTracker.isTurnOver())  // isTurnOver is basically always false since nobody's accusing most of the time
+                    {
+                        nextPlayer();
+                    }
+                    break;
                 }
-                break;
             }
         }
-
-        if(actionRequest instanceof SuggestRequest)
-        {
-            processSuggestRequest((SuggestRequest) actionRequest);
-        }
-        // TODO: Actual in-game action requests
     }
 
 
@@ -404,50 +405,49 @@ public class ClueLessServer extends Thread
 
     public void processMoveRequest( MoveRequest mr )
     {
-       /* First check to see if the action request is from the player who holds the
-        * active turn status...
-        */
-       if( PlayerList.get( CurrentPlayerIndex ).PlayerName.equals(mr.PlayerName))
-       {
-
-          // TODO: update player location
-
-          // Announce the move to all players
-          sendToAllPlayers( new Notification("Player " + mr.PlayerName
-             + " moved " + mr.moveDirection) );
-
-
-          // Update player turn status, and move to next player
-          nextPlayer();
-       }
-
+        // processAction now checks if the sending player is allowed to move
+        if(turnTracker.CanMove)
+        {
+            // TODO: update player location. Only update the turn tracker on valid moves
+            turnTracker.move();
+            // Announce the move to all players
+            sendToAllPlayers(new Notification("Player " + mr.PlayerName
+                    + " moved " + mr.moveDirection));
+        }
+        else
+        {
+            sendToClient(mr.UniqueID, new Notification("You've already moved this turn!"));
+        }
     }
 
     public void processSuggestRequest( SuggestRequest sr )
     {
-        if( PlayerList.get( CurrentPlayerIndex ).PlayerName.equals(sr.PlayerName))
+        if(turnTracker.CanSuggest)
         {
+            turnTracker.suggest();
+            // processAction now checks if the sending player is allowed to move
             // TODO - Extend to give players choice of which card to use to refute
             // right now we are just sending back the first refutation
 
             sendToAllPlayers( new SuggestNotification( sr ) );
 
-            // TODO - update to start at the next player in the list
-            for (Player p : PlayerList )
+            for (int i = 1; i < PlayerList.size(); i++)  // Start at 1 to start with the next player. Don't check the current player
             {
+                Player p = PlayerList.get((CurrentPlayerIndex + i) % PlayerList.size());
                 PlayerHand possibleRefutations = sr.checkRefutations( p.getHand() );
-                if ( ! ( possibleRefutations.isEmpty() ) )
+
+                if (!possibleRefutations.isEmpty() )
                 {
                     sendToAllPlayers( new SuggestionWrong( sr.PlayerName, p.PlayerName ) );
-                    if ( ! ( possibleRefutations.getCharacters() == null ) )
+                    if ( !possibleRefutations.getCharacters().isEmpty() )
                     {
                         sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getCharacters().get( 0 ) ) );
                     }
-                    else if ( ! ( possibleRefutations.getRooms() == null ) )
+                    else if ( ! ( possibleRefutations.getRooms().isEmpty()) )
                     {
                         sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getRooms().get( 0 ) ) );
                     }
-                    else if ( ! ( possibleRefutations.getWeapons() == null ) )
+                    else if ( ! ( possibleRefutations.getWeapons().isEmpty()) )
                     {
                         sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getWeapons().get( 0 ) ) );
                     }
@@ -458,6 +458,12 @@ public class ClueLessServer extends Thread
                     sendToAllPlayers(new SuggestionPassed( p.PlayerName ));
                 }
             }
+            // If it comes back to us, do we lie or do nothing? I think do nothing is better?
+            //sendToAllPlayers(new SuggestionPassed( PlayerList.get(CurrentPlayerIndex).PlayerName));
+        }
+        else
+        {
+            sendToClient(sr.UniqueID, new Notification("You've already suggested this turn!"));
         }
     }
 
@@ -525,6 +531,7 @@ public class ClueLessServer extends Thread
         if(PlayerList.get( CurrentPlayerIndex ).PlayerConnected && PlayerList.get( CurrentPlayerIndex ).PlayerActive)
         {
             sendToAllPlayers(new TurnUpdate( PlayerList.get( CurrentPlayerIndex ).PlayerName ) );
+            turnTracker.reset();
         }
         else  // If a player is out or DC'd, skip them
         {
