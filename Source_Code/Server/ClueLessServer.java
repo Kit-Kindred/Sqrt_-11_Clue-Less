@@ -436,7 +436,7 @@ public class ClueLessServer extends Thread
             for (Player p : PlayerList )
             {
                 PlayerHand possibleRefutations = sr.checkRefutations( p.getHand() );
-                if ( ! ( possibleRefutations == null ) )
+                if ( ! ( possibleRefutations.isEmpty() ) )
                 {
                     sendToAllPlayers( new SuggestionWrong( sr.PlayerName, p.PlayerName ) );
                     if ( ! ( possibleRefutations.getCharacters() == null ) )
