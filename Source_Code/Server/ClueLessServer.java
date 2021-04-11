@@ -481,23 +481,23 @@ public class ClueLessServer extends Thread
     public void processAccuseRequest( AccuseRequest acccuseRequest )
     {
         // prep the AccuseNotification here with who and what they are guessing.
-        AccuseNotification accuseNotification = new AccuseNotification(accuseRequest.PlayerName, accuseRequest.AccuseHand);
+        AccuseNotification accuseNotification = new AccuseNotification(acccuseRequest.PlayerName, acccuseRequest.AccuseHand);
 
         // Check to see if the person is correct
-        if (EnvelopeHand.isEqual(accuseRequest.Hand))
+        if (EnvelopeHand.isEqual(acccuseRequest.AccuseHand))
         {
             // If correct, tell everyone, end game
             accuseNotification.setCorrect(true);
             sendToAllPlayers( accuseNotification );
-            sendToAllPlayers( new GameStart(false) )
-            ServState == ServerState.Lobby;
+            sendToAllPlayers( new GameStart(false) );
+            ServState = ServerState.Lobby;
         }
         else
         {
             // If incorrect. tell everyone, set player "out"
             accuseNotification.setCorrect(false);
             // TODO - looks like setting this to false doesn't actually prevent them from making moves
-            PlayerList[CurrentPlayerIndex].PlayerActive = false;
+            PlayerList.get(CurrentPlayerIndex).PlayerActive = false;
             sendToAllPlayers( accuseNotification );
             sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new OutNotification( PlayerList.get ( CurrentPlayerIndex ).PlayerName ) );
         }

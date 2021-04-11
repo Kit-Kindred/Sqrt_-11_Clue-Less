@@ -1,4 +1,4 @@
-package Common.Messages.StatusUpdates
+package Common.Messages.StatusUpdates;
 
 import Common.SolutionHand;
 
@@ -10,7 +10,7 @@ public class AccuseNotification extends StatusUpdate
 
     public AccuseNotification()
     {
-        super()
+        super();
     }
 
     public AccuseNotification(String name, SolutionHand hand)
@@ -36,11 +36,11 @@ public class AccuseNotification extends StatusUpdate
         String outString = "";
         outString += this.PlayerName;
         outString += " suggested that ";
-        outString += this.Hand.getCharacterName();
+        outString += this.AccuseHand.getCharacterName();
         outString += " dit it in the ";
-        outString += this.Hand.getRoomName();
+        outString += this.AccuseHand.getRoomName();
         outString += " with the ";
-        outString += this.Hand.getWeaponType();
+        outString += this.AccuseHand.getWeaponType();
         return outString;
     }
 }

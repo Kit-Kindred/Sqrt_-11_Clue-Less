@@ -407,7 +407,7 @@ public class ClueLessClient extends Thread
         else if (statUp instanceof AccuseNotification)
         {
             // Just recast it because we are going to use so much
-            accuseNotification = (AccuseNotification) statUp;
+            AccuseNotification accuseNotification = (AccuseNotification) statUp;
             // Tell them about the accusation
             System.out.println( accuseNotification );
 

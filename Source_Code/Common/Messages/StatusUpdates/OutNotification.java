@@ -1,4 +1,4 @@
-package Common.Messages.StatusUpdates
+package Common.Messages.StatusUpdates;
 
 public class OutNotification extends StatusUpdate
 {
