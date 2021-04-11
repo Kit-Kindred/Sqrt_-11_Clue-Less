@@ -287,7 +287,13 @@ public class ClueLessServer extends Thread
                 {
                     processGameStartRequest((GameStartRequest) actionRequest);
                 }
-                if(PlayerList.get( CurrentPlayerIndex ).PlayerName.equals(p.PlayerName))  // Only the player who's turn it is can do these
+                
+                else if(actionRequest instanceof RefuteSuggestionResponse)
+                {
+                    processRefuteSuggestionResponse((RefuteSuggestionResponse) actionRequest);
+                }
+                
+                else if(PlayerList.get( CurrentPlayerIndex ).PlayerName.equals(p.PlayerName))  // Only the player who's turn it is can do these
                 {
                     if(actionRequest instanceof MoveRequest)
                     {
@@ -297,6 +303,7 @@ public class ClueLessServer extends Thread
                     {
                         processSuggestRequest((SuggestRequest) actionRequest);
                     }
+                    
                     else if(actionRequest instanceof EndTurn || turnTracker.isTurnOver())  // isTurnOver is basically always false since nobody's accusing most of the time
                     {
                         nextPlayer();
@@ -435,22 +442,46 @@ public class ClueLessServer extends Thread
             {
                 Player p = PlayerList.get((CurrentPlayerIndex + i) % PlayerList.size());
                 PlayerHand possibleRefutations = sr.checkRefutations( p.getHand() );
+                
 
                 if (!possibleRefutations.isEmpty() )
                 {
+                       
+                    /**
+                     * This checks to see if the player has more than one card to refute the
+                     * suggestion. If there's only one card that can refute the suggestion,
+                     * we don't bother asking the player to choose.
+                     * TODO: Clean this up a bit
+                     */
+                    if( possibleRefutations.numberOfCards() == 1 )
+                    {
+                        if ( !possibleRefutations.getCharacters().isEmpty() )
+                        {
+                            sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getCharacters().get( 0 ) ) );
+                        }
+                        else if ( ! ( possibleRefutations.getRooms().isEmpty()) )
+                        {
+                            sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getRooms().get( 0 ) ) );
+                        }
+                        else if ( ! ( possibleRefutations.getWeapons().isEmpty()) )
+                        {
+                            sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getWeapons().get( 0 ) ) );
+                        }
+                    }
+                    
+                    // Ask the player which card to use to refute the suggestion
+                    else
+                    {
+                       System.out.println(possibleRefutations);
+                       sendToPlayer( p.PlayerName, new RefuteSuggestionPicker( sr.PlayerName, possibleRefutations ) );
+                    }
+                    
+                    System.out.println(possibleRefutations);
+                    
+                    // Tell all other players
                     sendToAllPlayers( new SuggestionWrong( sr.PlayerName, p.PlayerName ) );
-                    if ( !possibleRefutations.getCharacters().isEmpty() )
-                    {
-                        sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getCharacters().get( 0 ) ) );
-                    }
-                    else if ( ! ( possibleRefutations.getRooms().isEmpty()) )
-                    {
-                        sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getRooms().get( 0 ) ) );
-                    }
-                    else if ( ! ( possibleRefutations.getWeapons().isEmpty()) )
-                    {
-                        sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getWeapons().get( 0 ) ) );
-                    }
+
+                    // We found a player who can refute the suggestion, so we're done here.
                     break;
                 }
                 else
@@ -466,6 +497,17 @@ public class ClueLessServer extends Thread
             sendToClient(sr.UniqueID, new Notification("You've already suggested this turn!"));
         }
     }
+    
+    
+    public void processRefuteSuggestionResponse( RefuteSuggestionResponse rsr )
+    {
+       System.out.println("Received Refute Suggest Response from " + rsr.PlayerName );
+       sendToPlayer( rsr.getToPlayer(), new RefuteSuggestion( rsr.PlayerName, rsr.getCard() ) );
+       
+    }
+    
+    
+    
 
     /**
      * Send a message to a specific player

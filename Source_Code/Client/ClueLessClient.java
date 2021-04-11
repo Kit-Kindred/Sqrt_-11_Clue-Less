@@ -8,9 +8,10 @@ import Common.WeaponCard.WeaponType;
 import Common.Messages.*;
 import Common.Messages.StatusUpdates.*;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
-
 import java.util.concurrent.Semaphore;
 
 public class ClueLessClient extends Thread
@@ -20,24 +21,27 @@ public class ClueLessClient extends Thread
      * then allow the user to run some test commands
      *
      * @param args - Unused
+    * @throws IOException 
+    * @throws NumberFormatException 
      *
      */
-    public static void main(String[] args)
+    public static void main(String[] args) throws NumberFormatException, IOException
     {
         // Can pass these in from the command line if you want
         // TODO: Error-check these
-        Scanner scan = new Scanner(System.in);
+//        Scanner scan = new Scanner(System.in);
+        ConsoleInput reader = new ConsoleInput();
         String server;
         String name;
         int port;
         if(args.length != 3)
         {
             System.out.println("Enter server IP:");
-            server = scan.nextLine();
+            server = reader.read();
             System.out.println("Enter server port:");
-            port = Integer.parseInt(scan.nextLine());
+            port = Integer.parseInt(reader.read());
             System.out.println("Enter player name:");
-            name = scan.nextLine();
+            name = reader.read();
         }
         else
         {
@@ -71,11 +75,11 @@ public class ClueLessClient extends Thread
             System.out.println("Send Connect Request: 3");  // To test sending multiple
             System.out.println("Request Start Game: 4");
             System.out.println("Exit: -1");
-            input = scan.nextInt();
+            input = Integer.parseInt( reader.read() );
 
             // Clients not going first need a way to break from this while loop
             // without
-            /*if( clientApplication.activeGame )
+            if( clientApplication.activeGame )
             {
                System.out.println("\n****Enter a command****");
                System.out.println("Move Left: 1");
@@ -84,7 +88,7 @@ public class ClueLessClient extends Thread
                System.out.println("Move Down: 4");
                System.out.println("Exit: -1");
                break;
-            }*/
+            }
 
             switch (input)
             {
@@ -128,7 +132,7 @@ public class ClueLessClient extends Thread
                                e.printStackTrace();
                             }
 
-                            input = scan.nextInt();
+                            input = Integer.parseInt( reader.read() );
 
                         }
                 case -1 ->
@@ -182,7 +186,7 @@ public class ClueLessClient extends Thread
                                 index += 1;
                             }
                             // int suggestCharacterIndex = scan.nextInt() - 1;
-                            CharacterName suggestCharacter = CharacterName.values()[ scan.nextInt() - 1] ;
+                            CharacterName suggestCharacter = CharacterName.values()[ Integer.parseInt( reader.read() ) - 1] ;
 
                             // index = 1;
                             // for ( RoomName room : RoomName.values() )
@@ -205,9 +209,9 @@ public class ClueLessClient extends Thread
                                 index += 1;
                             }
                             // int suggestWeaponIndex = scan.nextInt() - 1;
-                            WeaponType suggestWeapon = WeaponType.values()[ scan.nextInt() - 1 ];
+                            WeaponType suggestWeapon = WeaponType.values()[ Integer.parseInt( reader.read() ) - 1 ];
 
-                            SolutionHand suggestHand = new SolutionHand( suggestCharacter, suggestRoom, suggestWeapon );
+                            SuggestHand suggestHand = new SuggestHand( suggestCharacter, suggestRoom, suggestWeapon );
                             clientApplication.csc.send(new SuggestRequest(clientApplication.UserPlayer.PlayerName, suggestHand));
                         }
                 case 6 ->
@@ -231,7 +235,7 @@ public class ClueLessClient extends Thread
               System.out.println("It is not your turn, please wait.");
            }
 
-            input = scan.nextInt();
+            input = Integer.parseInt( reader.read() );
         }
         while(input != -1 && clientApplication.activeGame );
 
@@ -260,6 +264,8 @@ public class ClueLessClient extends Thread
     private final int ServerPort;
 
     private final Player UserPlayer;
+    
+    private ConsoleInput reader = new ConsoleInput();
     
     private Board board;
 
@@ -354,6 +360,11 @@ public class ClueLessClient extends Thread
         {
             System.out.println((RefuteSuggestion) statUp);
         }
+        // Let the player choose which card to use when refuting a suggestion
+        else if( statUp instanceof RefuteSuggestionPicker )
+        {   
+            processRefuteSuggestionPicker( (RefuteSuggestionPicker) statUp );
+        }
         //Notify all players that a given player was unable to refute
         else if( statUp instanceof SuggestionPassed)
         {
@@ -443,6 +454,74 @@ public class ClueLessClient extends Thread
             System.out.println( "[Server] It's " + tu.TurnPlayer + "'s turn.");
         }
     }
+    
+    
+    /**
+     * Steals the active thread to get the player to pick a card to refute the
+     * suggestion
+     * @param rs The specific RefuteSuggestionPicker message with the possible
+     *   Cards to use in the refute process
+    * @throws InterruptedException 
+     */
+    public void processRefuteSuggestionPicker( RefuteSuggestionPicker rs )
+    {
+        System.out.println( "\n[Server] You have multiple cards that can refute the"
+           + " suggestion; please pick one:");
+
+        /* I think I want to move this level of processing elsewhere (maybe another
+         * object type. Not sure yet. We want to blend all the cards from the
+         * hand into one arraylist for easier iterations.
+         */
+        ArrayList<Card> cardChoices = new ArrayList<Card>();
+        
+        cardChoices.addAll( rs.getHand().getCharacters() );
+        cardChoices.addAll( rs.getHand().getRooms() ) ;
+        cardChoices.addAll( rs.getHand().getWeapons() );
+        
+        for( int i = 1; i <= cardChoices.size(); i++ )
+        {
+           System.out.print( "[" + i + "] " );
+           if( cardChoices.get( i - 1 ) instanceof CharacterCard )
+           {
+              System.out.println( ((CharacterCard) cardChoices.get( i - 1 )).getCharacterName() );
+           }
+           else if( cardChoices.get( i - 1 ) instanceof RoomCard )
+           {
+              System.out.println( ((RoomCard) cardChoices.get( i - 1 )).getRoomName() );
+           }
+           else
+           {
+              System.out.println( ((WeaponCard) cardChoices.get( i - 1 )).getWeaponType() );
+           }
+
+        }
+        
+        // In case of errors, defaults to sending the first card found 
+        int userInput = 1;
+
+        try
+        {
+           userInput = Integer.parseInt( reader.read() );
+        } 
+        catch( NumberFormatException e )
+        {
+           e.printStackTrace();
+        } 
+        catch( IOException e )
+        {
+           e.printStackTrace();
+        }
+        
+        
+        System.out.println("About to send...");
+        csc.send( new RefuteSuggestionResponse( UserPlayer.PlayerName, rs.getPlayer(), cardChoices.get( userInput - 1 ) ) );
+
+        return;
+        
+    }
+    
+    
+    
 
     /**
      * CSC just received something from the server. Parse it and pass it to where it needs to go
@@ -480,4 +559,5 @@ public class ClueLessClient extends Thread
         csc.close();  // Kill server comms
         interrupt();  // Then kill our action processing
     }
+    
 }
