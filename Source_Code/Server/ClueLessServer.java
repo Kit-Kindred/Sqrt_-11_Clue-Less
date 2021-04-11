@@ -369,7 +369,7 @@ public class ClueLessServer extends Thread
                     // Update player objects with all the cards in the deck
                     CardDeck.shuffleAndAssignCards( PlayerList );
 
-                    sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
+                    // sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
 
 
                     // Send the player hands to their respective clients
@@ -436,18 +436,18 @@ public class ClueLessServer extends Thread
             for (Player p : PlayerList )
             {
                 PlayerHand possibleRefutations = sr.checkRefutations( p.getHand() );
-                if ( ! possibleRefutations.isEmpty() )
+                if ( ! ( possibleRefutations == null ) )
                 {
                     sendToAllPlayers( new SuggestionWrong( sr.PlayerName, p.PlayerName ) );
-                    if ( ! possibleRefutations.getCharacters().isEmpty() )
+                    if ( ! ( possibleRefutations.getCharacters() == null ) )
                     {
                         sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getCharacters().get( 0 ) ) );
                     }
-                    else if ( ! possibleRefutations.getRooms().isEmpty() )
+                    else if ( ! ( possibleRefutations.getRooms() == null ) )
                     {
                         sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getRooms().get( 0 ) ) );
                     }
-                    else if ( ! possibleRefutations.getWeapons().isEmpty() )
+                    else if ( ! ( possibleRefutations.getWeapons() == null ) )
                     {
                         sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getWeapons().get( 0 ) ) );
                     }

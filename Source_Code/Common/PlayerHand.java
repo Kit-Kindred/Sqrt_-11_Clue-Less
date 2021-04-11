@@ -143,7 +143,7 @@ public class PlayerHand implements Serializable
       this.setWeapon( weapon );
    }
 
-   // retyrbs True if we have no cards
+   // returns True if we have no cards
    public boolean isEmpty()
    {
        if (this.character.size() > 0)

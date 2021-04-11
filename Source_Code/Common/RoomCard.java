@@ -17,7 +17,7 @@ public class RoomCard extends Card
 
    /**
     * Must instantiate the room card with the specific room name
-    * 
+    *
     * @param roomName
     *        Name of the room
     */
@@ -41,7 +41,7 @@ public class RoomCard extends Card
    /**
     * Instantiate the room card with the specific room name and pass a boolean
     * representing whether or not a custom name should be used
-    * 
+    *
     * @param roomName
     *        The name of the Room
     * @param modifyRoomName
@@ -68,15 +68,15 @@ public class RoomCard extends Card
       }
 
    }
-   
-   
+
+
    /**
     * Looks into a custom file, reads the name associated with the assigned
     * room name, and replaces the room name with the custom name
     */
    public void loadCustomRoomName()
    {
-      
+
    }
 
 
@@ -89,13 +89,18 @@ public class RoomCard extends Card
 
    }
 
+   public RoomName getRoomEnum()
+   {
+       return this.roomName;
+   }
+
    /*
     * Test Method public static void main( String[] args ) {
-    * 
+    *
     * RoomName name = RoomName.MR_GREEN; RoomCard test = new RoomCard( name );
-    * 
+    *
     * System.out.println( test.getRoomName() );
-    * 
+    *
     * }
     */
 

@@ -125,7 +125,7 @@ public class ClueLessClient extends Thread
                             // TODO: reduce the sleep time if possible
                             try
                             {
-                               Thread.sleep( 1000 );
+                               Thread.sleep( 500 );
                             }
                             catch( InterruptedException e )
                             {
@@ -187,25 +187,33 @@ public class ClueLessClient extends Thread
                                 System.out.println(character + " : " + index);
                                 index += 1;
                             }
-                            int suggestCharacterIndex = scan.nextInt();
+                            // int suggestCharacterIndex = scan.nextInt() - 1;
+                            CharacterName suggestCharacter = CharacterName.values()[ scan.nextInt() - 1] ;
 
-                            index = 1;
-                            for ( RoomName room : RoomName.values() )
-                            {
-                                System.out.println(room + " : " + index);
-                                index += 1;
-                            }
-                            int suggestRoomIndex = scan.nextInt();
+                            // index = 1;
+                            // for ( RoomName room : RoomName.values() )
+                            // {
+                            //     System.out.println(room + " : " + index);
+                            //     index += 1;
+                            // }
+                            // int suggestRoomIndex = scan.nextInt();
 
+                            // TODO TAKE THIS OUT IT IS JUST HARDCODED TO ALWAYS GUESS
+                            // 1. THIS NEEDS TO BE CHANGED TO USE THE CURRENT ROOM
+                            // THE PLAYER IS IN, AND ADD CHECKS ON SERVER SIDE
+                            RoomName suggestRoom = RoomName.values()[1];
+
+                            System.out.println("Which weapon would you like to suggest?");
                             index = 1;
                             for ( WeaponType weapon : WeaponType.values() )
                             {
                                 System.out.println(weapon + " : " + index);
                                 index += 1;
                             }
-                            int suggestWeaponIndex = scan.nextInt();
+                            // int suggestWeaponIndex = scan.nextInt() - 1;
+                            WeaponType suggestWeapon = WeaponType.values()[ scan.nextInt() - 1 ];
 
-                            SolutionHand suggestHand = new SolutionHand(CharacterName.values()[ suggestCharacterIndex - 1 ], RoomName.values()[ suggestRoomIndex - 1 ], WeaponType.values()[ suggestWeaponIndex - 1 ]);
+                            SolutionHand suggestHand = new SolutionHand( suggestCharacter, suggestRoom, suggestWeapon );
                             clientApplication.csc.send(new SuggestRequest(clientApplication.UserPlayer.PlayerName, suggestHand));
                         }
                 case -1 ->
@@ -297,7 +305,7 @@ public class ClueLessClient extends Thread
     }
 
     /**
-     * Process status updates sent to the clien
+     * Process status updates sent to the client
      *
      * @param statUp - Received status update
      */
@@ -374,9 +382,9 @@ public class ClueLessClient extends Thread
 
         else if( statUp instanceof PlayerHandUpdate)
         {
-            //UserPlayer.setHand( ((PlayerHandUpdate) statUp).getHandUpdate() );
-            //System.out.println( UserPlayer.getAllCardsString() + "\n");
-           System.out.println( ((PlayerHandUpdate) statUp).getHandUpdate() + "\n");
+            UserPlayer.setHand( ((PlayerHandUpdate) statUp).getHandUpdate() );
+            System.out.println( UserPlayer.getAllCardsString() + "\n");
+           //System.out.println( ((PlayerHandUpdate) statUp).getHandUpdate() + "\n");
 
         }
 

@@ -28,11 +28,11 @@ public class SuggestRequest extends ActionRequest
         String outString = "";
         outString += this.PlayerName;
         outString += "wants to suggest that ";
-        outString += this.Hand.getCharacters().get(0).getCharacterName();
+        outString += this.Hand.getCharacterName();
         outString += " dit it in the ";
-        outString += this.Hand.getRooms().get(0).getRoomName();
+        outString += this.Hand.getRoomName();
         outString += " with the ";
-        outString += this.Hand.getWeapons().get(0).getWeaponType();
+        outString += this.Hand.getWeaponType();
         return outString;
     }
 
@@ -46,7 +46,7 @@ public class SuggestRequest extends ActionRequest
         //probably a better way to do this than to loop through
         for ( CharacterCard playerCard : playerHand.getCharacters())
         {
-                if (playerCard.getCharacterName() == this.Hand.getCharacters().get(0).getCharacterName())
+                if (playerCard.getCharacterEnum() == this.Hand.getCharacterEnum())
                 {
                     outHand.setCard(playerCard);
                 }
@@ -54,7 +54,7 @@ public class SuggestRequest extends ActionRequest
 
         for ( RoomCard playerCard : playerHand.getRooms())
         {
-                if (playerCard.getRoomName() == this.Hand.getRooms().get(0).getRoomName())
+                if (playerCard.getRoomEnum() == this.Hand.getRoomEnum())
                 {
                     outHand.setCard(playerCard);
                 }
@@ -62,7 +62,7 @@ public class SuggestRequest extends ActionRequest
 
         for ( WeaponCard playerCard : playerHand.getWeapons())
         {
-                if (playerCard.getWeaponType() == this.Hand.getWeapons().get(0).getWeaponType())
+                if (playerCard.getWeaponEnum() == this.Hand.getWeaponEnum())
                 {
                     outHand.setCard(playerCard);
                 }

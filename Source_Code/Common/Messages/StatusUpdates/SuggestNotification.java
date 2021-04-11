@@ -28,11 +28,11 @@ public class SuggestNotification extends StatusUpdate
         String outString = "";
         outString += this.PlayerName;
         outString += " suggested that ";
-        outString += this.Hand.getCharacters().get(0).getCharacterName();
+        outString += this.Hand.getCharacterName();
         outString += " dit it in the ";
-        outString += this.Hand.getRooms().get(0).getRoomName();
+        outString += this.Hand.getRoomName();
         outString += " with the ";
-        outString += this.Hand.getWeapons().get(0).getWeaponType();
+        outString += this.Hand.getWeaponType();
         return outString;
     }
 }
