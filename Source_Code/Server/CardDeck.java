@@ -8,6 +8,7 @@ import java.util.List;
 
 import Common.Player;
 import Common.Card;
+import Common.SolutionHand;
 import Common.CharacterCard;
 import Common.RoomCard;
 import Common.WeaponCard;
@@ -21,19 +22,19 @@ import Common.WeaponCard.WeaponType;
  * Helper class that handles everything related to the deck used to play the
  * game. The primary use will likely be shuffling the available cards, and
  * assigning cards to each player
- * 
+ *
  * @author DavidC
  *
  */
 public class CardDeck
 {
 
-   
+
    /**
     * Driver method to shuffle all the play cards, and assign them to the
     * solution hand and each player. A player may have more than one card of
     * each type.
-    * 
+    *
     * Simply, this method shuffles the ArrayLists and assigns the cards
     * sequentially to each player. This method returns the three solution
     * cards that are not assigned to the players.
@@ -88,9 +89,8 @@ public class CardDeck
       // Remove the top card from each card type and store as solution cards
       try
       {
-         solutionCards = new SolutionHand( characters.remove( 0 ),
-            rooms.remove( 0 ), weapons.remove( 0 ) );
-         
+         solutionCards = new SolutionHand( characters.remove( 0 ), rooms.remove( 0 ), weapons.remove( 0 ) );
+
       } catch( Exception e )
       {
          System.out.println( "Error generating solution cards." );
@@ -105,7 +105,7 @@ public class CardDeck
       deck.addAll( rooms );
 
       deck.addAll( weapons );
-      
+
 
       // Shuffle the deck and assign to each player sequentially
       Collections.shuffle( deck );

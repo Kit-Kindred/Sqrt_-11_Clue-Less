@@ -1,11 +1,15 @@
 package Client;
 
 import Common.*;
+import Common.CharacterCard.CharacterName;
+import Common.RoomCard.RoomName;
+import Common.WeaponCard.WeaponType;
 import Common.Messages.*;
 import Common.Messages.ActionRequests.ActionRequest;
 import Common.Messages.ActionRequests.ConnectRequest;
 import Common.Messages.ActionRequests.GameStartRequest;
 import Common.Messages.ActionRequests.MoveRequest;
+import Common.Messages.ActionRequests.SuggestRequest;
 import Common.Messages.StatusUpdates.*;
 
 import java.util.Scanner;
@@ -71,21 +75,21 @@ public class ClueLessClient extends Thread
             System.out.println("Send Connect Request: 3");  // To test sending multiple
             System.out.println("Request Start Game: 4");
             System.out.println("Exit: -1");
-            System.out.print("\n>> ");
             input = scan.nextInt();
-            
-            // Clients not going first need a way to break from this while loop 
+
+            // Clients not going first need a way to break from this while loop
+            // without
             if( clientApplication.activeGame )
             {
-//               System.out.println("****Enter a command****");
-//               System.out.println("Move Left: 1");
-//               System.out.println("Move Right: 2");
-//               System.out.println("Move Up: 3");  // To test sending multiple
-//               System.out.println("Move Down: 4");
-//               System.out.println("Exit: -1");
+               System.out.println("\n****Enter a command****");
+               System.out.println("Move Left: 1");
+               System.out.println("Move Right: 2");
+               System.out.println("Move Up: 3");  // To test sending multiple
+               System.out.println("Move Down: 4");
+               System.out.println("Exit: -1");
                break;
             }
-            
+
             switch (input)
             {
                 case 1 ->
@@ -113,23 +117,23 @@ public class ClueLessClient extends Thread
                         }
                 case 4 ->
                         {
-                            System.out.println("Sending game start request...");
+                            System.out.println("Sending game start request...\n");
                             clientApplication.csc.send(new GameStartRequest());
-                            
+
                             // Using a sleep here to wait for the active game status to be updated.
                             // There's probably a better way of doing this.
                             // TODO: reduce the sleep time if possible
                             try
                             {
                                Thread.sleep( 500 );
-                            } 
+                            }
                             catch( InterruptedException e )
                             {
                                e.printStackTrace();
                             }
-                            
+
                             input = scan.nextInt();
-                            
+
                         }
                 case -1 ->
                         {
@@ -142,8 +146,8 @@ public class ClueLessClient extends Thread
             }
         }
         while(input != -1 && !clientApplication.activeGame);
-        
-        
+
+
 
         // Present the user with actions and wait for them to take their turn
         do
@@ -174,6 +178,44 @@ public class ClueLessClient extends Thread
                            System.out.println("Sending move down request...\n");
                            clientApplication.csc.send(new MoveRequest(clientApplication.UserPlayer.PlayerName, MoveRequest.Move.DOWN));
                         }
+                case 5 ->
+                        {
+                            System.out.println("Which character would you like to suggest?");
+                            int index = 1;
+                            for ( CharacterName character : CharacterName.values() )
+                            {
+                                System.out.println(character + " : " + index);
+                                index += 1;
+                            }
+                            // int suggestCharacterIndex = scan.nextInt() - 1;
+                            CharacterName suggestCharacter = CharacterName.values()[ scan.nextInt() - 1] ;
+
+                            // index = 1;
+                            // for ( RoomName room : RoomName.values() )
+                            // {
+                            //     System.out.println(room + " : " + index);
+                            //     index += 1;
+                            // }
+                            // int suggestRoomIndex = scan.nextInt();
+
+                            // TODO TAKE THIS OUT IT IS JUST HARDCODED TO ALWAYS GUESS
+                            // 1. THIS NEEDS TO BE CHANGED TO USE THE CURRENT ROOM
+                            // THE PLAYER IS IN, AND ADD CHECKS ON SERVER SIDE
+                            RoomName suggestRoom = RoomName.values()[1];
+
+                            System.out.println("Which weapon would you like to suggest?");
+                            index = 1;
+                            for ( WeaponType weapon : WeaponType.values() )
+                            {
+                                System.out.println(weapon + " : " + index);
+                                index += 1;
+                            }
+                            // int suggestWeaponIndex = scan.nextInt() - 1;
+                            WeaponType suggestWeapon = WeaponType.values()[ scan.nextInt() - 1 ];
+
+                            SolutionHand suggestHand = new SolutionHand( suggestCharacter, suggestRoom, suggestWeapon );
+                            clientApplication.csc.send(new SuggestRequest(clientApplication.UserPlayer.PlayerName, suggestHand));
+                        }
                 case -1 ->
                         {
                             System.out.println("Exiting...\n");
@@ -181,22 +223,20 @@ public class ClueLessClient extends Thread
                 default ->
                         {
                             System.out.println("Sorry, that option isn't currently supported. Please try again\n");
-                            System.out.print(">> ");
                         }
               }
            }
-           
+
            else
            {
               System.out.println("It is not your turn, please wait.");
            }
-           
-           
-           input = scan.nextInt();
+
+            input = scan.nextInt();
         }
         while(input != -1 && clientApplication.activeGame );
-        
-        
+
+
         // END TEMPORARY
 
         // Not sure what our server exit condition will be in the final form...
@@ -227,7 +267,7 @@ public class ClueLessClient extends Thread
     public int numUpdatesReceived;  // Temp just to show we're getting things
 
     public Semaphore initialized;
-    
+
     public boolean activeGame; // True if the game has started
 
     public ClueLessClient(String serverIP, int serverPort)
@@ -304,7 +344,7 @@ public class ClueLessClient extends Thread
         {
             if(((GameStart) statUp).GameStarting)
             {
-                System.out.println("\n[Server] Game starting!\n");
+                System.out.println("[Server] Game starting!\n");
                 activeGame = true;
             }
             else
@@ -319,38 +359,60 @@ public class ClueLessClient extends Thread
             if(((TurnUpdate) statUp).activeTurn )
             {
                 UserPlayer.PlayerTurn = true; // Set the turn status to true
-                System.out.println( "[Server] It is now your turn.");
-                System.out.println("\n****Enter a command****");
+                System.out.println( "\n[Server] It is now your turn.");
+                System.out.println("\n\n****Enter a command****");
                 System.out.println("Move Left: 1");
                 System.out.println("Move Right: 2");
                 System.out.println("Move Up: 3");  // To test sending multiple
                 System.out.println("Move Down: 4");
-                System.out.println("Exit: -1\n");
-                System.out.println( UserPlayer.getAllCardsString() );
-                System.out.print("\n>> ");
+                System.out.println("Suggest: 5");
+                System.out.println("Exit: -1");
             }
-            
-            
-            
+
+
+
             else
             {
                UserPlayer.PlayerTurn = false; // Set the turn status to false
                System.out.println( "[Server] Ended turn.");
             }
-            
+
         }
-        
-        
+
+
         else if( statUp instanceof PlayerHandUpdate)
         {
-           UserPlayer.setHand( ((PlayerHandUpdate) statUp).getHandUpdate() );
-           System.out.println( UserPlayer.getAllCardsString() + "\n");
+            UserPlayer.setHand( ((PlayerHandUpdate) statUp).getHandUpdate() );
+            System.out.println( UserPlayer.getAllCardsString() + "\n");
            //System.out.println( ((PlayerHandUpdate) statUp).getHandUpdate() + "\n");
-            
+
         }
-        
-        
-        
+
+        //Notify all players of a suggestion (who, and what they are suggestion)
+        else if( statUp instanceof SuggestNotification)
+        {
+            System.out.println((SuggestNotification) statUp);
+        }
+
+        //Notify this player who refuted and what card they showed
+        else if( statUp instanceof RefuteSuggestion)
+        {
+            System.out.println((RefuteSuggestion) statUp);
+        }
+
+        //Notify all players that a given player was unable to refute
+        else if( statUp instanceof SuggestionPassed)
+        {
+            System.out.println(((SuggestionPassed) statUp).PlayerName + " was not able to refute the suggestion");
+        }
+
+        //Notify all players that a given player was able to refute (WITHOUT THE SPECIFIC CARD)
+        else if( statUp instanceof SuggestionWrong)
+        {
+            System.out.println(((SuggestionWrong) statUp).RefuterName + " was able to refute the suggestion");
+        }
+
+
         else  // Something else. Eventually this'll be an error case, but it's fine for now
         {
             System.out.println("[Server] Update Status: Received StatusUpdate");
@@ -380,7 +442,7 @@ public class ClueLessClient extends Thread
             }
         }
     }
-    
+
     public void setPlayerName(String name)
     {
         UserPlayer.PlayerName = name;

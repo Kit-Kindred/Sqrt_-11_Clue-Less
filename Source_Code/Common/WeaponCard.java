@@ -16,7 +16,7 @@ public class WeaponCard extends Card
 
    /**
     * Must instantiate the weapon card with the weapon type
-    * 
+    *
     * @param weaponType
     *        Name of the weapon
     */
@@ -40,7 +40,7 @@ public class WeaponCard extends Card
    /**
     * Instantiate the weapon type with the specific name and pass a boolean to
     * indicate whether or not a custom name is used
-    * 
+    *
     * @param weaponType
     *        Name of the weapon
     * @param modifyWeaponName
@@ -52,7 +52,7 @@ public class WeaponCard extends Card
       try
       {
          this.weaponType = weaponType;
-         
+
          if (modifyWeaponName)
          {
             this.modifyName();
@@ -74,12 +74,12 @@ public class WeaponCard extends Card
     */
    public void loadCustomWeaponName()
    {
-      
+
    }
-   
-   
+
+
    /**
-    * 
+    *
     * @return The specific weapon name represented by this instance
     */
    public String getWeaponType()
@@ -88,14 +88,19 @@ public class WeaponCard extends Card
 
    }
 
+   public WeaponType getWeaponEnum()
+   {
+       return this.weaponType;
+   }
+
    /*
     * Test method public static void main( String[] args ) {
-    * 
+    *
     * WeaponType rope = WeaponType.ROPE; WeaponCard test = new WeaponCard(
     * rope );
-    * 
+    *
     * System.out.println( test.getWeaponType() );
-    * 
+    *
     * }
     */
 

@@ -9,6 +9,7 @@ import Common.Messages.ActionRequests.ActionRequest;
 import Common.Messages.ActionRequests.ConnectRequest;
 import Common.Messages.ActionRequests.GameStartRequest;
 import Common.Messages.ActionRequests.MoveRequest;
+import Common.Messages.ActionRequests.SuggestRequest;
 import Common.Messages.StatusUpdates.*;
 
 import java.util.ArrayList;
@@ -152,8 +153,8 @@ public class ClueLessServer extends Thread
      * What ID we'll give the next player to join
      */
     private int NextPlayerNumber;
-    
-    
+
+
     /**
      * The index of the player who's turn it is currently. This index corresponds to the
      * PlayerList ArrayList.
@@ -289,10 +290,15 @@ public class ClueLessServer extends Thread
         {
             processGameStartRequest((GameStartRequest) actionRequest);
         }
-        
+
         if(actionRequest instanceof MoveRequest)
         {
            processMoveRequest((MoveRequest) actionRequest);
+        }
+
+        if(actionRequest instanceof SuggestRequest)
+        {
+            processSuggestRequest((SuggestRequest) actionRequest);
         }
         // TODO: Actual in-game action requests
     }
@@ -359,10 +365,13 @@ public class ClueLessServer extends Thread
                 {
                     ServState = ServerState.ActiveGame;
                     sendToAllPlayers(new GameStart());
-                    
+
                     // Update player objects with all the cards in the deck
                     CardDeck.shuffleAndAssignCards( PlayerList );
-                    
+
+                    // sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
+
+
                     // Send the player hands to their respective clients
                     for( Player p : PlayerList )
                     {
@@ -372,7 +381,7 @@ public class ClueLessServer extends Thread
 
                     // Send the first player a turn update to begin the game
                     sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
-                    
+
                 }
                 else
                 {
@@ -389,7 +398,7 @@ public class ClueLessServer extends Thread
             sendToClient(gsr.UniqueID, new Notification("Game in-progress!"));
         }
     }
-    
+
 
     public void processMoveRequest( MoveRequest mr )
     {
@@ -398,20 +407,58 @@ public class ClueLessServer extends Thread
         */
        if( PlayerList.get( CurrentPlayerIndex ).PlayerName.equals(mr.PlayerName))
        {
-          
+
           // TODO: update player location
-          
+
           // Announce the move to all players
           sendToAllPlayers( new Notification("Player " + mr.PlayerName
              + " moved " + mr.moveDirection) );
-          
-          
+
+
           // Update player turn status, and move to next player
           sendToPlayer( PlayerList.get( CurrentPlayerIndex ).PlayerName, new TurnUpdate( false ) );
           nextPlayer();
           sendToPlayer( PlayerList.get( CurrentPlayerIndex ).PlayerName, new TurnUpdate( true ) );
        }
-       
+
+    }
+
+    public void processSuggestRequest( SuggestRequest sr )
+    {
+        if( PlayerList.get( CurrentPlayerIndex ).PlayerName.equals(sr.PlayerName))
+        {
+            // TODO - Extend to give players choice of which card to use to refute
+            // right now we are just sending back the first refutation
+
+            sendToAllPlayers( new SuggestNotification( sr ) );
+
+            // TODO - update to start at the next player in the list
+            for (Player p : PlayerList )
+            {
+                PlayerHand possibleRefutations = sr.checkRefutations( p.getHand() );
+                if ( ! ( possibleRefutations.isEmpty() ) )
+                {
+                    sendToAllPlayers( new SuggestionWrong( sr.PlayerName, p.PlayerName ) );
+                    if ( ! ( possibleRefutations.getCharacters() == null ) )
+                    {
+                        sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getCharacters().get( 0 ) ) );
+                    }
+                    else if ( ! ( possibleRefutations.getRooms() == null ) )
+                    {
+                        sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getRooms().get( 0 ) ) );
+                    }
+                    else if ( ! ( possibleRefutations.getWeapons() == null ) )
+                    {
+                        sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getWeapons().get( 0 ) ) );
+                    }
+                    break;
+                }
+                else
+                {
+                    sendToAllPlayers(new SuggestionPassed( p.PlayerName ));
+                }
+            }
+        }
     }
 
     /**
@@ -468,7 +515,7 @@ public class ClueLessServer extends Thread
         return retVal;
     }
 
-    
+
     /**
      * Smarter way to increment the current player index so that we don't run
      * into out of bounds errors.
@@ -479,15 +526,15 @@ public class ClueLessServer extends Thread
        {
           CurrentPlayerIndex = 0;
        }
-       
+
        else
        {
           CurrentPlayerIndex ++;
        }
     }
 
-    
-    
+
+
     /**
      * Alright, game's over. Kill the server
      */
@@ -496,37 +543,37 @@ public class ClueLessServer extends Thread
         ssc.close();  // Kill server comms
         interrupt();  // Then kill our action processing
     }
-    
-    
-    
+
+
+
     /**
      * Inner class where the game logic can be isolated. I haven't come up with a
      * great way to incorporate this yet.
      */
 //    class GameDriver
 //    {
-//       
+//
 //       /**
 //        * Boolean to keep track of when the game is over. If the game logic gets too
 //        * complicated, we could always default to using break statements.
 //        */
 //       private boolean ongoingGame;
-//       
+//
 //       /**
 //        * The index of the player who's turn it is currently. This index corresponds to the
 //        * PlayerList ArrayList.
 //        */
 //       private int CurrentPlayerIndex;
-//       
-//       
-//       
+//
+//
+//
 //       public GameDriver( ArrayList<Player> Players )
 //       {
 //          this.ongoingGame = true;
 //          startGame( Players );
 //       }
-//       
-//       
+//
+//
 //       /**
 //        * Game driving logic goes here for the most part
 //        */
@@ -535,14 +582,11 @@ public class ClueLessServer extends Thread
 //          while( ongoingGame )
 //          {
 //             sendToClient( Players.get( this.CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
-//             
+//
 //             this.CurrentPlayerIndex ++;
 //          }
-//     
+//
 //       }
-//    } 
+//    }
 
 }
-
-
-
