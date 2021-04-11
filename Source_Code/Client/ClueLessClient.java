@@ -260,6 +260,8 @@ public class ClueLessClient extends Thread
     private final int ServerPort;
 
     private final Player UserPlayer;
+    
+    private Board board;
 
     private boolean ConnectionRequested;  // Wait for a response before asking to connect again
 
@@ -362,6 +364,12 @@ public class ClueLessClient extends Thread
         {
             System.out.println(((SuggestionWrong) statUp).RefuterName + " was able to refute the suggestion");
         }
+
+        // Update the Board object based on updates received from the server
+        else if( statUp instanceof BoardUpdate)
+        {
+            this.board = ((BoardUpdate) statUp).getBoard();
+        }
         else  // Something else. Eventually this'll be an error case, but it's fine for now
         {
             System.out.println("[Server] Update Status: Received StatusUpdate");
@@ -398,10 +406,17 @@ public class ClueLessClient extends Thread
 
     public void processGameStart(GameStart gs)
     {
-        if(gs.GameStarting)
+        if(((GameStart) statUp).GameStarting && !activeGame )
         {
             System.out.println("[Server] Game starting!\n");
+
+            // Only instantiate the board after the game starts
+            this.board = new Board();
             activeGame = true;
+        }
+        else if( activeGame )
+        {
+           System.out.println("[Server] Game has already been started!\n");
         }
         else
         {
