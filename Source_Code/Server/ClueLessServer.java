@@ -481,7 +481,7 @@ public class ClueLessServer extends Thread
     public void processAccuseRequest( AccuseRequest acccuseRequest )
     {
         // prep the AccuseNotification here with who and what they are guessing.
-        AccuseNotification accuseNotification = new AccuseNotification(accuseRequest.PlayerName, accuseRequest.Hand);
+        AccuseNotification accuseNotification = new AccuseNotification(accuseRequest.PlayerName, accuseRequest.AccuseHand);
 
         // Check to see if the person is correct
         if (EnvelopeHand.isEqual(accuseRequest.Hand))
@@ -489,7 +489,7 @@ public class ClueLessServer extends Thread
             // If correct, tell everyone, end game
             accuseNotification.setCorrect(true);
             sendToAllPlayers( accuseNotification );
-            sendToAllPlayers( new GameEnd() )
+            sendToAllPlayers( new GameStart(false) )
             ServState == ServerState.Lobby;
         }
         else

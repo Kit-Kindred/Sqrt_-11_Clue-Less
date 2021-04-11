@@ -356,11 +356,7 @@ public class ClueLessClient extends Thread
         {
             processGameStart((GameStart) statUp);
         }
-        else if (statUp instanceof GameEnd)
-        {
-            System.out.println("[Server] Game ending!\n");
-            activeGame = false;
-        }
+
         else if( statUp instanceof TurnUpdate)
         {
             processTurnUpdate((TurnUpdate) statUp);
