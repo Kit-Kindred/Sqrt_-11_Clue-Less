@@ -260,6 +260,8 @@ public class ClueLessClient extends Thread
     private final int ServerPort;
 
     private final Player UserPlayer;
+    
+    private Board board;
 
     private boolean ConnectionRequested;  // Wait for a response before asking to connect again
 
@@ -398,11 +400,20 @@ public class ClueLessClient extends Thread
 
     public void processGameStart(GameStart gs)
     {
-        if(gs.GameStarting)
-        {
+       
+        if(gs.GameStarting && !activeGame )
+        {          
             System.out.println("[Server] Game starting!\n");
+            // Only instantiate the board after the game starts
+            this.board = new Board();
             activeGame = true;
         }
+        
+        else if( gs.GameStarting && activeGame )
+        {
+           System.out.println("[Server] Game has already been started!\n");
+        }
+        
         else
         {
             System.out.println("[Server] Game ending!\n");
