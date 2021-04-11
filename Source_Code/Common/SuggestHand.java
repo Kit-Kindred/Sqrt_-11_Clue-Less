@@ -12,19 +12,21 @@ import java.io.Serializable;
 /**
  *  Solution hand class contains a character, weapon, and room.
  */
-public class SolutionHand implements Serializable
+public class SuggestHand implements Serializable
 {
+
+    private static final long serialVersionUID = 8926362609562798635L;
     public CharacterCard character;
     public RoomCard room;
     public WeaponCard weapon;
 
-   public SolutionHand()
+   public SuggestHand()
    {
    }
 
 
    // Constructor that takes Card Objects
-   public SolutionHand( CharacterCard c, RoomCard r, WeaponCard w )
+   public SuggestHand( CharacterCard c, RoomCard r, WeaponCard w )
    {
       this.character = c;
       this.room  = r;
@@ -33,7 +35,7 @@ public class SolutionHand implements Serializable
 
 
    // Constructor that takes types and names
-   public SolutionHand( CharacterName character, RoomName room, WeaponType weapon )
+   public SuggestHand( CharacterName character, RoomName room, WeaponType weapon )
    {
       this( new CharacterCard( character ), new RoomCard( room ), new WeaponCard( weapon ) );
    }
