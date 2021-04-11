@@ -83,4 +83,11 @@ public class SolutionHand implements Serializable
        return this.weapon.getWeaponEnum();
    }
 
+   public boolean isEqual(SolutionHand other)
+   {
+       return (( getCharacterEnum() == other.getCharacterEnum() )
+            && ( getRoomEnum() == other.getRoomEnum() )
+            && ( getWeaponEnum() == other.getWeaponEnum() ));
+   }
+
 }
