@@ -215,6 +215,38 @@ public class ClueLessClient extends Thread
                             System.out.println("Ending turn...\n");
                             clientApplication.csc.send(new EndTurn(clientApplication.UserPlayer.PlayerName));
                         }
+                case 9 ->
+                        {
+                            System.out.println("Which character would you like to accuse?");
+                            int index = 1;
+                            for ( CharacterName character : CharacterName.values() )
+                            {
+                                System.out.println(character + " : " + index);
+                                index += 1;
+                            }
+                            CharacterName accuseCharacter = CharacterName.values()[ scan.nextInt() - 1];
+
+                            System.out.println("Which room would you like to accuse?");
+                            index = 1;
+                            for ( RoomName room : RoomName.values() )
+                            {
+                                System.out.println(room + " : " + index);
+                                index += 1;
+                            }
+                            RoomName accuseRoom = RoomName.values()[ scan.nextInt() - 1 ];
+
+                            System.out.println("Which weapon would you like to accuse?");
+                            index = 1;
+                            for ( WeaponType weapon : WeaponType.values() )
+                            {
+                                System.out.println(weapon + " : " + index);
+                                index += 1;
+                            }
+                            WeaponType accuseWeapon = WeaponType.values()[ scan.nextInt() - 1 ];
+
+                            SolutionHand accuseHand = new SolutionHand( accuseCharacter, accuseRoom, accuseWeapon );
+                            clientApplication.csc.send(new AccuseRequest(clientApplication.UserPlayer.PlayerName, accuseHand));
+                        }
                 case -1 ->
                         {
                             System.out.println("Exiting...\n");
@@ -260,7 +292,7 @@ public class ClueLessClient extends Thread
     private final int ServerPort;
 
     private final Player UserPlayer;
-    
+
     private Board board;
 
     private boolean ConnectionRequested;  // Wait for a response before asking to connect again
@@ -324,6 +356,11 @@ public class ClueLessClient extends Thread
         {
             processGameStart((GameStart) statUp);
         }
+        else if (statUp instanceof GameEnd)
+        {
+            System.out.println("[Server] Game ending!\n");
+            activeGame = false;
+        }
         else if( statUp instanceof TurnUpdate)
         {
             processTurnUpdate((TurnUpdate) statUp);
@@ -370,6 +407,37 @@ public class ClueLessClient extends Thread
         {
             this.board = ((BoardUpdate) statUp).getBoard();
         }
+        // Notify players about an accusation
+        else if (statUp instanceof AccuseNotification)
+        {
+            // Just recast it because we are going to use so much
+            accuseNotification = (AccuseNotification) statUp;
+            // Tell them about the accusation
+            System.out.println( accuseNotification );
+
+            // If they (or you) are correct
+            if ( accuseNotification.Correct )
+            {
+                // Tell everyone and end the game
+                System.out.println("That was correct!");
+            }
+
+            // If inccorect
+            else
+            {
+                System.out.println("That was incorrect!");
+                System.out.println(accuseNotification.PlayerName + " was wrong! They are out of the game!");
+            }
+        }
+        // This is sent to a player to let them know they are out of the game.
+        // Do we have to do anything else here?
+        else if (statUp instanceof OutNotification)
+        {
+            System.out.println("You can no longer participate in the game.");
+            UserPlayer.PlayerActive = false;
+        }
+
+
         else  // Something else. Eventually this'll be an error case, but it's fine for now
         {
             System.out.println("[Server] Update Status: Received StatusUpdate");
