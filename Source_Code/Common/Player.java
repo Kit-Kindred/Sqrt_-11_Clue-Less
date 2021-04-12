@@ -22,7 +22,9 @@ public class Player
     public int yPos; // y position of player on the board
     
     protected PlayerHand hand;
-    
+
+    public CharacterCard.CharacterName charName;
+
     public Player()
     {
         this("", -1);
@@ -37,10 +39,58 @@ public class Player
         PlayerTurn = false;
         hand = new PlayerHand();
     }
+
+    public Player(String playerName, int clientID, boolean conn, boolean act)
+    {
+        PlayerName = playerName;
+        ClientID = clientID;
+        PlayerActive = act;
+        PlayerConnected = conn;
+        PlayerTurn = false;
+        hand = new PlayerHand();
+    }
     
     public void setPlayerTurn( boolean turn )
     {
        this.PlayerTurn = turn;
+    }
+
+
+    public void assignCharacter(CharacterCard.CharacterName name)
+    {
+        switch(name)
+        {
+            case MR_GREEN ->
+                    {
+                        xPos = 0;
+                        yPos = 0;
+                    }
+            case MRS_WHITE ->
+                    {
+                        xPos = 3;
+                        yPos = 4;
+                    }
+            case MRS_PEACOCK ->
+                    {
+                        xPos = 0;
+                        yPos = 3;
+                    }
+            case MISS_SCARLET ->
+                    {
+                        xPos = 3;
+                        yPos = 0;
+                    }
+            case PROFESSOR_PLUM ->
+                    {
+                        xPos = 0;
+                        yPos = 1;
+                    }
+            case COLONEL_MUSTARD ->
+                    {
+                        xPos = 0;
+                        yPos = 4;
+                    }
+        }
     }
 
     /**

@@ -85,7 +85,7 @@ public class SuggestHand implements Serializable
        return this.weapon.getWeaponEnum();
    }
 
-   public boolean isEqual(SolutionHand other)
+   public boolean isEqual(SuggestHand other)
    {
        return (( getCharacterEnum() == other.getCharacterEnum() )
             && ( getRoomEnum() == other.getRoomEnum() )

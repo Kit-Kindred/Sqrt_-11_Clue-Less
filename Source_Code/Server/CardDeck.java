@@ -8,7 +8,7 @@ import java.util.List;
 
 import Common.Player;
 import Common.Card;
-import Common.SolutionHand;
+import Common.SuggestHand;
 import Common.CharacterCard;
 import Common.RoomCard;
 import Common.WeaponCard;
@@ -39,12 +39,12 @@ public class CardDeck
     * sequentially to each player. This method returns the three solution
     * cards that are not assigned to the players.
     */
-   public static SolutionHand shuffleAndAssignCards(
+   public static SuggestHand shuffleAndAssignCards(
       ArrayList< Player > players )
    {
       int          counter       = 0; // Iterator pointer to keep track of the
                                       // cards
-      SolutionHand solutionCards = null;
+      SuggestHand solutionCards = null;
 
       /*
        * Grab all the names and types of each card Had to do some list
@@ -89,7 +89,7 @@ public class CardDeck
       // Remove the top card from each card type and store as solution cards
       try
       {
-         solutionCards = new SolutionHand( characters.remove( 0 ), rooms.remove( 0 ), weapons.remove( 0 ) );
+         solutionCards = new SuggestHand( characters.remove( 0 ), rooms.remove( 0 ), weapons.remove( 0 ) );
 
       } catch( Exception e )
       {

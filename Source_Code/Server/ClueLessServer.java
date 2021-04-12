@@ -147,6 +147,8 @@ public class ClueLessServer extends Thread
 
     private final TurnTracker turnTracker;
 
+    private final Board board = new Board();
+
     /**
      * The index of the player who's turn it is currently. This index corresponds to the
      * PlayerList ArrayList.
@@ -156,7 +158,7 @@ public class ClueLessServer extends Thread
     /**
     * The solution sealed in the envelope before the start of the Game
     */
-    private SolutionHand EnvelopeHand;
+    private SuggestHand EnvelopeHand;
 
     /**
      * Initialize the ClueLessServer. Set up game state
@@ -284,20 +286,21 @@ public class ClueLessServer extends Thread
         {
             processConnectRequest((ConnectRequest) actionRequest);
         }
+        boolean newGame = false;
         for(Player p : PlayerList)  // Only process non-connection requests from players
         {
             if(actionRequest.UniqueID == p.ClientID)
             {
                 if(actionRequest instanceof GameStartRequest)
                 {
-                    processGameStartRequest((GameStartRequest) actionRequest);
+                    newGame = processGameStartRequest((GameStartRequest) actionRequest);
                 }
-                
+
                 else if(actionRequest instanceof RefuteSuggestionResponse)
                 {
                     processRefuteSuggestionResponse((RefuteSuggestionResponse) actionRequest);
                 }
-                
+
                 else if(PlayerList.get( CurrentPlayerIndex ).PlayerName.equals(p.PlayerName))  // Only the player who's turn it is can do these
                 {
                     if(actionRequest instanceof MoveRequest)
@@ -308,7 +311,7 @@ public class ClueLessServer extends Thread
                     {
                         processSuggestRequest((SuggestRequest) actionRequest);
                     }
-                    
+
                     else if(actionRequest instanceof EndTurn || turnTracker.isTurnOver())  // isTurnOver is basically always false since nobody's accusing most of the time
                     {
                         nextPlayer();
@@ -322,6 +325,10 @@ public class ClueLessServer extends Thread
             }
         }
 
+        if (newGame)
+        {
+            fillPlayers();
+        }
         // TODO: Actual in-game action requests
     }
 
@@ -376,7 +383,7 @@ public class ClueLessServer extends Thread
      *
      * @param gsr - Request
      */
-    public void processGameStartRequest(GameStartRequest gsr)
+    public boolean processGameStartRequest(GameStartRequest gsr)
     {
         if(ServState == ServerState.Lobby)
         {
@@ -402,24 +409,43 @@ public class ClueLessServer extends Thread
 
                     // Notify the players of the first turn
                     sendToAllPlayers( new TurnUpdate(PlayerList.get( CurrentPlayerIndex ).PlayerName) );
-
+                    return true;
                 }
                 else
                 {
                     sendToClient(gsr.UniqueID, new Notification("Need at least " + MinPlayers + " players!"));
+                    return false;
                 }
             }
             else
             {
                 sendToClient(gsr.UniqueID, new Notification("Only " + PlayerList.get(0).PlayerName + " can start the game"));
+                return false;
             }
         }
         else
         {
             sendToClient(gsr.UniqueID, new Notification("Game in-progress!"));
+            return false;
         }
     }
 
+    public void fillPlayers()
+    {
+        // Fill in non-players, assign characters to players. After cards are dealt, so hopefully OK
+        int toAdd = MaxPlayers - PlayerList.size();
+        for (int i = 0; i < toAdd; i++)
+        {
+            System.out.println("Added player");
+            PlayerList.add(new Player("", -13, false, false));
+        }
+        for(int i = 0; i < PlayerList.size(); i++)
+        {
+            PlayerList.get(i).assignCharacter(CharacterName.values()[i]);
+        }
+        System.out.println("Filled players " + PlayerList.size());
+        //board.putPlayers(PlayerList);
+    }
 
     public void processMoveRequest( MoveRequest mr )
     {
@@ -452,52 +478,45 @@ public class ClueLessServer extends Thread
             for (int i = 1; i < PlayerList.size(); i++)  // Start at 1 to start with the next player. Don't check the current player
             {
                 Player p = PlayerList.get((CurrentPlayerIndex + i) % PlayerList.size());
-                PlayerHand possibleRefutations = sr.checkRefutations( p.getHand() );
-                
-
-                if (!possibleRefutations.isEmpty() )
+                if(!p.PlayerName.equals(""))  // Skip dummy players
                 {
-                       
-                    /**
-                     * This checks to see if the player has more than one card to refute the
-                     * suggestion. If there's only one card that can refute the suggestion,
-                     * we don't bother asking the player to choose.
-                     * TODO: Clean this up a bit
-                     */
-                    if( possibleRefutations.numberOfCards() == 1 )
-                    {
-                        if ( !possibleRefutations.getCharacters().isEmpty() )
-                        {
-                            sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getCharacters().get( 0 ) ) );
-                        }
-                        else if ( ! ( possibleRefutations.getRooms().isEmpty()) )
-                        {
-                            sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getRooms().get( 0 ) ) );
-                        }
-                        else if ( ! ( possibleRefutations.getWeapons().isEmpty()) )
-                        {
-                            sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getWeapons().get( 0 ) ) );
-                        }
-                    }
-                    
-                    // Ask the player which card to use to refute the suggestion
-                    else
-                    {
-                       System.out.println(possibleRefutations);
-                       sendToPlayer( p.PlayerName, new RefuteSuggestionPicker( sr.PlayerName, possibleRefutations ) );
-                    }
-                    
-                    System.out.println(possibleRefutations);
-                    
-                    // Tell all other players
-                    sendToAllPlayers( new SuggestionWrong( sr.PlayerName, p.PlayerName ) );
+                    PlayerHand possibleRefutations = sr.checkRefutations(p.getHand());
 
-                    // We found a player who can refute the suggestion, so we're done here.
-                    break;
-                }
-                else
-                {
-                    sendToAllPlayers(new SuggestionPassed( p.PlayerName ));
+
+                    if (!possibleRefutations.isEmpty()) {
+
+                        /**
+                         * This checks to see if the player has more than one card to refute the
+                         * suggestion. If there's only one card that can refute the suggestion,
+                         * we don't bother asking the player to choose.
+                         * TODO: Clean this up a bit
+                         */
+                        if (possibleRefutations.numberOfCards() == 1) {
+                            if (!possibleRefutations.getCharacters().isEmpty()) {
+                                sendToPlayer(PlayerList.get(CurrentPlayerIndex).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getCharacters().get(0)));
+                            } else if (!(possibleRefutations.getRooms().isEmpty())) {
+                                sendToPlayer(PlayerList.get(CurrentPlayerIndex).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getRooms().get(0)));
+                            } else if (!(possibleRefutations.getWeapons().isEmpty())) {
+                                sendToPlayer(PlayerList.get(CurrentPlayerIndex).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getWeapons().get(0)));
+                            }
+                        }
+
+                        // Ask the player which card to use to refute the suggestion
+                        else {
+                            System.out.println(possibleRefutations);
+                            sendToPlayer(p.PlayerName, new RefuteSuggestionPicker(sr.PlayerName, possibleRefutations));
+                        }
+
+                        System.out.println(possibleRefutations);
+
+                        // Tell all other players
+                        sendToAllPlayers(new SuggestionWrong(sr.PlayerName, p.PlayerName));
+
+                        // We found a player who can refute the suggestion, so we're done here.
+                        break;
+                    } else {
+                        sendToAllPlayers(new SuggestionPassed(p.PlayerName));
+                    }
                 }
             }
             // If it comes back to us, do we lie or do nothing? I think do nothing is better?

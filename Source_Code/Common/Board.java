@@ -1,6 +1,8 @@
 package Common;
 import Common.Messages.ActionRequests.MoveRequest;
 
+import java.util.ArrayList;
+
 /**
  * This class defines the set up of the Clue-less board with some useful helper 
  * classes so that other
@@ -86,9 +88,9 @@ public class Board
     }
 
     // if room is an occupied hallway, player cannot move there
-    if (board[currX][currY] instanceof BoardHallway)
+    if (board[currY][currX] instanceof BoardHallway)
     {
-      if (((BoardHallway)board[currX][currY]).isOccupied())
+      if (((BoardHallway)board[currY][currX]).isOccupied())
       {
         throw new IllegalArgumentException("Hallway is occupied!");
       }
@@ -106,8 +108,17 @@ public class Board
     }
 
     // remove player from old room and assign to new room
-    board[currX][currY].removePlayer(player);
-    board[newX][newY].addPlayer(player);
+    board[currY][currX].removePlayer(player);
+    board[newY][newX].addPlayer(player);
+  }
+
+  public void putPlayers(ArrayList<Player> players)
+  {
+    for (Player p : players)
+    {
+      board[p.getyPos()][p.getxPos()].addPlayer(p);
+    }
+  printBoard();
   }
 
   /**
@@ -145,6 +156,135 @@ public class Board
     board[4][2] = new BoardRoom("Ball Room");
     board[4][3] = new BoardHallway();
     board[4][4] = new BoardRoom("Kitchen");
+  }
+
+  public void printBoard()
+  {
+    String[] study = {"    ", "    ", "    ", "    ", "    ", "    ", };
+    String[] hall = {"    ", "    ", "    ", "    ", "    ", "    ", };
+    String[] lounge = {"    ", "    ", "    ", "    ", "    ", "    ", };
+
+    String[] library = {"    ", "    ", "    ", "    ", "    ", "    ", };
+    String[] billiard = {"    ", "    ", "    ", "    ", "    ", "    ", };
+    String[] dining = {"    ", "    ", "    ", "    ", "    ", "    ", };
+
+    String[] conservatory = {"    ", "    ", "    ", "    ", "    ", "    ", };
+    String[] ballroom = {"    ", "    ", "    ", "    ", "    ", "    ", };
+    String[] kitchen = {"    ", "    ", "    ", "    ", "    ", "    ", };
+
+    for (int y = 0; y < board.length; y++)
+    {
+      for(int x = 0; x < board[0].length; x++)
+      {
+        if(board[y][x] instanceof BoardHallway)
+        {
+
+        }
+        else if (board[y][x] != null)
+        {
+          System.out.println(board[y][x].players.get(0).charName);
+          switch(board[y][x].name)
+          {
+            case "Study" ->
+                    {
+                      for(int i = 0; i < board[y][x].players.size(); i++)
+                      {
+                        study[i] = CharacterCard.characterTwoLetter(board[y][x].players.get(i).charName);
+                      }
+                    }
+            case "Hall" ->
+                    {
+                      for(int i = 0; i < board[y][x].players.size(); i++)
+                      {
+                        hall[i] = CharacterCard.characterTwoLetter(board[y][x].players.get(i).charName);
+                      }
+                    }
+            case "Lounge"->
+                    {
+                      for(int i = 0; i < board[y][x].players.size(); i++)
+                      {
+                        lounge[i] = CharacterCard.characterTwoLetter(board[y][x].players.get(i).charName);
+                      }
+                    }
+            case "Library"->
+                    {
+                      for(int i = 0; i < board[y][x].players.size(); i++)
+                      {
+                        library[i] = CharacterCard.characterTwoLetter(board[y][x].players.get(i).charName);
+                      }
+                    }
+            case "Billiard Room"->
+                    {
+                      for(int i = 0; i < board[y][x].players.size(); i++)
+                      {
+                        billiard[i] = CharacterCard.characterTwoLetter(board[y][x].players.get(i).charName);
+                      }
+                    }
+            case "Dining Room"->
+                    {
+                      for(int i = 0; i < board[y][x].players.size(); i++)
+                      {
+                        dining[i] = CharacterCard.characterTwoLetter(board[y][x].players.get(i).charName);
+                      }
+                    }
+            case "Conservatory"->
+                    {
+                      for(int i = 0; i < board[y][x].players.size(); i++)
+                      {
+                        conservatory[i] = CharacterCard.characterTwoLetter(board[y][x].players.get(i).charName);
+                      }
+                    }
+            case "Ball Room"->
+                    {
+                      for(int i = 0; i < board[y][x].players.size(); i++)
+                      {
+                        ballroom[i] = CharacterCard.characterTwoLetter(board[y][x].players.get(i).charName);
+                      }
+                    }
+            case "Kitchen"->
+                    {
+                      for(int i = 0; i < board[y][x].players.size(); i++)
+                      {
+                        kitchen[i] = CharacterCard.characterTwoLetter(board[y][x].players.get(i).charName);
+                      }
+                    }
+          }
+        }
+
+      }
+    }
+
+    String boardStr = "====================================================================\n" +
+            "====================================================================\n" +
+            "||   study    |xxxxxxxxxxxx|    hall    |xxxxxxxxxxxx|   lounge   ||\n" +
+            "|| " + study[0] +  "  " + study[1] +  " |============| " + hall[0] +  "  " + hall[1] +  " |============| " + lounge[0] +  "  " + lounge[1] +  " ||\n" +
+            "|| " + study[2] +  "  " + study[3] +  "                " + hall[2] +  "  " + hall[3] +  "                " + lounge[2] +  "  " + lounge[3] +  " ||\n" +
+            "|| " + study[4] +  "  " + study[5] +  " |============| " + hall[4] +  "  " + hall[5] +  " |============| " + lounge[4] +  "  " + lounge[5] +  " ||\n" +
+            "||====    ====|xxxxxxxxxxxx|====    ====|xxxxxxxxxxxx|====    ====||\n" +
+            "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
+            "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
+            "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
+            "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
+            "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
+            "||====    ====|xxxxxxxxxxxx|====    ====|xxxxxxxxxxxx|====    ====||\n" +
+            "||  library   |xxxxxxxxxxxx|  billiard  |xxxxxxxxxxxx|   dining   ||\n" +
+            "||            |============|            |============|            ||\n" +
+            "||                                                                ||\n" +
+            "||            |============|            |============|            ||\n" +
+            "||====    ====|xxxxxxxxxxxx|====    ====|xxxxxxxxxxxx|====    ====||\n" +
+            "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
+            "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
+            "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
+            "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
+            "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
+            "||====    ====|xxxxxxxxxxxx|====    ====|xxxxxxxxxxxx|====    ====||\n" +
+            "||            |xxxxxxxxxxxx|            |xxxxxxxxxxxx|            ||\n" +
+            "||            |============|            |============|            ||\n" +
+            "||                                                                ||\n" +
+            "||conservatory|============|  ballroom  |============|   kitchen  ||\n" +
+            "||============|xxxxxxxxxxxx|============|xxxxxxxxxxxx|============||\n" +
+            "====================================================================";
+    System.out.println(boardStr);
   }
 
 }

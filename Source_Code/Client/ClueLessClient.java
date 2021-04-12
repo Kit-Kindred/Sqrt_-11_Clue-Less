@@ -240,7 +240,7 @@ public class ClueLessClient extends Thread
                                 System.out.println(character + " : " + index);
                                 index += 1;
                             }
-                            CharacterName accuseCharacter = CharacterName.values()[ scan.nextInt() - 1];
+                            CharacterName accuseCharacter = CharacterName.values()[ Integer.parseInt( reader.read() ) - 1];
 
                             System.out.println("Which room would you like to accuse?");
                             index = 1;
@@ -249,7 +249,7 @@ public class ClueLessClient extends Thread
                                 System.out.println(room + " : " + index);
                                 index += 1;
                             }
-                            RoomName accuseRoom = RoomName.values()[ scan.nextInt() - 1 ];
+                            RoomName accuseRoom = RoomName.values()[ Integer.parseInt( reader.read() ) - 1 ];
 
                             System.out.println("Which weapon would you like to accuse?");
                             index = 1;
@@ -258,9 +258,9 @@ public class ClueLessClient extends Thread
                                 System.out.println(weapon + " : " + index);
                                 index += 1;
                             }
-                            WeaponType accuseWeapon = WeaponType.values()[ scan.nextInt() - 1 ];
+                            WeaponType accuseWeapon = WeaponType.values()[ Integer.parseInt( reader.read() ) - 1 ];
 
-                            SolutionHand accuseHand = new SolutionHand( accuseCharacter, accuseRoom, accuseWeapon );
+                            SuggestHand accuseHand = new SuggestHand( accuseCharacter, accuseRoom, accuseWeapon );
                             clientApplication.csc.send(new AccuseRequest(clientApplication.UserPlayer.PlayerName, accuseHand));
                         }
                 case -1 ->

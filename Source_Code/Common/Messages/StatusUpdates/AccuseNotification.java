@@ -1,11 +1,11 @@
 package Common.Messages.StatusUpdates;
 
-import Common.SolutionHand;
+import Common.SuggestHand;
 
 public class AccuseNotification extends StatusUpdate
 {
     public String PlayerName;
-    public SolutionHand AccuseHand;
+    public SuggestHand AccuseHand;
     public boolean Correct;
 
     public AccuseNotification()
@@ -13,13 +13,13 @@ public class AccuseNotification extends StatusUpdate
         super();
     }
 
-    public AccuseNotification(String name, SolutionHand hand)
+    public AccuseNotification(String name, SuggestHand hand)
     {
         this.PlayerName = name;
         this.AccuseHand = hand;
     }
 
-    public AccuseNotification(String name, SolutionHand hand, boolean correct)
+    public AccuseNotification(String name, SuggestHand hand, boolean correct)
     {
         this.PlayerName = name;
         this.AccuseHand = hand;

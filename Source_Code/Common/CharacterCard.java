@@ -12,6 +12,40 @@ public class CharacterCard extends Card
 
    }
 
+   public static String characterTwoLetter(CharacterName cn)
+   {
+      switch(cn)
+      {
+         case MR_GREEN ->
+                 {
+                    return "[MG]";
+                 }
+         case MRS_WHITE ->
+                 {
+                    return "[MW]";
+                 }
+         case MRS_PEACOCK ->
+                 {
+                    return "[MP]";
+                 }
+         case MISS_SCARLET ->
+                 {
+                    return "[MS]";
+                 }
+         case PROFESSOR_PLUM ->
+                 {
+                    return "[PP]";
+                 }
+         case COLONEL_MUSTARD ->
+                 {
+                    return "[CM]";
+                 }
+         default ->
+                 {
+                    return "[UN]";
+                 }
+      }
+   }
 
    CharacterName characterName;
 
