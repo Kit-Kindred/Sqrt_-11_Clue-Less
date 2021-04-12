@@ -491,6 +491,7 @@ public class ClueLessClient extends Thread
             System.out.println("Move Down: 4");
             System.out.println("Suggest: 5");
             System.out.println("End turn: 6");
+            System.out.println("Accuse: 9");
             System.out.println("Exit: -1");
         }
         else

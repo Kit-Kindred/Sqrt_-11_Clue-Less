@@ -2,7 +2,7 @@ package Common.Messages.StatusUpdates;
 
 import Common.SolutionHand;
 
-public class EnvelopePeakNotification extends Notification
+public class EnvelopePeakNotification extends StatusUpdate
 {
     public SolutionHand EnvelopeHand;
 
