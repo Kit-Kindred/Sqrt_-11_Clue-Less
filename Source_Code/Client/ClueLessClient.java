@@ -91,7 +91,6 @@ public class ClueLessClient extends Thread
 //               System.out.println("Move Up: 3");  // To test sending multiple
 //               System.out.println("Move Down: 4");
 //               System.out.println("Exit: -1");
-               input = 0;
                break;
             }
 
@@ -191,11 +190,11 @@ public class ClueLessClient extends Thread
                         }
                 case 5 ->
                         {
-                            System.out.println("Which character would you like to suggest?");
+                            System.out.println("Which character would you like to suggest?\n");
                             int index = 1;
                             for ( CharacterName character : CharacterName.values() )
                             {
-                                System.out.println( "\n\t[" + index + "] " + character + "\n");
+                                System.out.println( "\t[" + index + "] " + character);
                                 index += 1;
                             }
                             // int suggestCharacterIndex = scan.nextInt() - 1;
@@ -214,11 +213,11 @@ public class ClueLessClient extends Thread
                             // THE PLAYER IS IN, AND ADD CHECKS ON SERVER SIDE
                             RoomName suggestRoom = RoomName.values()[1];
 
-                            System.out.println("Which weapon would you like to suggest?");
+                            System.out.println("Which weapon would you like to suggest?\n");
                             index = 1;
                             for ( WeaponType weapon : WeaponType.values() )
                             {
-                                System.out.println("\t[" + index + "] " + weapon + "\n");
+                                System.out.println("\t[" + index + "] " + weapon);
                                 index += 1;
                             }
                             // int suggestWeaponIndex = scan.nextInt() - 1;
@@ -465,7 +464,7 @@ public class ClueLessClient extends Thread
         else
         {
             UserPlayer.PlayerTurn = false; // Set the turn status to false
-            System.out.println( "[Server] It's " + tu.TurnPlayer + "'s turn.");
+            System.out.println( "[Server] It's " + tu.TurnPlayer + "'s turn.\n");
         }
     }
     
