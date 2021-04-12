@@ -144,7 +144,7 @@ public class ClueLessServer extends Thread
      * Current state of the server (Lobby/Active)
      */
     private ServerState ServState;
-    
+
     private final TurnTracker turnTracker;
 
     /**
@@ -152,6 +152,11 @@ public class ClueLessServer extends Thread
      * PlayerList ArrayList.
      */
     private int CurrentPlayerIndex;
+
+    /**
+    * The solution sealed in the envelope before the start of the Game
+    */
+    private SolutionHand EnvelopeHand;
 
     /**
      * Initialize the ClueLessServer. Set up game state
@@ -301,10 +306,16 @@ public class ClueLessServer extends Thread
                     {
                         nextPlayer();
                     }
+                    else if (actionRequest instanceof AccuseRequest)
+                    {
+                        processAccuseRequest((AccuseRequest) actionRequest);
+                    }
                     break;
                 }
             }
         }
+
+        // TODO: Actual in-game action requests
     }
 
 
@@ -370,7 +381,7 @@ public class ClueLessServer extends Thread
                     sendToAllPlayers(new GameStart());
 
                     // Update player objects with all the cards in the deck
-                    CardDeck.shuffleAndAssignCards( PlayerList );
+                    EnvelopeHand = CardDeck.shuffleAndAssignCards( PlayerList );
 
                     // sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
 
@@ -464,6 +475,36 @@ public class ClueLessServer extends Thread
         else
         {
             sendToClient(sr.UniqueID, new Notification("You've already suggested this turn!"));
+        }
+    }
+
+    public void processAccuseRequest( AccuseRequest acccuseRequest )
+    {
+        // prep the AccuseNotification here with who and what they are guessing.
+        AccuseNotification accuseNotification = new AccuseNotification(acccuseRequest.PlayerName, acccuseRequest.AccuseHand);
+
+        // Check to see if the person is correct
+        if (EnvelopeHand.isEqual(acccuseRequest.AccuseHand))
+        {
+            // If correct, tell everyone, end game
+            accuseNotification.setCorrect(true);
+            sendToAllPlayers( accuseNotification );
+            sendToAllPlayers( new GameStart(false) );
+            ServState = ServerState.Lobby;
+        }
+        else
+        {
+            // If incorrect
+            accuseNotification.setCorrect(false);
+            // Set player to out
+            PlayerList.get(CurrentPlayerIndex).PlayerActive = false;
+
+            // Tell everyone what happend
+            sendToAllPlayers( accuseNotification );
+            // Tell the player who accused the correct answer
+            sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new EnvelopePeakNotification( this.EnvelopeHand ) );
+            // Tell the player who accused (incorrectly) that their "Out"
+            sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new OutNotification( PlayerList.get ( CurrentPlayerIndex ).PlayerName ) );
         }
     }
 
