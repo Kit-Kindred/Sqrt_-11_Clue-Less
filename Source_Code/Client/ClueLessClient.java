@@ -466,7 +466,7 @@ public class ClueLessClient extends Thread
             this.board = new Board();
             activeGame = true;
         }
-        else if( activeGame )
+        else if( gs.GameStarting && activeGame )
         {
            System.out.println("[Server] Game has already been started!\n");
         }
