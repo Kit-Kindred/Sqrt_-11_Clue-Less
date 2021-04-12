@@ -137,10 +137,7 @@ public class ClueLessClient extends Thread
                                e.printStackTrace();
                             }
 
-                            synchronized( reader )
-                            {
-                               input = Integer.parseInt( reader.read() );
-                            }
+                            input = Integer.parseInt( reader.read() );
 
                         }
                 case -1 ->
