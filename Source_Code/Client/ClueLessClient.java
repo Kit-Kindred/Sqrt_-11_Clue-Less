@@ -52,6 +52,7 @@ public class ClueLessClient extends Thread
 
         ClueLessClient clientApplication = new ClueLessClient(server, port);  // Create the server
         clientApplication.start();  // Start processing
+        clientApplication.setPriority( 10 );
 
         // Auto-connect to the server for now, but make sure we're initialized first
         try
@@ -66,8 +67,9 @@ public class ClueLessClient extends Thread
         clientApplication.setPlayerName(name);
         // BEGIN TEMPORARY - Just to let us test out the interface
         // Read user input from CLI and perform appropriate action
-        int input;
-        do
+        int input = 0;
+        
+        while(input != -1 && !clientApplication.activeGame)
         {
             System.out.println("****Enter a command****");
             System.out.println("Send action request to server: 1");
@@ -75,18 +77,21 @@ public class ClueLessClient extends Thread
             System.out.println("Send Connect Request: 3");  // To test sending multiple
             System.out.println("Request Start Game: 4");
             System.out.println("Exit: -1");
+
             input = Integer.parseInt( reader.read() );
+
 
             // Clients not going first need a way to break from this while loop
             // without
             if( clientApplication.activeGame )
             {
-               System.out.println("\n****Enter a command****");
-               System.out.println("Move Left: 1");
-               System.out.println("Move Right: 2");
-               System.out.println("Move Up: 3");  // To test sending multiple
-               System.out.println("Move Down: 4");
-               System.out.println("Exit: -1");
+//               System.out.println("\n****Enter a command****");
+//               System.out.println("Move Left: 1");
+//               System.out.println("Move Right: 2");
+//               System.out.println("Move Up: 3");  // To test sending multiple
+//               System.out.println("Move Down: 4");
+//               System.out.println("Exit: -1");
+               input = 0;
                break;
             }
 
@@ -132,7 +137,10 @@ public class ClueLessClient extends Thread
                                e.printStackTrace();
                             }
 
-                            input = Integer.parseInt( reader.read() );
+                            synchronized( reader )
+                            {
+                               input = Integer.parseInt( reader.read() );
+                            }
 
                         }
                 case -1 ->
@@ -145,16 +153,24 @@ public class ClueLessClient extends Thread
                         }
             }
         }
-        while(input != -1 && !clientApplication.activeGame);
+
 
         // Present the user with actions and wait for them to take their turn
         do
         {
+
            // Quick turn validation to make sure it's the player's turn
            if( clientApplication.UserPlayer.PlayerTurn )
            {
+              
+              if( !clientApplication.UpdateQueue.isEmpty() )
+              {
+                 break;
+              }
+              
               switch (input)
               {
+                       
                 case 1 ->
                         {
                             System.out.println("Sending move left request...\n");
@@ -182,7 +198,7 @@ public class ClueLessClient extends Thread
                             int index = 1;
                             for ( CharacterName character : CharacterName.values() )
                             {
-                                System.out.println(character + " : " + index);
+                                System.out.println( "\n\t[" + index + "] " + character + "\n");
                                 index += 1;
                             }
                             // int suggestCharacterIndex = scan.nextInt() - 1;
@@ -205,7 +221,7 @@ public class ClueLessClient extends Thread
                             index = 1;
                             for ( WeaponType weapon : WeaponType.values() )
                             {
-                                System.out.println(weapon + " : " + index);
+                                System.out.println("\t[" + index + "] " + weapon + "\n");
                                 index += 1;
                             }
                             // int suggestWeaponIndex = scan.nextInt() - 1;
@@ -235,7 +251,8 @@ public class ClueLessClient extends Thread
               System.out.println("It is not your turn, please wait.");
            }
 
-            input = Integer.parseInt( reader.read() );
+           input = Integer.parseInt( reader.read() );
+           
         }
         while(input != -1 && clientApplication.activeGame );
 

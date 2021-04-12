@@ -2,7 +2,6 @@ package Common;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.concurrent.*;
 
@@ -58,13 +57,13 @@ public class ConsoleInput
    public class ConsoleInputHandler implements Callable< String >
    {
 
-      public String call() throws IOException
+      public synchronized String call() throws IOException
       {
          BufferedReader br = new BufferedReader(
             new InputStreamReader( System.in ) );
-         String input;
+         String input = "";
 
-         do
+         while( input.equals( "" ) )
          {
             System.out.print( ">> " );
 
@@ -73,7 +72,6 @@ public class ConsoleInput
             
 //            try
 //            {
-//
 //               // wait until we have data to complete a readLine()
 //               while( !br.ready() /* ADD SHUTDOWN CHECK HERE */ )
 //               {
@@ -81,12 +79,13 @@ public class ConsoleInput
 //               }
 //
 //               input = br.readLine();
+//               
 //            } catch( InterruptedException e )
 //            {
 //               return null;
 //            }
 
-         } while( "".equals( input ) );
+         } 
 
          return input;
 
