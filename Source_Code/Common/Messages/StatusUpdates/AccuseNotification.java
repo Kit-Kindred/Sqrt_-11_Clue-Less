@@ -35,9 +35,9 @@ public class AccuseNotification extends StatusUpdate
     {
         String outString = "";
         outString += this.PlayerName;
-        outString += " suggested that ";
+        outString += " accused ";
         outString += this.AccuseHand.getCharacterName();
-        outString += " dit it in the ";
+        outString += " of doing it in the ";
         outString += this.AccuseHand.getRoomName();
         outString += " with the ";
         outString += this.AccuseHand.getWeaponType();
