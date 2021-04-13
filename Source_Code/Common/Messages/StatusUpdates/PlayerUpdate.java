@@ -1,19 +1,21 @@
 package Common.Messages.StatusUpdates;
 
-import java.util.ArrayList;
-
 import Common.Player;
 
-public class PlayerUpdate extends StatusUpdate
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class PlayerUpdate extends StatusUpdate implements Serializable
 {
-   
-   private static final long serialVersionUID = -3375789620849010144L;
-   public ArrayList<Player> players;
-   
-   public PlayerUpdate( ArrayList<Player> players )
-   {
-      this.players = players;
-   }
-   
-   
+    public ArrayList<Player> p;
+
+    public PlayerUpdate(ArrayList<Player> p)
+    {
+        super();
+        this.p = new ArrayList<Player>();
+        for (Player pl : p)
+        {
+            this.p.add(new Player(pl));
+        }
+    }
 }
