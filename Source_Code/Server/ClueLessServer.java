@@ -450,12 +450,34 @@ public class ClueLessServer extends Thread
     {
         // processAction now checks if the sending player is allowed to move
         if(turnTracker.CanMove)
-        {
-            // TODO: update player location. Only update the turn tracker on valid moves
-            turnTracker.move();
-            // Announce the move to all players
-            sendToAllPlayers(new Notification("Player " + mr.PlayerName
-                    + " moved " + mr.moveDirection));
+        {   
+            // try to move player
+            try 
+            {
+                // get current player instance
+                Player player = PlayerList.get(CurrentPlayerIndex);
+                
+                // update player location on the board
+                board.movePlayer(player, mr);
+
+                // toggle to next player
+                turnTracker.move();
+
+                // Announce the move to all players
+                sendToAllPlayers(new Notification("Player " + mr.PlayerName
+                + " moved " + mr.moveDirection));
+
+                // Send the new board layout to all of the players
+                for( Player p : PlayerList )
+                {
+                    sendToClient( p.ClientID, new BoardUpdate( board ) );
+                }
+            }
+            // illegal move attempted
+            catch (IllegalArgumentException e)
+            {
+                sendToClient(mr.UniqueID, new Notification(e.toString()));
+            }       
         }
         else
         {
@@ -536,15 +558,13 @@ public class ClueLessServer extends Thread
     }
     
     
-    
-
-    public void processAccuseRequest( AccuseRequest acccuseRequest )
+    public void processAccuseRequest( AccuseRequest accuseRequest )
     {
         // prep the AccuseNotification here with who and what they are guessing.
-        AccuseNotification accuseNotification = new AccuseNotification(acccuseRequest.PlayerName, acccuseRequest.AccuseHand);
+        AccuseNotification accuseNotification = new AccuseNotification(accuseRequest.PlayerName, accuseRequest.AccuseHand);
 
         // Check to see if the person is correct
-        if (EnvelopeHand.isEqual(acccuseRequest.AccuseHand))
+        if (EnvelopeHand.isEqual(accuseRequest.AccuseHand))
         {
             // If correct, tell everyone, end game
             accuseNotification.setCorrect(true);

@@ -20,15 +20,4 @@ public class MoveRequest extends ActionRequest
       this.PlayerName = PlayerName;
       this.moveDirection = moveDirection;
    }
-
-   /**
-    * example use case of move request with enumarated move set 
-    *
-    * @param args
-    */
-   //public static void main(String[] args)
-   //{
-   //   MoveRequest move = new MoveRequest(1, Move.UP);
-   //}
-
 }

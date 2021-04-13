@@ -1,5 +1,5 @@
 package Common;
-
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -8,8 +8,9 @@ import java.util.ArrayList;
  * @author Kit Kindred & Steve Nilla
  *
  */
-public class Player
+public class Player implements Serializable
 {
+    private static final long serialVersionUID = -9155126928314372511L; // make serialized id
     public boolean PlayerActive;  // true if the player is in; false if the player is out
     public boolean PlayerConnected;  // true if the player is connected; false otherwise
     public boolean PlayerTurn; // True is it's the player's turn. This should be set by the server.

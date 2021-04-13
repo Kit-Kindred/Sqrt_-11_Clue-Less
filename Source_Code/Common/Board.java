@@ -1,6 +1,6 @@
 package Common;
 import Common.Messages.ActionRequests.MoveRequest;
-
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -9,10 +9,15 @@ import java.util.ArrayList;
  * 
  * @author Steve Nilla
  */
-public class Board
+public class Board implements Serializable
 {
+  /**
+   * Make board object serializable
+   */
+  private static final long serialVersionUID = 1792196563360444459L;
+  
   // set up board
-  BoardRoom board[][] = new BoardRoom[5][5];
+  private BoardRoom board[][] = new BoardRoom[5][5];
  
   /**
    * The method to move a player on the board
@@ -87,10 +92,16 @@ public class Board
         break;
     }
 
-    // if room is an occupied hallway, player cannot move there
-    if (board[currY][currX] instanceof BoardHallway)
+    // invalid index range given
+    if (!((newX >= 0) && (newX <= 4)) | !((newY >= 0) && (newY <= 4)))
     {
-      if (((BoardHallway)board[currY][currX]).isOccupied())
+      throw new IllegalArgumentException("Invalid move request");
+    }
+
+    // if room is an occupied hallway, player cannot move there
+    if (board[newY][newX] instanceof BoardHallway)
+    {
+      if (((BoardHallway)board[newY][newX]).isOccupied())
       {
         throw new IllegalArgumentException("Hallway is occupied!");
       }
@@ -99,17 +110,18 @@ public class Board
     // try to move the player to the requested position
     try
     {
+      // set new position
       player.setxPos(newX);
       player.setyPos(newY);
-    }
-    catch(IllegalArgumentException e)
-    {
-      System.out.println(e);
-    }
 
-    // remove player from old room and assign to new room
-    board[currY][currX].removePlayer(player);
-    board[newY][newX].addPlayer(player);
+      // remove player from old room and assign to new room
+      board[currY][currX].removePlayer(player);
+      board[newY][newX].addPlayer(player);
+    }
+    catch(IllegalArgumentException | NullPointerException e)
+    {
+      throw new IllegalArgumentException("Invalid move request");
+    }
   }
 
   public void putPlayers(ArrayList<Player> players)
@@ -122,45 +134,8 @@ public class Board
   }
 
   /**
-   * Default class constructor
+   * Please ignore how ugly this is...
    */
-  public Board()
-  {     
-    // board row 1 
-    board[0][0] = new BoardRoom("Study");
-    board[0][1] = new BoardHallway();
-    board[0][2] = new BoardRoom("Hall");
-    board[0][3] = new BoardHallway();
-    board[0][4] = new BoardRoom("Lounge");
-
-    // board row 2
-    board[1][0] = new BoardHallway();
-    board[1][2] = new BoardHallway();
-    board[1][4] = new BoardHallway();
-
-    // board row 3
-    board[2][0] = new BoardRoom("Library");
-    board[2][1] = new BoardHallway();
-    board[2][2] = new BoardRoom("Billiard Room");
-    board[2][3] = new BoardHallway();
-    board[2][4] = new BoardRoom("Dining Room");
-
-    // board row 4
-    board[3][0] = new BoardHallway();
-    board[3][2] = new BoardHallway();
-    board[3][4] = new BoardHallway();
-
-    // board row 5
-    board[4][0] = new BoardRoom("Conservatory");
-    board[4][1] = new BoardHallway();
-    board[4][2] = new BoardRoom("Ball Room");
-    board[4][3] = new BoardHallway();
-    board[4][4] = new BoardRoom("Kitchen");
-  }
-
-  /*
-  * Please ignore how ugly this is...
-  * */
   public void printBoard()
   {
     String[] study = {"    ", "    ", "    ", "    ", "    ", "    ", };
@@ -300,4 +275,40 @@ public class Board
     System.out.println(boardStr);
   }
 
+  /**
+   * Default class constructor
+   */
+  public Board()
+  {     
+    // board row 1 
+    board[0][0] = new BoardRoom("Study");
+    board[0][1] = new BoardHallway();
+    board[0][2] = new BoardRoom("Hall");
+    board[0][3] = new BoardHallway();
+    board[0][4] = new BoardRoom("Lounge");
+
+    // board row 2
+    board[1][0] = new BoardHallway();
+    board[1][2] = new BoardHallway();
+    board[1][4] = new BoardHallway();
+
+    // board row 3
+    board[2][0] = new BoardRoom("Library");
+    board[2][1] = new BoardHallway();
+    board[2][2] = new BoardRoom("Billiard Room");
+    board[2][3] = new BoardHallway();
+    board[2][4] = new BoardRoom("Dining Room");
+
+    // board row 4
+    board[3][0] = new BoardHallway();
+    board[3][2] = new BoardHallway();
+    board[3][4] = new BoardHallway();
+
+    // board row 5
+    board[4][0] = new BoardRoom("Conservatory");
+    board[4][1] = new BoardHallway();
+    board[4][2] = new BoardRoom("Ball Room");
+    board[4][3] = new BoardHallway();
+    board[4][4] = new BoardRoom("Kitchen");
+  }
 }

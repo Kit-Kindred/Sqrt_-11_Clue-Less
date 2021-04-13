@@ -14,6 +14,9 @@ import Common.Board;
 public class BoardUpdate extends StatusUpdate
 {
 
+   /**
+    * Sends the serializable object board
+    */
    private static final long serialVersionUID = -3873643820049641645L;
    
    private Board board;

@@ -375,23 +375,17 @@ public class ClueLessClient extends Thread
         {
             processGameStart((GameStart) statUp);
         }
-
         else if( statUp instanceof TurnUpdate)
         {
             processTurnUpdate((TurnUpdate) statUp);
         }
-
-
         else if( statUp instanceof PlayerHandUpdate)
         {
             UserPlayer.setHand( ((PlayerHandUpdate) statUp).getHandUpdate() );
             System.out.println( UserPlayer.getAllCardsString() + "\n");
            //System.out.println( ((PlayerHandUpdate) statUp).getHandUpdate() + "\n");
-
         }
-
         // These just print stuff, so I guess just leave them
-
         else if(statUp instanceof Notification)  // Generic server print essentially
         {
             System.out.println("[Server] " + ((Notification) statUp).NotificationText);
@@ -425,7 +419,11 @@ public class ClueLessClient extends Thread
         // Update the Board object based on updates received from the server
         else if( statUp instanceof BoardUpdate)
         {
-            this.board = ((BoardUpdate) statUp).getBoard();
+            // align client board with server version
+            setBoard(((BoardUpdate) statUp).getBoard());
+
+            // display board
+            this.board.printBoard();
         }
         // Notify players about an accusation
         else if (statUp instanceof AccuseNotification)
@@ -645,6 +643,12 @@ public class ClueLessClient extends Thread
     {
         csc.close();  // Kill server comms
         interrupt();  // Then kill our action processing
+    }
+
+    // treating board as 
+    public void setBoard(Board board)
+    {
+        this.board = board;
     }
     
 }

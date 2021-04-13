@@ -1,5 +1,6 @@
 package Common;
 import java.util.List;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -7,8 +8,12 @@ import java.util.ArrayList;
  * 
  * @author Steve Nilla
  */
-public class BoardRoom 
+public class BoardRoom implements Serializable
 {
+  /**
+   * Make BoardRoom object serializable
+   */
+  private static final long serialVersionUID = 3116940914504957764L;
   String name; // name of the room
   ArrayList<Player> players; // players in a room 
 
