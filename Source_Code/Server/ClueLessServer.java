@@ -461,7 +461,7 @@ public class ClueLessServer extends Thread
     {
         for(Player p : PlayerList)
         {
-            if(p.charName == mo.cn)
+            if(p.charName == mo.playerName)
             {
                 p.xPos = mo.xPos;
                 p.yPos = mo.yPos;
