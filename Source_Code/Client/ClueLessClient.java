@@ -196,6 +196,7 @@ public class ClueLessClient extends Thread
                         }
                 case 5 ->
                         {
+                            System.out.println( clientApplication.UserPlayer.getAllCardsString() + "\n");
                             System.out.println("Which character would you like to suggest?\n");
                             int index = 1;
                             for ( CharacterName character : CharacterName.values() )
@@ -287,6 +288,8 @@ public class ClueLessClient extends Thread
                         }
                 case 9 ->
                         {
+
+                            System.out.println( clientApplication.UserPlayer.getAllCardsString() + "\n");
                             System.out.println("Which character would you like to accuse?\n");
                             int index = 1;
                             for ( CharacterName character : CharacterName.values() )

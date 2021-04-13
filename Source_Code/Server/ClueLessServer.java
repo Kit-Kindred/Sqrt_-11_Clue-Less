@@ -332,6 +332,9 @@ public class ClueLessServer extends Thread
         if (newGame)
         {
             fillPlayers();
+            
+            // Send board first so players know where they start
+            sendToAllPlayers(new PlayerUpdate(PlayerList));
         }
         // TODO: Actual in-game action requests
     }
@@ -402,9 +405,6 @@ public class ClueLessServer extends Thread
                     EnvelopeHand = CardDeck.shuffleAndAssignCards( PlayerList );
 
                     // sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
-
-                    // Send board first so players know where they start
-                    sendToAllPlayers(new PlayerUpdate(PlayerList));
                     
                     // Notify the players of the first turn
                     sendToAllPlayers( new TurnUpdate(PlayerList.get( CurrentPlayerIndex ).PlayerName) );

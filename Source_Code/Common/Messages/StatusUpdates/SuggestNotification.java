@@ -29,7 +29,7 @@ public class SuggestNotification extends StatusUpdate
         outString += this.PlayerName;
         outString += " suggested that ";
         outString += this.Hand.getCharacterName();
-        outString += " did it in the ";
+        outString += " committed the murder in the ";
         outString += this.Hand.getRoomName();
         outString += " with the ";
         outString += this.Hand.getWeaponType();
