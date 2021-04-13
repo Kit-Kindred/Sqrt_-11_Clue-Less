@@ -2,9 +2,9 @@ package Server;
 
 public class TurnTracker
 {
-    boolean CanAccuse;
-    boolean CanMove;
-    boolean CanSuggest;
+    public boolean CanAccuse;
+    public boolean CanMove;
+    public boolean CanSuggest;
 
     public TurnTracker()
     {
