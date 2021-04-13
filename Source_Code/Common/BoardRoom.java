@@ -14,8 +14,8 @@ public class BoardRoom implements Serializable
    * Make BoardRoom object serializable
    */
   private static final long serialVersionUID = 3116940914504957764L;
-  String name; // name of the room
-  ArrayList<Player> players; // players in a room 
+  public String name; // name of the room
+  public ArrayList<Player> players; // players in a room
 
   /**
    * Set the name of the room
@@ -76,5 +76,14 @@ public class BoardRoom implements Serializable
   {
     setName(name);
     this.players = new ArrayList<Player>();
+  }
+  public BoardRoom(BoardRoom br)
+  {
+    name = br.name;
+    players = new ArrayList<Player>();
+    for (Player p : br.players)
+    {
+      players.add(new Player(p));
+    }
   }
 }

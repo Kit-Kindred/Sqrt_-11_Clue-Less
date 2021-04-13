@@ -50,6 +50,19 @@ public class Player implements Serializable
         PlayerTurn = false;
         hand = new PlayerHand();
     }
+
+    public Player(Player other)
+    {
+        PlayerName = other.PlayerName;
+        ClientID = other.ClientID;
+        PlayerActive = other.PlayerActive;
+        PlayerConnected = other.PlayerConnected;
+        PlayerTurn = other.PlayerTurn;
+        hand = other.getHand();
+        xPos = other.xPos;
+        yPos = other.yPos;
+        charName = other.charName;
+    }
     
     public void setPlayerTurn( boolean turn )
     {

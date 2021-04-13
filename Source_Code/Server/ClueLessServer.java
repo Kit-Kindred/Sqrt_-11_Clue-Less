@@ -147,7 +147,7 @@ public class ClueLessServer extends Thread
 
     private final TurnTracker turnTracker;
 
-    private final Board board = new Board();
+    private Board board = new Board();
 
     /**
      * The index of the player who's turn it is currently. This index corresponds to the
@@ -307,6 +307,10 @@ public class ClueLessServer extends Thread
                     {
                        processMoveRequest((MoveRequest) actionRequest);
                     }
+                    else if (actionRequest instanceof MoveOther)
+                    {
+                        processMoveOther((MoveOther) actionRequest);
+                    }
                     else if(actionRequest instanceof SuggestRequest)
                     {
                         processSuggestRequest((SuggestRequest) actionRequest);
@@ -453,6 +457,22 @@ public class ClueLessServer extends Thread
         }
     }
 
+    public void processMoveOther(MoveOther mo)
+    {
+        for(Player p : PlayerList)
+        {
+            if(p.charName == mo.cn)
+            {
+                p.xPos = mo.xPos;
+                p.yPos = mo.yPos;
+            }
+        }
+        board = new Board();
+        board.putPlayers(PlayerList);
+        //sendToAllPlayers(new PlayerUpdate(PlayerList));
+        //board.printBoard();
+    }
+
     public void processMoveRequest( MoveRequest mr )
     {
         // processAction now checks if the sending player is allowed to move
@@ -477,8 +497,14 @@ public class ClueLessServer extends Thread
                 // Send the new board layout to all of the players
                 for( Player p : PlayerList )
                 {
-                    sendToClient( p.ClientID, new BoardUpdate( board ) );
+                    //sendToClient( p.ClientID, new BoardUpdate( board ) );
+                    //sendToAllPlayers(new PlayerUpdate(PlayerList));
+                    /*System.out.println(p.PlayerName);
+                    System.out.println(p.charName);
+                    System.out.println(p.xPos);
+                    System.out.println(p.yPos);*/
                 }
+                sendToAllPlayers(new PlayerUpdate(PlayerList));
                 board.printBoard();
             }
             // illegal move attempted
@@ -514,6 +540,7 @@ public class ClueLessServer extends Thread
 
                     if (!possibleRefutations.isEmpty()) {
 
+                        sendToAllPlayers(new PlayerUpdate(PlayerList));
                         /**
                          * This checks to see if the player has more than one card to refute the
                          * suggestion. If there's only one card that can refute the suggestion,
@@ -544,12 +571,14 @@ public class ClueLessServer extends Thread
                         // We found a player who can refute the suggestion, so we're done here.
                         break;
                     } else {
+                        sendToAllPlayers(new PlayerUpdate(PlayerList));
                         sendToAllPlayers(new SuggestionPassed(p.PlayerName));
                     }
                 }
             }
             // If it comes back to us, do we lie or do nothing? I think do nothing is better?
             //sendToAllPlayers(new SuggestionPassed( PlayerList.get(CurrentPlayerIndex).PlayerName));
+
         }
         else
         {

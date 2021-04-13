@@ -217,10 +217,57 @@ public class ClueLessClient extends Thread
                             // }
                             // int suggestRoomIndex = scan.nextInt();
 
+                            RoomName suggestRoom;
+                            if(!(clientApplication.board.board[clientApplication.UserPlayer.yPos][clientApplication.UserPlayer.xPos] instanceof BoardHallway) &&
+                                    clientApplication.board.board[clientApplication.UserPlayer.yPos][clientApplication.UserPlayer.xPos] != null)
+                            {
+                                switch(clientApplication.board.board[clientApplication.UserPlayer.yPos][clientApplication.UserPlayer.xPos].name)
+                                {
+                                    case "Study" ->
+                                            {
+                                                suggestRoom = RoomName.values()[8];
+                                            }
+                                    case "Hall" ->
+                                            {
+                                                suggestRoom = RoomName.values()[4];
+                                            }
+                                    case "Lounge"->
+                                            {
+                                                suggestRoom = RoomName.values()[7];
+                                            }
+                                    case "Library"->
+                                            {
+                                                suggestRoom = RoomName.values()[6];
+                                            }
+                                    case "Billiard Room"->
+                                            {
+                                                suggestRoom = RoomName.values()[1];
+                                            }
+                                    case "Dining Room"->
+                                            {
+                                                suggestRoom = RoomName.values()[3];
+                                            }
+                                    case "Conservatory"->
+                                            {
+                                                suggestRoom = RoomName.values()[2];
+                                            }
+                                    case "Ball Room"->
+                                            {
+                                                suggestRoom = RoomName.values()[0];
+                                            }
+                                    case "Kitchen"->
+                                            {
+                                                suggestRoom = RoomName.values()[5];
+                                            }
+                                    default -> {suggestRoom = RoomName.values()[1];}
+                                }
+                            }
+                            else{
                             // TODO TAKE THIS OUT IT IS JUST HARDCODED TO ALWAYS GUESS
                             // 1. THIS NEEDS TO BE CHANGED TO USE THE CURRENT ROOM
                             // THE PLAYER IS IN, AND ADD CHECKS ON SERVER SIDE
-                            RoomName suggestRoom = RoomName.values()[1];
+                            suggestRoom = RoomName.values()[1];
+                            }
 
                             System.out.println("Which weapon would you like to suggest?\n");
                             index = 1;
@@ -234,6 +281,7 @@ public class ClueLessClient extends Thread
 
                             SuggestHand suggestHand = new SuggestHand( suggestCharacter, suggestRoom, suggestWeapon );
                             clientApplication.csc.send(new SuggestRequest(clientApplication.UserPlayer.PlayerName, suggestHand));
+                            clientApplication.csc.send(new MoveOther(clientApplication.UserPlayer.xPos, clientApplication.UserPlayer.yPos, suggestCharacter));
                         }
                 case 6 ->
                         {
@@ -379,6 +427,23 @@ public class ClueLessClient extends Thread
         {
             processPlayerConnection((PlayerConnection) statUp);
         }
+        else if (statUp instanceof PlayerUpdate)
+        {
+            for(Player pl : ((PlayerUpdate) statUp).p){
+                /*System.out.println(pl.PlayerName);
+                System.out.println(pl.charName);
+                System.out.println(pl.xPos);
+                System.out.println(pl.yPos);*/
+                if(pl.PlayerName.equals(UserPlayer.PlayerName))
+                {
+                    UserPlayer.xPos = pl.xPos;
+                    UserPlayer.yPos = pl.yPos;
+                }
+            }
+            board = new Board();
+            board.putPlayers(((PlayerUpdate) statUp).p);
+            board.printBoard();
+        }
         else if(statUp instanceof ConnectRequestStatus)  // Response to our join request
         {
             processConnectionRequestStatus((ConnectRequestStatus) statUp);
@@ -432,10 +497,10 @@ public class ClueLessClient extends Thread
         else if( statUp instanceof BoardUpdate)
         {
             // align client board with server version
-            setBoard(((BoardUpdate) statUp).getBoard());
-
+            //setBoard(((BoardUpdate) statUp).getBoard());
+            //((BoardUpdate) statUp).getBoard().printBoard();
             // display board
-            this.board.printBoard();
+            //this.board.printBoard();
         }
         // Notify players about an accusation
         else if (statUp instanceof AccuseNotification)

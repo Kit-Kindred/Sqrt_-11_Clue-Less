@@ -17,7 +17,7 @@ public class Board implements Serializable
   private static final long serialVersionUID = 1792196563360444459L;
   
   // set up board
-  private BoardRoom board[][] = new BoardRoom[5][5];
+  public BoardRoom board[][] = new BoardRoom[5][5];
  
   /**
    * The method to move a player on the board
@@ -130,7 +130,7 @@ public class Board implements Serializable
     {
       board[p.getyPos()][p.getxPos()].addPlayer(p);
     }
-  printBoard();
+    printBoard();
   }
 
   /**
@@ -271,7 +271,7 @@ public class Board implements Serializable
             "|| " + conservatory[4] +  "  " + conservatory[5] +  "      " + hallways[4][1] + "      " + ballroom[4] +  "  " + ballroom[5] +  "      " + hallways[4][3] + "      " + kitchen[4] +  "  " + kitchen[5] +  " ||\n" +
             "||conservatory|============|  ballroom  |============|   kitchen  ||\n" +
             "||============|xxxxxxxxxxxx|============|xxxxxxxxxxxx|============||\n" +
-            "====================================================================";
+            "====================================================================\n";
     System.out.println(boardStr);
   }
 
@@ -310,5 +310,23 @@ public class Board implements Serializable
     board[4][2] = new BoardRoom("Ball Room");
     board[4][3] = new BoardHallway();
     board[4][4] = new BoardRoom("Kitchen");
+  }
+
+  public Board(Board b)
+  {
+    for (int y = 0; y < 5; y++)
+    {
+      for (int x = 0; x < 5; x++)
+      {
+        if (b.board[y][x] instanceof BoardHallway)
+        {
+          board[y][x] = new BoardHallway((BoardHallway) b.board[y][x]);
+        }
+        else if (b.board[y][x] != null)
+        {
+          board[y][x] = new BoardRoom(b.board[y][x]);
+        }
+      }
+    }
   }
 }
