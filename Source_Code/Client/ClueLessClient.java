@@ -429,7 +429,7 @@ public class ClueLessClient extends Thread
         }
         else if (statUp instanceof PlayerUpdate)
         {
-            for(Player pl : ((PlayerUpdate) statUp).players){
+            for(Player pl : ((PlayerUpdate) statUp).p){
                 /*System.out.println(pl.PlayerName);
                 System.out.println(pl.charName);
                 System.out.println(pl.xPos);
@@ -441,7 +441,7 @@ public class ClueLessClient extends Thread
                 }
             }
             board = new Board();
-            board.putPlayers(((PlayerUpdate) statUp).players);
+            board.putPlayers(((PlayerUpdate) statUp).p);
             board.printBoard();
         }
         else if(statUp instanceof ConnectRequestStatus)  // Response to our join request
