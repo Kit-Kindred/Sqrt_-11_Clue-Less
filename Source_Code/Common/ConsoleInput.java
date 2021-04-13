@@ -14,6 +14,10 @@ import java.util.concurrent.*;
  */
 public class ConsoleInput
 {
+   
+   private final int timeout = 100;
+   private final TimeUnit unit = TimeUnit.MILLISECONDS;
+   
 
    public String read() throws IOException
    {
@@ -45,6 +49,47 @@ public class ConsoleInput
 
       return input;
 
+   }
+   
+   
+   /**
+    * Equivalent to the read() method call, except we add a timeout so that
+    * we don't hold any resources so another prioritized thread can have access.
+    * @return
+    */
+   public String waitAndRead()
+   {
+      
+      ExecutorService ex    = Executors.newSingleThreadExecutor();
+      String          input = null;
+
+      try
+      {
+
+            Future< String > result = ex.submit( new ConsoleInputHandler() );
+
+            try
+            {
+               input = result.get( timeout, unit );
+            } 
+            catch( ExecutionException e )
+            {
+               e.getCause().printStackTrace();
+            } 
+            catch( InterruptedException e )
+            {
+               e.printStackTrace();
+            } catch( TimeoutException e )
+            {
+               return "0";
+            }
+
+      } finally
+      {
+         ex.shutdownNow();
+      }
+
+      return input;
    }
 
    

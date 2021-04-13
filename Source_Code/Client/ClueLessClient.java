@@ -10,10 +10,8 @@ import Common.Messages.StatusUpdates.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class ClueLessClient extends Thread
@@ -75,7 +73,6 @@ public class ClueLessClient extends Thread
         
         System.out.println();
         printPreGameInstructions();
-        System.out.println();
         
         while(input != -1 && !clientApplication.activeGame)
         {
@@ -429,20 +426,21 @@ public class ClueLessClient extends Thread
         }
         else if (statUp instanceof PlayerUpdate)
         {
-            for(Player pl : ((PlayerUpdate) statUp).players){
-                /*System.out.println(pl.PlayerName);
-                System.out.println(pl.charName);
-                System.out.println(pl.xPos);
-                System.out.println(pl.yPos);*/
+            for(Player pl : ((PlayerUpdate) statUp).players ){
+//                System.out.println(pl.PlayerName);
+//                System.out.println(pl.charName);
+//                System.out.println(pl.xPos);
+//                System.out.println(pl.yPos);
                 if(pl.PlayerName.equals(UserPlayer.PlayerName))
                 {
                     UserPlayer.xPos = pl.xPos;
                     UserPlayer.yPos = pl.yPos;
                 }
             }
-            board = new Board();
-            board.putPlayers(((PlayerUpdate) statUp).players);
-            board.printBoard();
+            this.board = new Board();
+            this.board.putPlayers(((PlayerUpdate) statUp).players);
+            this.board.printBoard();
+            return;
         }
         else if(statUp instanceof ConnectRequestStatus)  // Response to our join request
         {
@@ -465,7 +463,7 @@ public class ClueLessClient extends Thread
         // These just print stuff, so I guess just leave them
         else if(statUp instanceof Notification)  // Generic server print essentially
         {
-            System.out.println("[Server] " + ((Notification) statUp).NotificationText);
+            System.out.println("\t[Server] " + ((Notification) statUp).NotificationText);
         }
         //Notify all players of a suggestion (who, and what they are suggestion)
         else if( statUp instanceof SuggestNotification)
@@ -524,20 +522,22 @@ public class ClueLessClient extends Thread
 
         else  // Something else. Eventually this'll be an error case, but it's fine for now
         {
-            System.out.println("[Server] Update Status: Received StatusUpdate");
+            System.out.println("\t[Server] Update Status: Received StatusUpdate");
         }
         numUpdatesReceived++;
+        
+        return;
     }
 
     public void processPlayerConnection(PlayerConnection pc)
     {
         if(pc.Connected)
         {
-            System.out.println("[Server] " + pc.PlayerName + " joined the game!");
+            System.out.println("\t[Server] " + pc.PlayerName + " joined the game!");
         }
         else
         {
-            System.out.println("[Server] " + pc.PlayerName + " left the game!");
+            System.out.println("\t[Server] " + pc.PlayerName + " left the game!");
         }
     }
 
@@ -546,11 +546,11 @@ public class ClueLessClient extends Thread
         if(crs.Joined)
         {
             UserPlayer.PlayerName = crs.PlayerName;  // Think these should always already match
-            System.out.println("[Server] You are now connected as " + UserPlayer.PlayerName + "!");
+            System.out.println("\t[Server] You are now connected as " + UserPlayer.PlayerName + "!");
         }
         else
         {
-            System.out.println("[Server] Join request refused");
+            System.out.println("\t[Server] Join request refused");
             csc.send(new ConnectRequestStatus(false, UserPlayer.PlayerName));  // Send refusal acknowledgement
         }
         ConnectionRequested = false;  // We got a response, so we can ask again if we want
@@ -560,19 +560,19 @@ public class ClueLessClient extends Thread
     {
         if(gs.GameStarting && !activeGame )
         {
-            System.out.println("[Server] Game starting!\n");
+            System.out.println("\t[Server] Game starting!\n");
 
             // Only instantiate the board after the game starts
-            this.board = new Board();
+            board = new Board();
             activeGame = true;
         }
         else if( gs.GameStarting && activeGame )
         {
-           System.out.println("[Server] Game has already been started!\n");
+           System.out.println("\t[Server] Game has already been started!\n");
         }
         else
         {
-            System.out.println("[Server] Game ending!\n");
+            System.out.println("\t[Server] Game ending!\n");
             activeGame = false;
         }
     }
@@ -583,21 +583,22 @@ public class ClueLessClient extends Thread
         if(tu.TurnPlayer.equals(UserPlayer.PlayerName))
         {
             UserPlayer.PlayerTurn = true; // Set the turn status to true
-            System.out.println( "\n[Server] It is now your turn.");
-            System.out.println("\n\n****Enter a command****");
-            System.out.println("Move Left: 1");
-            System.out.println("Move Right: 2");
-            System.out.println("Move Up: 3");  // To test sending multiple
-            System.out.println("Move Down: 4");
-            System.out.println("Suggest: 5");
-            System.out.println("End turn: 6");
-            System.out.println("Accuse: 9");
-            System.out.println("Exit: -1");
+//            System.out.println( "\n[Server] It is now your turn.");
+//            System.out.println("\n\n****Enter a command****");
+//            System.out.println("Move Left: 1");
+//            System.out.println("Move Right: 2");
+//            System.out.println("Move Up: 3");  // To test sending multiple
+//            System.out.println("Move Down: 4");
+//            System.out.println("Suggest: 5");
+//            System.out.println("End turn: 6");
+//            System.out.println("Accuse: 9");
+//            System.out.println("Exit: -1");
+            printGameInstructions();
         }
         else
         {
             UserPlayer.PlayerTurn = false; // Set the turn status to false
-            System.out.println( "[Server] It's " + tu.TurnPlayer + "'s turn.\n");
+            System.out.println( "\t[Server] It's " + tu.TurnPlayer + "'s turn.\n");
         }
     }
     
@@ -617,7 +618,7 @@ public class ClueLessClient extends Thread
          */
         interrupted = true;
        
-        System.out.println( "\n[Server] You have multiple cards that can refute the"
+        System.out.println( "\n\t[Server] You have multiple cards that can refute the"
            + " suggestion; please pick one:");
 
         /* I think I want to move this level of processing elsewhere (maybe another
@@ -665,7 +666,7 @@ public class ClueLessClient extends Thread
         }
         
         
-        System.out.println("About to send...");
+//        System.out.println("About to send...");
         csc.send( new RefuteSuggestionResponse( UserPlayer.PlayerName, rs.getPlayer(), cardChoices.get( userInput - 1 ) ) );
 
         
@@ -682,12 +683,12 @@ public class ClueLessClient extends Thread
         // If they (or you) are correct
         if ( accuseNotification.Correct )
         {
-            System.out.println("That was correct!");
+            System.out.println("\n\t[Server] That was correct!");
         }
         // If incorrect
         else
         {
-            System.out.println("\n\tThat was incorrect!\n\t");
+            System.out.println("\n\t[Server] That was incorrect!\n\t");
             System.out.println(accuseNotification.PlayerName + " was wrong! They are out of the game!\n");
         }
     }
@@ -730,7 +731,7 @@ public class ClueLessClient extends Thread
        System.out.println("See total num received status updates: 2");
        System.out.println("Send Connect Request: 3");  // To test sending multiple
        System.out.println("Request Start Game: 4");
-       System.out.println("Exit: -1");
+       System.out.println("Exit: -1\n");
     }
     
     
@@ -748,7 +749,7 @@ public class ClueLessClient extends Thread
        System.out.println("Suggest: 5");
        System.out.println("End turn: 6");
        System.out.println("Accuse: 9");
-       System.out.println("Exit: -1");
+       System.out.println("Exit: -1\n");
    }
     
 

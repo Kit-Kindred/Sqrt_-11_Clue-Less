@@ -130,7 +130,7 @@ public class Board implements Serializable
     {
       board[p.getyPos()][p.getxPos()].addPlayer(p);
     }
-    printBoard();
+    //printBoard();
   }
 
   /**

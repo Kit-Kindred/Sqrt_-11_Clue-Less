@@ -403,7 +403,12 @@ public class ClueLessServer extends Thread
 
                     // sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
 
-
+                    // Send board first so players know where they start
+                    sendToAllPlayers(new PlayerUpdate(PlayerList));
+                    
+                    // Notify the players of the first turn
+                    sendToAllPlayers( new TurnUpdate(PlayerList.get( CurrentPlayerIndex ).PlayerName) );
+                    
                     // Send the player hands to their respective clients
                     for( Player p : PlayerList )
                     {
@@ -411,8 +416,8 @@ public class ClueLessServer extends Thread
                        sendToClient( p.ClientID, new PlayerHandUpdate( p.getHand() ) );
                     }
 
-                    // Notify the players of the first turn
-                    sendToAllPlayers( new TurnUpdate(PlayerList.get( CurrentPlayerIndex ).PlayerName) );
+                    
+
                     return true;
                 }
                 else
@@ -495,22 +500,23 @@ public class ClueLessServer extends Thread
                 + " moved " + mr.moveDirection));
 
                 // Send the new board layout to all of the players
-                for( Player p : PlayerList )
-                {
-                    //sendToClient( p.ClientID, new BoardUpdate( board ) );
-                    //sendToAllPlayers(new PlayerUpdate(PlayerList));
-                    /*System.out.println(p.PlayerName);
-                    System.out.println(p.charName);
-                    System.out.println(p.xPos);
-                    System.out.println(p.yPos);*/
-                }
-                sendToAllPlayers(new PlayerUpdate(PlayerList));
+//                for( Player p : PlayerList )
+//                {
+//                    //sendToClient( p.ClientID, new BoardUpdate( board ) );
+//                    //sendToAllPlayers(new PlayerUpdate(PlayerList));
+//                    System.out.println(p.PlayerName);
+//                    System.out.println(p.charName);
+//                    System.out.println(p.xPos);
+//                    System.out.println(p.yPos);
+//                }
+
+                sendToAllPlayers( new PlayerUpdate(PlayerList) );
                 board.printBoard();
             }
             // illegal move attempted
             catch (IllegalArgumentException e)
             {
-                sendToClient(mr.UniqueID, new Notification(e.toString()));
+                sendToClient(mr.UniqueID, new Notification("Sorry, you cannot move there."));
             }       
         }
         else
