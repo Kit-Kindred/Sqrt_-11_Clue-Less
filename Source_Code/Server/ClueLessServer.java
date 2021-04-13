@@ -444,6 +444,13 @@ public class ClueLessServer extends Thread
         }
         System.out.println("Filled players " + PlayerList.size());
         board.putPlayers(PlayerList);
+        for (Player p : PlayerList)
+        {
+            if(!p.PlayerName.equals(""))
+            {
+                sendToAllPlayers(new Notification(p.PlayerName + " is " + String.valueOf(p.charName)));
+            }
+        }
     }
 
     public void processMoveRequest( MoveRequest mr )
@@ -472,6 +479,7 @@ public class ClueLessServer extends Thread
                 {
                     sendToClient( p.ClientID, new BoardUpdate( board ) );
                 }
+                board.printBoard();
             }
             // illegal move attempted
             catch (IllegalArgumentException e)
