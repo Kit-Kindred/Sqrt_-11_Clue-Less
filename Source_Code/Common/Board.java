@@ -158,6 +158,9 @@ public class Board
     board[4][4] = new BoardRoom("Kitchen");
   }
 
+  /*
+  * Please ignore how ugly this is...
+  * */
   public void printBoard()
   {
     String[] study = {"    ", "    ", "    ", "    ", "    ", "    ", };
@@ -172,17 +175,27 @@ public class Board
     String[] ballroom = {"    ", "    ", "    ", "    ", "    ", "    ", };
     String[] kitchen = {"    ", "    ", "    ", "    ", "    ", "    ", };
 
+    String[][] hallways = {
+            {"","    ","","    ",""},
+            {"    ","","    ","","    "},
+            {"","    ","","    ",""},
+            {"    ","","    ","","    "},
+            {"","    ","","    ",""}
+    };
+
     for (int y = 0; y < board.length; y++)
     {
       for(int x = 0; x < board[0].length; x++)
       {
         if(board[y][x] instanceof BoardHallway)
         {
-
+          if(((BoardHallway) board[y][x]).isOccupied())
+          {
+            hallways[y][x] = CharacterCard.characterTwoLetter(board[y][x].players.get(0).charName);
+          }
         }
         else if (board[y][x] != null)
         {
-          System.out.println(board[y][x].players.get(0).charName);
           switch(board[y][x].name)
           {
             case "Study" ->
@@ -258,29 +271,29 @@ public class Board
             "====================================================================\n" +
             "||   study    |xxxxxxxxxxxx|    hall    |xxxxxxxxxxxx|   lounge   ||\n" +
             "|| " + study[0] +  "  " + study[1] +  " |============| " + hall[0] +  "  " + hall[1] +  " |============| " + lounge[0] +  "  " + lounge[1] +  " ||\n" +
-            "|| " + study[2] +  "  " + study[3] +  "                " + hall[2] +  "  " + hall[3] +  "                " + lounge[2] +  "  " + lounge[3] +  " ||\n" +
+            "|| " + study[2] +  "  " + study[3] +  "      " + hallways[0][1] + "      " + hall[2] +  "  " + hall[3] +  "      " + hallways[0][3] + "      " + lounge[2] +  "  " + lounge[3] +  " ||\n" +
             "|| " + study[4] +  "  " + study[5] +  " |============| " + hall[4] +  "  " + hall[5] +  " |============| " + lounge[4] +  "  " + lounge[5] +  " ||\n" +
             "||====    ====|xxxxxxxxxxxx|====    ====|xxxxxxxxxxxx|====    ====||\n" +
             "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
             "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
-            "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
+            "||xxx|" + hallways[1][0] +   "|xxxxxxxxxxxxxxxxxxxx|" + hallways[1][2] + "|xxxxxxxxxxxxxxxxxxxx|" + hallways[1][4] + "|xxx||\n" +
             "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
             "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
             "||====    ====|xxxxxxxxxxxx|====    ====|xxxxxxxxxxxx|====    ====||\n" +
             "||  library   |xxxxxxxxxxxx|  billiard  |xxxxxxxxxxxx|   dining   ||\n" +
-            "||            |============|            |============|            ||\n" +
-            "||                                                                ||\n" +
-            "||            |============|            |============|            ||\n" +
+            "|| " + library[0] +  "  " + library[1] +  " |============| " + billiard[0] +  "  " + billiard[1] +  " |============| " + dining[0] +  "  " + dining[1] +  " ||\n" +
+            "|| " + library[2] +  "  " + library[3] +  "      " + hallways[2][1] + "      " + billiard[2] +  "  " + billiard[3] +  "      " + hallways[2][3] + "      " + dining[2] +  "  " + dining[3] +  " ||\n" +
+            "|| " + library[4] +  "  " + library[5] +  " |============| " + billiard[4] +  "  " + billiard[5] +  " |============| " + dining[4] +  "  " + dining[5] +  " ||\n" +
             "||====    ====|xxxxxxxxxxxx|====    ====|xxxxxxxxxxxx|====    ====||\n" +
             "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
             "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
-            "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
+            "||xxx|" + hallways[3][0] +   "|xxxxxxxxxxxxxxxxxxxx|" + hallways[3][2] + "|xxxxxxxxxxxxxxxxxxxx|" + hallways[3][4] + "|xxx||\n" +
             "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
             "||xxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxxxxxxxxxxxxxxxxxxx|    |xxx||\n" +
             "||====    ====|xxxxxxxxxxxx|====    ====|xxxxxxxxxxxx|====    ====||\n" +
-            "||            |xxxxxxxxxxxx|            |xxxxxxxxxxxx|            ||\n" +
-            "||            |============|            |============|            ||\n" +
-            "||                                                                ||\n" +
+            "|| " + conservatory[0] +  "  " + conservatory[1] +  " |============| " + ballroom[0] +  "  " + ballroom[1] +  " |============| " + kitchen[0] +  "  " + kitchen[1] +  " ||\n" +
+            "|| " + conservatory[2] +  "  " + conservatory[3] +  " |============| " + ballroom[2] +  "  " + ballroom[3] +  " |============| " + kitchen[2] +  "  " + kitchen[3] +  " ||\n" +
+            "|| " + conservatory[4] +  "  " + conservatory[5] +  "      " + hallways[4][1] + "      " + ballroom[4] +  "  " + ballroom[5] +  "      " + hallways[4][3] + "      " + kitchen[4] +  "  " + kitchen[5] +  " ||\n" +
             "||conservatory|============|  ballroom  |============|   kitchen  ||\n" +
             "||============|xxxxxxxxxxxx|============|xxxxxxxxxxxx|============||\n" +
             "====================================================================";

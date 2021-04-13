@@ -58,12 +58,13 @@ public class Player
 
     public void assignCharacter(CharacterCard.CharacterName name)
     {
+        charName = name;
         switch(name)
         {
             case MR_GREEN ->
                     {
-                        xPos = 0;
-                        yPos = 0;
+                        xPos = 1;
+                        yPos = 4;
                     }
             case MRS_WHITE ->
                     {
@@ -87,8 +88,8 @@ public class Player
                     }
             case COLONEL_MUSTARD ->
                     {
-                        xPos = 0;
-                        yPos = 4;
+                        xPos = 4;
+                        yPos = 1;
                     }
         }
     }

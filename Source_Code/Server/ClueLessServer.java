@@ -436,7 +436,6 @@ public class ClueLessServer extends Thread
         int toAdd = MaxPlayers - PlayerList.size();
         for (int i = 0; i < toAdd; i++)
         {
-            System.out.println("Added player");
             PlayerList.add(new Player("", -13, false, false));
         }
         for(int i = 0; i < PlayerList.size(); i++)
@@ -444,7 +443,7 @@ public class ClueLessServer extends Thread
             PlayerList.get(i).assignCharacter(CharacterName.values()[i]);
         }
         System.out.println("Filled players " + PlayerList.size());
-        //board.putPlayers(PlayerList);
+        board.putPlayers(PlayerList);
     }
 
     public void processMoveRequest( MoveRequest mr )
