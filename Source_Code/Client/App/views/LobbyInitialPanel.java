@@ -1,10 +1,7 @@
 package Client.App.views;
 
 import javax.swing.JPanel;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.GridBagLayout;
-import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import javax.swing.JTextField;
@@ -24,6 +21,15 @@ import javax.swing.border.TitledBorder;
  */
 public class LobbyInitialPanel extends JPanel
 {
+   
+   JPanel playerPictureBorderPanel;
+   JPanel playerPicture;
+   JLabel tempPlayerPictureLabel;
+   JLabel playerNameLabel;
+   JTextField playerNameTextField;
+   JButton themeConfigButton;
+   JButton joinGameButton;
+   
 
    LobbyInitialPanel()
    {
@@ -46,7 +52,7 @@ public class LobbyInitialPanel extends JPanel
       this.setLayout( gbl_this );
 
       // Basic Board that goes around the player picture
-      JPanel playerPictureBorderPanel = new JPanel();
+      playerPictureBorderPanel = new JPanel();
       playerPictureBorderPanel.setBorder( new TitledBorder( null, "",
          TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
       GridBagConstraints gbc_playerPictureBorderPanel = new GridBagConstraints();
@@ -61,22 +67,19 @@ public class LobbyInitialPanel extends JPanel
       playerPictureBorderPanel.setLayout( gbl_playerPictureBorderPanel );
 
       // Generic JPanel to house the player picture that will go here
-      JPanel             playerPicture     = new JPanel();
-      GridBagConstraints gbc_playerPicture = new GridBagConstraints();
-      gbc_playerPicture.gridx = 0;
-      gbc_playerPicture.gridy = 1;
-      playerPictureBorderPanel.add( playerPicture, gbc_playerPicture );
+      playerPicture     = new JPanel();
+      playerPictureBorderPanel.add( playerPicture );
 
       /*
        * Temporary text that goes inside the player picture field to test
        * sizing...
        */
-      JLabel tempPlayerPictureLabel = new JLabel(
+      tempPlayerPictureLabel = new JLabel(
          "<html>PLAYER PICTURE</html>" );
       playerPicture.add( tempPlayerPictureLabel );
 
       // Label for the Player Name text field
-      JLabel             playerNameLabel     = new JLabel( "Player Name:" );
+      playerNameLabel     = new JLabel( "Player Name:" );
       GridBagConstraints gbc_playerNameLabel = new GridBagConstraints();
       gbc_playerNameLabel.weighty = 1.0;
       gbc_playerNameLabel.gridheight = 3;
@@ -86,7 +89,7 @@ public class LobbyInitialPanel extends JPanel
       this.add( playerNameLabel, gbc_playerNameLabel );
 
       // PlayerName text field
-      JTextField playerNameTextField = new JTextField();
+      playerNameTextField = new JTextField();
       playerNameTextField.setToolTipText( "Enter Player Name" );
       GridBagConstraints gbc_playerNameTextField = new GridBagConstraints();
       gbc_playerNameTextField.gridheight = 2;
@@ -99,7 +102,7 @@ public class LobbyInitialPanel extends JPanel
       playerNameTextField.setColumns( 10 );
 
       // Theme Config button
-      JButton            themeConfigButton     = new JButton( "Themes" );
+      themeConfigButton     = new JButton( "Themes" );
       GridBagConstraints gbc_themeConfigButton = new GridBagConstraints();
       gbc_themeConfigButton.gridheight = 2;
       gbc_themeConfigButton.anchor = GridBagConstraints.SOUTH;
@@ -111,7 +114,7 @@ public class LobbyInitialPanel extends JPanel
       this.add( themeConfigButton, gbc_themeConfigButton );
 
       // Lobby Join Button
-      JButton            joinGameButton     = new JButton( "Join Game" );
+      joinGameButton     = new JButton( "Join Game" );
       GridBagConstraints gbc_joinGameButton = new GridBagConstraints();
       gbc_joinGameButton.gridheight = 3;
       gbc_joinGameButton.anchor = GridBagConstraints.SOUTH;
@@ -122,29 +125,6 @@ public class LobbyInitialPanel extends JPanel
       gbc_joinGameButton.insets = new Insets( 25, 50, 15, 15 );
       this.add( joinGameButton, gbc_joinGameButton );
 
-      // Anonymous class implementation of ActionListener to keep things
-      // relatively contained.
-      joinGameButton.addActionListener( new ActionListener()
-      {
-
-         @Override
-         public void actionPerformed( ActionEvent e )
-         {
-            // mainLobbyFrame.setVisible( false );
-            // mainLobbyFrame.transferFocus();
-            // mainLobbyFrame.req
-            System.out.println( "Clicked Join." );
-
-            // TODO: We need to use this actionListener to create and send the
-            // focus to a LobbyStatusPanel after the player clicks join.
-            
-            setVisible( false );
-            LobbyStatusPanel statusPanel = new LobbyStatusPanel();
-            statusPanel.setVisible( true );
-
-         }
-
-      } );
 
    }
 

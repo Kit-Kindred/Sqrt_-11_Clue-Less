@@ -4,6 +4,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
@@ -19,7 +20,15 @@ import javax.swing.border.TitledBorder;
  */
 public class LobbyStatusPanel extends JPanel
 {
-
+   
+   JPanel playerPictureBorderPanel;
+   JPanel playerPicture;
+   JLabel playerNameDescription;
+   JLabel tempPlayerPictureLabel;
+   JLabel playerNameLabel;
+   JButton startGameButton;
+   
+   
    public LobbyStatusPanel()
    {
       this.setFocusable( true );
@@ -43,7 +52,7 @@ public class LobbyStatusPanel extends JPanel
       this.setLayout( gbl_this );
 
       // Basic Board that goes around the player picture
-      JPanel playerPictureBorderPanel = new JPanel();
+      playerPictureBorderPanel = new JPanel();
       playerPictureBorderPanel.setBorder( new TitledBorder( null, "",
          TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
       GridBagConstraints gbc_playerPictureBorderPanel = new GridBagConstraints();
@@ -58,40 +67,54 @@ public class LobbyStatusPanel extends JPanel
       playerPictureBorderPanel.setLayout( gbl_playerPictureBorderPanel );
 
       // Generic JPanel to house the player picture that will go here
-      JPanel             playerPicture     = new JPanel();
-      GridBagConstraints gbc_playerPicture = new GridBagConstraints();
-      gbc_playerPicture.gridx = 0;
-      gbc_playerPicture.gridy = 1;
-      playerPictureBorderPanel.add( playerPicture, gbc_playerPicture );
+      playerPicture = new JPanel();
+      playerPictureBorderPanel.add( playerPicture );
 
       /*
        * Temporary text that goes inside the player picture field to test
        * sizing...
        */
-      JLabel tempPlayerPictureLabel = new JLabel(
+      tempPlayerPictureLabel = new JLabel(
          "<html>PLAYER PICTURE</html>" );
       playerPicture.add( tempPlayerPictureLabel );
 
       // Label for the Player Name text field
-      JLabel             playerNameLabel     = new JLabel( "Player Name:" );
+      playerNameDescription     = new JLabel( "Player Name:" );
+      GridBagConstraints gbc_playerNameDescription = new GridBagConstraints();
+      gbc_playerNameDescription.weighty = 1.0;
+      gbc_playerNameDescription.gridheight = 3;
+      gbc_playerNameDescription.insets = new Insets( 0, 0, 5, 0 );
+      gbc_playerNameDescription.gridx = 3;
+      gbc_playerNameDescription.gridy = 2;
+      this.add( playerNameDescription, gbc_playerNameDescription );
+      
+      
+      // PlayerName text field
+      playerNameLabel = new JLabel();
       GridBagConstraints gbc_playerNameLabel = new GridBagConstraints();
-      gbc_playerNameLabel.weighty = 1.0;
-      gbc_playerNameLabel.gridheight = 3;
-      gbc_playerNameLabel.insets = new Insets( 0, 0, 5, 0 );
+      gbc_playerNameLabel.gridheight = 2;
+      gbc_playerNameLabel.ipady = 15;
+      gbc_playerNameLabel.ipadx = 75;
+      gbc_playerNameLabel.insets = new Insets( 10, 5, 10, 0 );
       gbc_playerNameLabel.gridx = 3;
-      gbc_playerNameLabel.gridy = 2;
+      gbc_playerNameLabel.gridy = 4;
       this.add( playerNameLabel, gbc_playerNameLabel );
       
       
-//      this.requestFocusInWindow();
-//      this.grabFocus();
-//      this.requestFocus();
-//      System.out.println("Created Status Panel.\nRequesting focus.");
+      // Game Start Button
+      startGameButton     = new JButton( "Start Game!" );
+      GridBagConstraints gbc_joinGameButton = new GridBagConstraints();
+      gbc_joinGameButton.gridheight = 3;
+      gbc_joinGameButton.anchor = GridBagConstraints.SOUTH;
+      gbc_joinGameButton.ipady = 50;
+      gbc_joinGameButton.ipadx = 75;
+      gbc_joinGameButton.gridx = 3;
+      gbc_joinGameButton.gridy = 6;
+      gbc_joinGameButton.insets = new Insets( 25, 50, 15, 15 );
+      this.add( startGameButton, gbc_joinGameButton );
       
       
    }
-   
-   
    
    
 }
