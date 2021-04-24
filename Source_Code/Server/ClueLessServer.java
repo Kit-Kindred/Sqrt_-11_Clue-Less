@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Semaphore;
 
 /**
  * This is the main server application. It initializes ServerSocketComms, then waits to receive ActionRequests.
@@ -145,9 +146,12 @@ public class ClueLessServer extends Thread
      */
     private ServerState ServState;
 
+    private final Semaphore BoardUpdateSem = new Semaphore(0);
+    private Thread boardUpdateThread;
+
     private final TurnTracker turnTracker;
 
-    private Board board = new Board();
+    private final Board board = new Board();
 
     /**
      * The index of the player who's turn it is currently. This index corresponds to the
@@ -179,6 +183,12 @@ public class ClueLessServer extends Thread
     public void run()
     {
         ssc = new ServerSocketComms(ServerPort, this::recvCallback, this::onClientDisconnect);  // Initialize SSC
+
+        // More threads
+        boardUpdateThread = new Thread(this::boardUpdateThreadFunc);
+        boardUpdateThread.start();
+
+        // Start message listener
         while(true)  // Keep trying to execute commands forever
         {
             try
@@ -197,6 +207,26 @@ public class ClueLessServer extends Thread
         }
     }
 
+    public void boardUpdateThreadFunc()
+    {
+        for(;;)  // Go, go, go
+        {
+            try
+            {
+
+                BoardUpdateSem.acquire();  // Wait for someone to ask us to update the board. Which is actually sending out player updates. Go figure
+                synchronized (PlayerList)  // Synchronization on this is really half-assed throughout. Oh well
+                {
+                    sendToAllPlayers(new PlayerUpdate(PlayerList));
+                    System.out.println("Sent board");
+                }
+            }
+            catch(InterruptedException e)
+            {
+                return;  // Someone called close; time to die
+            }
+        }
+    }
 
     /**
      * SSC just received something from a client. Parse it and pass it to where it needs to go
@@ -307,15 +337,10 @@ public class ClueLessServer extends Thread
                     {
                        processMoveRequest((MoveRequest) actionRequest);
                     }
-                    else if (actionRequest instanceof MoveOther)
-                    {
-                        processMoveOther((MoveOther) actionRequest);
-                    }
                     else if(actionRequest instanceof SuggestRequest)
                     {
                         processSuggestRequest((SuggestRequest) actionRequest);
                     }
-
                     else if(actionRequest instanceof EndTurn || turnTracker.isTurnOver())  // isTurnOver is basically always false since nobody's accusing most of the time
                     {
                         nextPlayer();
@@ -332,9 +357,6 @@ public class ClueLessServer extends Thread
         if (newGame)
         {
             fillPlayers();
-            
-            // Send board first so players know where they start
-            sendToAllPlayers(new PlayerUpdate(PlayerList));
         }
         // TODO: Actual in-game action requests
     }
@@ -403,8 +425,6 @@ public class ClueLessServer extends Thread
 
                     // Update player objects with all the cards in the deck
                     EnvelopeHand = CardDeck.shuffleAndAssignCards( PlayerList );
-
-                    // sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
                     
                     // Notify the players of the first turn
                     sendToAllPlayers( new TurnUpdate(PlayerList.get( CurrentPlayerIndex ).PlayerName) );
@@ -415,8 +435,6 @@ public class ClueLessServer extends Thread
                        //System.out.println( p.PlayerName + " " + p.getHand().toString() );
                        sendToClient( p.ClientID, new PlayerHandUpdate( p.getHand() ) );
                     }
-
-                    
 
                     return true;
                 }
@@ -460,22 +478,7 @@ public class ClueLessServer extends Thread
                 sendToAllPlayers(new Notification(p.PlayerName + " is " + String.valueOf(p.charName)));
             }
         }
-    }
-
-    public void processMoveOther(MoveOther mo)
-    {
-        for(Player p : PlayerList)
-        {
-            if(p.charName == mo.cn)
-            {
-                p.xPos = mo.xPos;
-                p.yPos = mo.yPos;
-            }
-        }
-        board = new Board();
-        board.putPlayers(PlayerList);
-        //sendToAllPlayers(new PlayerUpdate(PlayerList));
-        //board.printBoard();
+        BoardUpdateSem.release();  // Send out a board update
     }
 
     public void processMoveRequest( MoveRequest mr )
@@ -510,8 +513,9 @@ public class ClueLessServer extends Thread
 //                    System.out.println(p.yPos);
 //                }
 
-                sendToAllPlayers( new PlayerUpdate(PlayerList) );
-                board.printBoard();
+                //sendToAllPlayers( new PlayerUpdate(PlayerList) );
+                //board.printBoard();
+                BoardUpdateSem.release();
             }
             // illegal move attempted
             catch (IllegalArgumentException e)
@@ -535,6 +539,8 @@ public class ClueLessServer extends Thread
             // right now we are just sending back the first refutation
 
             sendToAllPlayers( new SuggestNotification( sr ) );
+
+            movePlayerByName(sr.Hand.character.getCharacterEnum(), sr.xPos, sr.yPos);
 
             for (int i = 1; i < PlayerList.size(); i++)  // Start at 1 to start with the next player. Don't check the current player
             {
@@ -631,6 +637,19 @@ public class ClueLessServer extends Thread
         }
     }
 
+    public void movePlayerByName(CharacterName cn, int x, int y)
+    {
+        for (Player p : PlayerList){
+            if(p.charName == cn)
+            {
+                p.xPos = x;
+                p.yPos = y;
+                board.putPlayer(p);
+                BoardUpdateSem.release();
+            }
+        }
+    }
+
     /**
      * Send a message to a specific player
      *
@@ -709,6 +728,7 @@ public class ClueLessServer extends Thread
     public void close()
     {
         ssc.close();  // Kill server comms
+        boardUpdateThread.interrupt();  // Kill the board updates
         interrupt();  // Then kill our action processing
     }
 }

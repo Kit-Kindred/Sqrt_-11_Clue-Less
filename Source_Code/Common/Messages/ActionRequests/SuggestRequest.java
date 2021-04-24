@@ -11,16 +11,20 @@ public class SuggestRequest extends ActionRequest
 {
     public String PlayerName;
     public SuggestHand Hand;
+    public int xPos;
+    public int yPos;
 
     public SuggestRequest()
     {
         super();
     }
 
-    public SuggestRequest(String name, SuggestHand h)
+    public SuggestRequest(String name, SuggestHand h, int x, int y)
     {
         this.PlayerName = name;
         this.Hand = h;
+        xPos = x;
+        yPos = y;
     }
 
     public String toString()

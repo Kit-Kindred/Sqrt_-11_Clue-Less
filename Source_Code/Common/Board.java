@@ -124,6 +124,60 @@ public class Board implements Serializable
     }
   }
 
+  public boolean inRoom(Player p)
+  {
+    return !(board[p.yPos][p.xPos] instanceof BoardHallway) && (board[p.yPos][p.xPos] != null);
+  }
+
+  public RoomCard.RoomName boardTextToRoomEnum(BoardRoom b)
+  {
+    switch(b.name)
+    {
+      case "Study" ->
+              {
+                return RoomCard.RoomName.values()[8];
+              }
+      case "Hall" ->
+              {
+                return RoomCard.RoomName.values()[4];
+              }
+      case "Lounge"->
+              {
+                return RoomCard.RoomName.values()[7];
+              }
+      case "Library"->
+              {
+                return RoomCard.RoomName.values()[6];
+              }
+      case "Billiard Room"->
+              {
+                return RoomCard.RoomName.values()[1];
+              }
+      case "Dining Room"->
+              {
+                return RoomCard.RoomName.values()[3];
+              }
+      case "Conservatory"->
+              {
+                return RoomCard.RoomName.values()[2];
+              }
+      case "Ball Room"->
+              {
+                return RoomCard.RoomName.values()[0];
+              }
+      case "Kitchen"->
+              {
+                return RoomCard.RoomName.values()[5];
+              }
+      default -> {return null;}  // Shouldn't be possible
+    }
+  }
+
+  public void putPlayer(Player p)
+  {
+    board[p.getyPos()][p.getxPos()].addPlayer(p);
+  }
+
   public void putPlayers(ArrayList<Player> players)
   {
     for (Player p : players)

@@ -196,92 +196,45 @@ public class ClueLessClient extends Thread
                         }
                 case 5 ->
                         {
-                            System.out.println( clientApplication.UserPlayer.getAllCardsString() + "\n");
-                            System.out.println("Which character would you like to suggest?\n");
-                            int index = 1;
-                            for ( CharacterName character : CharacterName.values() )
-                            {
-                                System.out.println( "\t[" + index + "] " + character);
-                                index += 1;
-                            }
-                            // int suggestCharacterIndex = scan.nextInt() - 1;
-                            CharacterName suggestCharacter = CharacterName.values()[ Integer.parseInt( reader.read() ) - 1] ;
-
-                            // index = 1;
-                            // for ( RoomName room : RoomName.values() )
-                            // {
-                            //     System.out.println(room + " : " + index);
-                            //     index += 1;
-                            // }
-                            // int suggestRoomIndex = scan.nextInt();
-
-                            RoomName suggestRoom;
-                            if(!(clientApplication.board.board[clientApplication.UserPlayer.yPos][clientApplication.UserPlayer.xPos] instanceof BoardHallway) &&
-                                    clientApplication.board.board[clientApplication.UserPlayer.yPos][clientApplication.UserPlayer.xPos] != null)
-                            {
-                                switch(clientApplication.board.board[clientApplication.UserPlayer.yPos][clientApplication.UserPlayer.xPos].name)
-                                {
-                                    case "Study" ->
-                                            {
-                                                suggestRoom = RoomName.values()[8];
-                                            }
-                                    case "Hall" ->
-                                            {
-                                                suggestRoom = RoomName.values()[4];
-                                            }
-                                    case "Lounge"->
-                                            {
-                                                suggestRoom = RoomName.values()[7];
-                                            }
-                                    case "Library"->
-                                            {
-                                                suggestRoom = RoomName.values()[6];
-                                            }
-                                    case "Billiard Room"->
-                                            {
-                                                suggestRoom = RoomName.values()[1];
-                                            }
-                                    case "Dining Room"->
-                                            {
-                                                suggestRoom = RoomName.values()[3];
-                                            }
-                                    case "Conservatory"->
-                                            {
-                                                suggestRoom = RoomName.values()[2];
-                                            }
-                                    case "Ball Room"->
-                                            {
-                                                suggestRoom = RoomName.values()[0];
-                                            }
-                                    case "Kitchen"->
-                                            {
-                                                suggestRoom = RoomName.values()[5];
-                                            }
-                                    default -> {suggestRoom = RoomName.values()[1];}
-                                }
-                            }
-                            else{
-                            // TODO TAKE THIS OUT IT IS JUST HARDCODED TO ALWAYS GUESS
-                            // 1. THIS NEEDS TO BE CHANGED TO USE THE CURRENT ROOM
-                            // THE PLAYER IS IN, AND ADD CHECKS ON SERVER SIDE
-                            suggestRoom = RoomName.values()[1];
-                            }
-
-                            System.out.println("Which weapon would you like to suggest?\n");
-                            index = 1;
-                            for ( WeaponType weapon : WeaponType.values() )
-                            {
-                                System.out.println("\t[" + index + "] " + weapon);
-                                index += 1;
-                            }
-                            // int suggestWeaponIndex = scan.nextInt() - 1;
-                            WeaponType suggestWeapon = WeaponType.values()[ Integer.parseInt( reader.read() ) - 1 ];
-
-                            SuggestHand suggestHand = new SuggestHand( suggestCharacter, suggestRoom, suggestWeapon );
-                            clientApplication.csc.send(new SuggestRequest(clientApplication.UserPlayer.PlayerName, suggestHand));
-                            clientApplication.csc.send(new MoveOther(clientApplication.UserPlayer.xPos, clientApplication.UserPlayer.yPos, suggestCharacter));
+                            System.out.println("Sending shortcut request...\n");
+                            clientApplication.csc.send(new MoveRequest(clientApplication.UserPlayer.PlayerName, MoveRequest.Move.SHORTCUT));
                         }
                 case 6 ->
+                        {
+                            if(clientApplication.board.inRoom(clientApplication.UserPlayer))
+                            {
+                                System.out.println( clientApplication.UserPlayer.getAllCardsString() + "\n");
+                                System.out.println("Which character would you like to suggest?\n");
+                                int index = 1;
+                                for ( CharacterName character : CharacterName.values() )
+                                {
+                                    System.out.println( "\t[" + index + "] " + character);
+                                    index += 1;
+                                }
+                                // int suggestCharacterIndex = scan.nextInt() - 1;
+                                CharacterName suggestCharacter = CharacterName.values()[ Integer.parseInt( reader.read() ) - 1] ;
+
+                                RoomName suggestRoom = clientApplication.board.boardTextToRoomEnum(clientApplication.board.board[clientApplication.UserPlayer.yPos][clientApplication.UserPlayer.xPos]);
+
+                                System.out.println("Which weapon would you like to suggest?\n");
+                                index = 1;
+                                for ( WeaponType weapon : WeaponType.values() )
+                                {
+                                    System.out.println("\t[" + index + "] " + weapon);
+                                    index += 1;
+                                }
+                                // int suggestWeaponIndex = scan.nextInt() - 1;
+                                WeaponType suggestWeapon = WeaponType.values()[ Integer.parseInt( reader.read() ) - 1 ];
+
+                                SuggestHand suggestHand = new SuggestHand( suggestCharacter, suggestRoom, suggestWeapon );
+                                clientApplication.csc.send(new SuggestRequest(clientApplication.UserPlayer.PlayerName, suggestHand, clientApplication.UserPlayer.xPos, clientApplication.UserPlayer.yPos));
+                            }
+                            else
+                            {
+                                System.out.println("You need to be in a room to suggest!");
+                            }
+                        }
+                case 7 ->
                         {
                             System.out.println("Ending turn...\n");
                             clientApplication.csc.send(new EndTurn(clientApplication.UserPlayer.PlayerName));
@@ -749,8 +702,9 @@ public class ClueLessClient extends Thread
        System.out.println("Move Right: 2");
        System.out.println("Move Up: 3");  // To test sending multiple
        System.out.println("Move Down: 4");
-       System.out.println("Suggest: 5");
-       System.out.println("End turn: 6");
+       System.out.println("Take Shortcut: 5");
+       System.out.println("Suggest: 6");
+       System.out.println("End turn: 7");
        System.out.println("Accuse: 9");
        System.out.println("Exit: -1\n");
    }
