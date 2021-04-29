@@ -8,6 +8,8 @@ import Common.WeaponCard;
 
 public class RefuteSuggestion extends StatusUpdate
 {
+
+    private static final long serialVersionUID = 1451986645648465346L;
     public String PlayerName;
     public Card Refutation;
 

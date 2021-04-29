@@ -1,17 +1,17 @@
 package Common.Messages.StatusUpdates;
 
-import Common.SolutionHand;
+import Common.SuggestHand;
 
 public class EnvelopePeakNotification extends StatusUpdate
 {
-    public SolutionHand EnvelopeHand;
+    public SuggestHand EnvelopeHand;
 
     public EnvelopePeakNotification()
     {
         super();
     }
 
-    public EnvelopePeakNotification(SolutionHand hand)
+    public EnvelopePeakNotification(SuggestHand hand)
     {
         this.EnvelopeHand = hand;
     }

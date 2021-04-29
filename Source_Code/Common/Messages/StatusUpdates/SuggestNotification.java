@@ -1,6 +1,6 @@
 package Common.Messages.StatusUpdates;
 
-import Common.SolutionHand;
+import Common.SuggestHand;
 import Common.Messages.StatusUpdates.StatusUpdate;
 import Common.Messages.ActionRequests.SuggestRequest;
 /**
@@ -10,7 +10,7 @@ import Common.Messages.ActionRequests.SuggestRequest;
 public class SuggestNotification extends StatusUpdate
 {
     public String PlayerName;
-    public SolutionHand Hand;
+    public SuggestHand Hand;
 
     public SuggestNotification()
     {
@@ -29,7 +29,7 @@ public class SuggestNotification extends StatusUpdate
         outString += this.PlayerName;
         outString += " suggested that ";
         outString += this.Hand.getCharacterName();
-        outString += " dit it in the ";
+        outString += " committed the murder in the ";
         outString += this.Hand.getRoomName();
         outString += " with the ";
         outString += this.Hand.getWeaponType();
