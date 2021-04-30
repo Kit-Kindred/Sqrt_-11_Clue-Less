@@ -269,11 +269,12 @@ public class CardPanel extends JComponent
 
               if( panel.selectable )
               {
+                 System.out.println("Valid");
               }
              
               else
               {
-                 
+                 System.out.println("Invalid");
               }
               
           }
