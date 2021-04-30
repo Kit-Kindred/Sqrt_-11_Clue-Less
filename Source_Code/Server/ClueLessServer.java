@@ -279,7 +279,7 @@ public class ClueLessServer extends Thread
                 if(dc != null)
                 {
                     PlayerList.remove(dc);
-                    sendToAllPlayers(new PlayerConnection(dc.PlayerName, false));  // Let everyone know
+                    sendToAllPlayers(new PlayerConnection(dc.PlayerName, false, PlayerList.get(0).PlayerName, PlayerList.size()));  // Let everyone know
                 }
             }
         }
@@ -292,7 +292,7 @@ public class ClueLessServer extends Thread
                     if(p.ClientID == uid)  // Yup
                     {
                         p.PlayerConnected = false;
-                        sendToAllPlayers(new PlayerConnection(p.PlayerName, false));  // Let everyone know
+                        sendToAllPlayers(new PlayerConnection(p.PlayerName, false, PlayerList.get(0).PlayerName, PlayerList.size()));  // Let everyone know
                     }
                 }
             }
@@ -311,7 +311,7 @@ public class ClueLessServer extends Thread
     public void processAction(ActionRequest actionRequest)
     {
 
-        System.out.println("Process Action: Received ActionRequest");
+        System.out.println("Process Action: Received ActionRequest (" + actionRequest.getClass() + ")");
         if(actionRequest instanceof ConnectRequest)  // Process this one regardless of turn order
         {
             processConnectRequest((ConnectRequest) actionRequest);
@@ -397,7 +397,7 @@ public class ClueLessServer extends Thread
                 synchronized (PlayerList)
                 {
                     // Yay, new player!
-                    sendToAllPlayers(new PlayerConnection(cr.PlayerName, true));  // Notify existing players
+                    sendToAllPlayers(new PlayerConnection(cr.PlayerName, true, PlayerList.size() > 0 ? PlayerList.get(0).PlayerName : cr.PlayerName, PlayerList.size()));  // Notify existing players
                     PlayerList.add(new Player(cr.PlayerName, cr.UniqueID));
                     sendToClient(cr.UniqueID, new ConnectRequestStatus(true, cr.PlayerName));  // Let player know they're in
                     return;

@@ -8,6 +8,8 @@ import Common.WeaponCard.WeaponType;
 import Common.Messages.*;
 import Common.Messages.StatusUpdates.*;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -315,10 +317,10 @@ public class ClueLessClient extends Thread
 
     static final int UpdateQueueDepth = 10;
 
-    private final String ServerIP;
-    private final int ServerPort;
+    private String ServerIP;
+    private int ServerPort;
 
-    private final Player UserPlayer;
+    private Player UserPlayer;
     
     private ConsoleInput reader = new ConsoleInput();
     
@@ -334,8 +336,20 @@ public class ClueLessClient extends Thread
 
     public boolean activeGame; // True if the game has started
 
+    private boolean initDone;
+
+    private boolean startPlayer;
+
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
+    public ClueLessClient()  // So we can instantiate a pointer to the object before we start the GUI
+    {
+        initDone = false;  // Not doing a real init
+    }
+
     public ClueLessClient(String serverIP, int serverPort)
     {
+        initDone= true;
         initialized = new Semaphore(0);
         ServerIP = serverIP;
         ServerPort = serverPort;
@@ -344,6 +358,41 @@ public class ClueLessClient extends Thread
         ConnectionRequested = false;
         activeGame = false;
         UserPlayer = new Player();
+        startPlayer = true;
+        setStartPlayer(false);
+    }
+
+    public void init(String serverIP, int serverPort, String playerName)
+    {
+        if (!initDone)
+        {
+            initDone = true;
+            initialized = new Semaphore(0);
+            ServerIP = serverIP;
+            ServerPort = serverPort;
+            UpdateQueue = new ArrayBlockingQueue<StatusUpdate>(UpdateQueueDepth);
+            numUpdatesReceived = 0;
+            ConnectionRequested = false;
+            activeGame = false;
+            UserPlayer = new Player();
+            startPlayer = true;  // Flip flop this to initialize the Start Game button properly
+            setStartPlayer(false);
+            setPlayerName(playerName);
+            start();  // Start processing
+            setPriority( 10 );
+
+            // Auto-connect to the server, but make sure we're initialized first
+            try
+            {
+                initialized.acquire();  // Sem wait
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            connect();
+        }
+
     }
 
     public void run()
@@ -366,6 +415,48 @@ public class ClueLessClient extends Thread
                 e.printStackTrace();  // We don't expect this. Log it and try to keep going
             }
         }
+    }
+
+    public void addPropertyChangeListener(String val, PropertyChangeListener pcl)
+    {
+        pcs.addPropertyChangeListener(val, pcl);
+    }
+
+    public void removePropertyChangeListener(String val, PropertyChangeListener pcl)
+    {
+        pcs.removePropertyChangeListener(val, pcl);
+    }
+
+    public boolean getStartPlayer()
+    {
+        return startPlayer;
+    }
+
+    public void setStartPlayer(boolean newValue)
+    {
+        boolean oldValue = startPlayer;
+        startPlayer = newValue;
+        this.pcs.firePropertyChange("startPlayer", oldValue, newValue);
+    }
+
+    public void startGame()
+    {
+        csc.send(new GameStartRequest());
+    }
+
+    public void connect()
+    {
+        if(!ConnectionRequested)
+        {
+            System.out.println("Sending connect request...\n");
+            csc.send(new ConnectRequest(UserPlayer.PlayerName));
+            ConnectionRequested = true;
+        }
+        else
+        {
+            System.out.println("Connect request pending...\n");
+        }
+        printPreGameInstructions();
     }
 
     /**
@@ -495,6 +586,9 @@ public class ClueLessClient extends Thread
         {
             System.out.println("\t[Server] " + pc.PlayerName + " left the game!");
         }
+
+        setStartPlayer(pc.StartPlayer.equals(UserPlayer.PlayerName));
+
     }
 
     public void processConnectionRequestStatus(ConnectRequestStatus crs)

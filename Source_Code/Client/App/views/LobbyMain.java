@@ -1,8 +1,12 @@
 package Client.App.views;
 
+import Client.ClueLessClient;
+
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -15,14 +19,14 @@ public class LobbyMain extends JFrame
    private JPanel            mainLobbyPanel;
    private LobbyInitialPanel joinPanel;
    private LobbyStatusPanel  statusPanel;
-   protected String          playerName;
-
+   private final ClueLessClient client;
 
    /**
     * Create the frame.
     */
-   public LobbyMain()
+   public LobbyMain(ClueLessClient c)
    {
+      client = c;
       setTitle( "ClueLess Application" );
       initLobbyComponents();
       // initGameComponents();
@@ -108,11 +112,15 @@ public class LobbyMain extends JFrame
          @Override
          public void actionPerformed( ActionEvent e )
          {
-            System.out.println( "Clicked Join." );
-            // TODO: We need to put the join request to the server here and
-            // add error checking just in case.
+            // TODO: add error checking just in case. But like, probably won't get to it...
 
-            playerName = joinPanel.playerNameTextField.getText();
+            String serverIP = joinPanel.serverIPTextField.getText();
+            int serverPort = Integer.parseInt(joinPanel.serverPortTextField.getText());
+            String playerName = joinPanel.playerNameTextField.getText();
+
+            // Structure doesn't really let us init the client anywhere else. Whoops
+            client.init(serverIP, serverPort, playerName);
+
             statusPanel.playerNameLabel.setText( playerName );
             ( (CardLayout) mainLobbyPanel.getLayout() )
                .next( mainLobbyPanel );
@@ -120,6 +128,34 @@ public class LobbyMain extends JFrame
          }
 
       } );
+
+      statusPanel.startGameButton.addActionListener(new ActionListener()
+      {
+
+         @Override
+         public void actionPerformed( ActionEvent e )
+         {
+            client.startGame();
+         }
+
+      });
+
+      // Whenever a player connects
+      client.addPropertyChangeListener("startPlayer", new PropertyChangeListener() {
+
+         @Override
+         public void propertyChange(PropertyChangeEvent evt) {
+            statusPanel.startGameButton.setEnabled((boolean) evt.getNewValue());
+            if((boolean) evt.getNewValue())
+            {
+               statusPanel.startGameButton.setToolTipText("Start the game!");
+            }
+            else
+            {
+               statusPanel.startGameButton.setToolTipText("Only the host can start the game!");
+            }
+         }
+      });
 
    }
 
