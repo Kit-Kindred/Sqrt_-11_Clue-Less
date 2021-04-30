@@ -16,9 +16,16 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import javax.swing.UIManager;
 import javax.swing.border.BevelBorder;
+
+import Common.Card;
+import Common.CharacterCard;
+import Common.RoomCard;
+import Common.WeaponCard;
+
 import javax.imageio.ImageIO;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -33,9 +40,10 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 public class CardPanel extends JComponent 
 {
    
+   Card card;
+   String cardName;
    JPanel cardContent;
    BufferedImage picture;
-//   JPanel cardPicture;
    JLabel cardPicture;
    JLabel label;
    PropertyChangeSupport propertyChange;
@@ -43,34 +51,112 @@ public class CardPanel extends JComponent
    Boolean selected = false;
    
    
-   public CardPanel()
+   public CardPanel( Card card )
    {
       setLayout(new BorderLayout(0, 0));
       setSize( 175, 225 );
+
+
+      
+      
+      /*
+       * Currently, we use the enum values to map the images. We need to make sure
+       * the images for each character, room, weapon all have names that match their respective enums.
+       */
+      processCard( card );
+      File root = null;
+      try
+      {
+         root = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
+         picture = ImageIO.read( new File( root, "/../Source_Code/Client/App/views/" + cardName + ".png") );
+      } 
+      catch( Exception e )
+      {
+         e.printStackTrace();
+         System.out.println(root);
+      }
+      
+
+      createComponents();
+      createEvents();
+      
+
+   } // End CardPanel Constructor
+   
+   
+   /**
+    * This method handles processing of the card passed to create this cardPanel
+    */
+   public void processCard( Card card )
+   {
+      if( card instanceof CharacterCard )
+      {
+         this.cardName = ((CharacterCard) card).getCharacterName();
+//         System.out.println( ((CharacterCard) card).getCharacterName() );
+      }
+      
+      if( card instanceof RoomCard )
+      {
+         this.cardName = ((RoomCard) card).getRoomName();
+      }
+      
+      if( card instanceof WeaponCard )
+      {
+         this.cardName = ((WeaponCard) card).getWeaponType();
+      }
+   }
+   
+   
+   public void deselect()
+   {
+      selected = false;
+   }
+   
+   
+   // Uses PropertyChangeSupport to fire the event
+   public void toggleSelectable()
+   {
+//      Boolean old = selectable;
+      propertyChange.firePropertyChange( new PropertyChangeEvent( this, "selectable", this.selectable, !this.selectable ) );
+      selectable = !selectable;
+   }
+   
+   
+   public void toggleBorder()
+   {
+      if( selected )
+      {
+         this.setBorder(UIManager.getBorder("Tree.editorBorder"));
+      }
+      else
+      {
+         this.setBorder( null );
+      }
+   }
+
+   
+
+   
+
+   
+   
+   public void createComponents()
+   {
       
       cardContent = new JPanel();
       cardContent.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
       add(cardContent);
-
-
-      try
-      {
-        picture = ImageIO.read(new File("C:\\Users\\DavidC\\git\\Sqrt_-11_Clue-Less\\Source_Code\\Client\\App\\views\\Colonel Mustard.png"));
-      } 
-      catch( IOException e )
-      {
-         e.printStackTrace();
-      }
-      cardPicture = new JLabel();
-//      add(cardPicture);
       
-//      cardPicture = new JPanel();
+      // Start adding our components into the panel
+      cardPicture = new JLabel();
       cardPicture.setBorder(UIManager.getBorder("Tree.editorBorder"));
       
       
-      
-      
-      // TEST
+      /*
+       *  TEST
+       *  These two buttons are just simulating network events that SHOULD happen in the future.
+       *  TODO: remove this testing section once network interface has been integrated.
+       */
       
       JButton button = new JButton("selected");
       button.addActionListener( new ActionListener()
@@ -122,13 +208,13 @@ public class CardPanel extends JComponent
          );
       
       
+      /*
+       *  TEST END
+       */
       
-      // TEST END
       
-      
-      
-      // TODO: replace this with character name string
-      label = new JLabel("Card Name");
+      // Get the card name and add/align EVERYTHING
+      label = new JLabel( cardName );
       label.setHorizontalAlignment(SwingConstants.CENTER);
       GroupLayout gl_cardContent = new GroupLayout(cardContent);
       gl_cardContent.setHorizontalGroup(
@@ -138,7 +224,7 @@ public class CardPanel extends JComponent
                .addGroup(gl_cardContent.createParallelGroup(Alignment.TRAILING)
                   .addComponent(label, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
                   .addComponent(cardPicture, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 125, Short.MAX_VALUE))
-               .addComponent( button ).addComponent( button2 )
+               .addComponent( button ).addComponent( button2 ) // TODO: Remove these buttons after testing.
                .addContainerGap())
       );
       gl_cardContent.setVerticalGroup(
@@ -147,7 +233,7 @@ public class CardPanel extends JComponent
                .addContainerGap()
                .addComponent(cardPicture, GroupLayout.PREFERRED_SIZE, 175, GroupLayout.PREFERRED_SIZE)
                .addPreferredGap(ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
-               .addComponent(label).addComponent( button ).addComponent( button2 )
+               .addComponent(label).addComponent( button ).addComponent( button2 ) // TODO: Remove these buttons after testing.
                .addGap(10))
       );
       
@@ -157,15 +243,16 @@ public class CardPanel extends JComponent
       cardPicture.setIcon( new ImageIcon( dimg ) );
       
       cardContent.setLayout(gl_cardContent);
-      
-      
+   }
+
+
+   
+   public void createEvents()
+   {
       
       // We need to create our own listener for the selectable boolean
       propertyChange = new PropertyChangeSupport(this);
       propertyChange.addPropertyChangeListener( "selectable", new SelectableListener() );
-      
-      
-      
       
       
       
@@ -192,51 +279,27 @@ public class CardPanel extends JComponent
           }
       };
       
-      addMouseListener( ml );
-      
-      
-
-      
-      
+      this.addMouseListener( ml );
    }
    
    
-   public void deselect()
-   {
-      selected = false;
-   }
-   
-   
-   // Uses PropertyChangeSupport to fire the event
-   public void toggleSelectable()
-   {
-//      Boolean old = selectable;
-      propertyChange.firePropertyChange( new PropertyChangeEvent( this, "selectable", this.selectable, !this.selectable ) );
-      selectable = !selectable;
-   }
-   
-   
-   public void toggleBorder()
-   {
-      if( selected )
-      {
-         this.setBorder(UIManager.getBorder("Tree.editorBorder"));
-      }
-      else
-      {
-         this.setBorder( null );
-      }
-   }
-
-   
-
    
    /**
     * Create the main GUI component and launch the game.
     */
    public static void main( String [] args)
    {
+      File root = null;
+      try
+      {
+         root = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
+      } catch( URISyntaxException e1 )
+      {
+         // TODO Auto-generated catch block
+         e1.printStackTrace();
+      }
       
+      System.out.println(root);
       EventQueue.invokeLater( new Runnable()
       {
 
@@ -248,7 +311,7 @@ public class CardPanel extends JComponent
                frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
                frame.setBounds( 100, 100, 1000, 725 );
 
-               CardPanel gui = new CardPanel();
+               CardPanel gui = new CardPanel( new CharacterCard( CharacterCard.CharacterName.COLONEL_MUSTARD ) );
                frame.add( gui );
                frame.setVisible( true );
                
@@ -262,8 +325,8 @@ public class CardPanel extends JComponent
       } );
       
    }
-
-
+   
+   
    
 }
 
@@ -287,6 +350,8 @@ class SelectableListener implements PropertyChangeListener
       else
       {
          cardPanel.label.setBorder( null );
+         cardPanel.deselect();
+         cardPanel.toggleBorder();
       }
 
 
