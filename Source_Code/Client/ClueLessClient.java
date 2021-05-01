@@ -508,6 +508,11 @@ public class ClueLessClient extends Thread
         this.pcs.firePropertyChange("startPlayer", oldValue, newValue);
     }
 
+    public String getPlayerName()
+    {
+        return UserPlayer.PlayerName;
+    }
+
     public void startGame()
     {
         csc.send(new GameStartRequest());
@@ -526,6 +531,21 @@ public class ClueLessClient extends Thread
             System.out.println("Connect request pending...\n");
         }
         printPreGameInstructions();
+    }
+
+    public void endTurn()
+    {
+        csc.send(new EndTurn(UserPlayer.PlayerName));
+    }
+
+    public void sendChatMessage(String to, String msg, boolean toAll)
+    {
+        if(toAll)
+        {
+            to = "All";
+        }
+        Log(Color.DARK_GRAY, "[To " + to + "] " + msg);
+        csc.send(new ChatFromClient(UserPlayer.PlayerName, to, msg, toAll));
     }
 
     /**
@@ -556,6 +576,7 @@ public class ClueLessClient extends Thread
             this.board = new Board();
             this.board.putPlayers(((PlayerUpdate) statUp).p);
             this.board.printBoard();
+            pcs.firePropertyChange("PlayerUpdate", null, ((PlayerUpdate) statUp).p);
             return;
         }
         else if(statUp instanceof ConnectRequestStatus)  // Response to our join request
@@ -603,7 +624,7 @@ public class ClueLessClient extends Thread
         else if( statUp instanceof SuggestionPassed)
         {
             System.out.println(((SuggestionPassed) statUp).PlayerName + " was not able to refute the suggestion");
-            Log(Color.BLUE, ((SuggestionPassed) statUp).PlayerName + " was not able to refute the suggestion");
+            Log(Color.RED, ((SuggestionPassed) statUp).PlayerName + " was not able to refute the suggestion");
         }
         //Notify all players that a given player was able to refute (WITHOUT THE SPECIFIC CARD)
         else if( statUp instanceof SuggestionWrong)
@@ -640,6 +661,11 @@ public class ClueLessClient extends Thread
             Log(Color.RED, "You can no longer participate in the game.");
             UserPlayer.PlayerActive = false;
             csc.send(new EndTurn( UserPlayer.PlayerName ));
+        }
+        else if (statUp instanceof ChatToClient)
+        {
+            String toAll = ((ChatToClient)statUp).ToAll ? " to all" : "";
+            Log(Color.DARK_GRAY, "[" + ((ChatToClient)statUp).SendingPlayer + toAll + "] " + ((ChatToClient)statUp).ChatMessage);
         }
 
 

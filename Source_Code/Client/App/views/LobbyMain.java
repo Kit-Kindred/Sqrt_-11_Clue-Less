@@ -1,12 +1,14 @@
 package Client.App.views;
 
 import Client.ClueLessClient;
+import Common.Player;
 
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -153,6 +155,23 @@ public class LobbyMain extends JFrame
 
       });
 
+      mainPanel.actionPanel.endTurnButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            client.endTurn();
+         }
+      });
+
+      mainPanel.chatBox.sendBox.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            client.sendChatMessage((String) mainPanel.chatBox.sendTo.getSelectedItem(),
+                                   mainPanel.chatBox.sendBox.getText(),
+                                   mainPanel.chatBox.sendTo.getSelectedIndex() == 0);
+            mainPanel.chatBox.sendBox.setText("");
+         }
+      });
+
       // Whenever a player connects
       client.addPropertyChangeListener("startPlayer", new PropertyChangeListener() {
 
@@ -188,6 +207,21 @@ public class LobbyMain extends JFrame
             mainPanel.theLog.log(
                     ((ClueLessClient.LogPair)evt.getNewValue()).color,
                     ((ClueLessClient.LogPair)evt.getNewValue()).msg);
+         }
+      });
+
+      client.addPropertyChangeListener("PlayerUpdate", new PropertyChangeListener() {
+         @Override
+         public void propertyChange(PropertyChangeEvent evt) {
+            mainPanel.chatBox.sendTo.removeAllItems();
+            mainPanel.chatBox.sendTo.addItem("[All]");
+            for (Player p : ((ArrayList<Player>) evt.getNewValue()))
+            {
+               if (!p.PlayerName.equals("") && !p.PlayerName.equals(client.getPlayerName()))
+               {
+                  mainPanel.chatBox.sendTo.addItem(p.PlayerName);
+               }
+            }
          }
       });
 

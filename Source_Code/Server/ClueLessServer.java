@@ -316,6 +316,10 @@ public class ClueLessServer extends Thread
         {
             processConnectRequest((ConnectRequest) actionRequest);
         }
+        if(actionRequest instanceof ChatFromClient)
+        {
+            processChatFromClient((ChatFromClient) actionRequest);
+        }
         boolean newGame = false;
         for(Player p : PlayerList)  // Only process non-connection requests from players
         {
@@ -361,6 +365,24 @@ public class ClueLessServer extends Thread
         // TODO: Actual in-game action requests
     }
 
+    public void processChatFromClient(ChatFromClient cfc)
+    {
+        for (Player p : PlayerList)
+        {
+            if(cfc.ToAll)
+            {
+                if(!p.PlayerName.equals("") && !p.PlayerName.equals(cfc.PlayerName))
+                {
+                    sendToPlayer(p.PlayerName, new ChatToClient(cfc.PlayerName, cfc.ChatMessage, true));
+                }
+            }
+            else if (p.PlayerName.equals(cfc.DestinationPlayer))
+            {
+                sendToPlayer(p.PlayerName, new ChatToClient(cfc.PlayerName, cfc.ChatMessage, false));
+                break;
+            }
+        }
+    }
 
     /**
      * A connected client wants to join the game

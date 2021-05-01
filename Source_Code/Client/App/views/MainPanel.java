@@ -17,12 +17,12 @@ public class MainPanel extends JPanel
 
     JPanel logBorderPanel;
     LogPanel theLog;
-    //JLabel tempLogPictureLabel;
 
+    JPanel chatBoxPanel;
+    ChatBox chatBox;
 
-    JPanel actionPictureBorderPanel;
-    JPanel actionPicture;
-    JLabel tempActionPictureLabel;
+    JPanel actionBorderPanel;
+    ActionPanel actionPanel;
 
     public MainPanel()
     {
@@ -40,7 +40,7 @@ public class MainPanel extends JPanel
          * components while maintaining the grid structure.
          */
         GridBagLayout gbl_this = new GridBagLayout();
-        gbl_this.rowHeights = new int[] { 33, 390, 33, 150, 33};
+        gbl_this.rowHeights = new int[] { 33, 350, 10, 30, 33, 150, 33};
         gbl_this.columnWidths = new int[] {33, 450, 34, 191, 34, 225, 33 };
         this.setLayout( gbl_this );
 
@@ -51,7 +51,7 @@ public class MainPanel extends JPanel
         boardPictureBorderPanel.setBorder( new TitledBorder( null, "",
                 TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
         GridBagConstraints gbc_playerPictureBorderPanel = new GridBagConstraints();
-        gbc_playerPictureBorderPanel.gridheight = 1;
+        gbc_playerPictureBorderPanel.gridheight = 3;
         gbc_playerPictureBorderPanel.gridwidth = 3;
         gbc_playerPictureBorderPanel.ipady = 0;
         gbc_playerPictureBorderPanel.ipadx = 0;
@@ -88,7 +88,7 @@ public class MainPanel extends JPanel
         gbc_cardsPictureBorderPanel.ipadx = 0;
         gbc_cardsPictureBorderPanel.insets = new Insets( 0, 0, 0, 0 );
         gbc_cardsPictureBorderPanel.gridx = 1;
-        gbc_cardsPictureBorderPanel.gridy = 3;
+        gbc_cardsPictureBorderPanel.gridy = 5;
         gbc_cardsPictureBorderPanel.anchor = GridBagConstraints.NORTHWEST;
         gbc_cardsPictureBorderPanel.fill = GridBagConstraints.BOTH;
         this.add( cardsPictureBorderPanel, gbc_cardsPictureBorderPanel );
@@ -129,35 +129,47 @@ public class MainPanel extends JPanel
 
         logBorderPanel.add( theLog );
 
+        // JPanel to hold the chat box
+        chatBoxPanel = new JPanel();
+        chatBoxPanel.setBorder( new TitledBorder( null, "",
+                TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
+        GridBagConstraints gbc_chatBoxPanel = new GridBagConstraints();
+        gbc_chatBoxPanel.gridheight = 1;
+        gbc_chatBoxPanel.gridwidth = 1;
+        gbc_chatBoxPanel.ipady = 0;
+        gbc_chatBoxPanel.ipadx = 0;
+        gbc_chatBoxPanel.insets = new Insets( 0, 0, 0, 0 );
+        gbc_chatBoxPanel.gridx = 5;
+        gbc_chatBoxPanel.gridy = 3;
+        gbc_chatBoxPanel.anchor = GridBagConstraints.NORTHWEST;
+        gbc_chatBoxPanel.fill = GridBagConstraints.BOTH;
+        this.add( chatBoxPanel, gbc_chatBoxPanel );
+        chatBoxPanel.setLayout( new BorderLayout() );
+
+        // The log panel
+        chatBox     = new ChatBox();
+
+        chatBoxPanel.add( chatBox );
 
         // Basic Board that goes around the player picture
-        actionPictureBorderPanel = new JPanel();
-        actionPictureBorderPanel.setBorder( new TitledBorder( null, "",
+        actionBorderPanel = new JPanel();
+        actionBorderPanel.setBorder( new TitledBorder( null, "",
                 TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
-        GridBagConstraints gbc_actionPictureBorderPanel = new GridBagConstraints();
-        gbc_actionPictureBorderPanel.gridheight = 1;
-        gbc_actionPictureBorderPanel.gridwidth = 3;
-        gbc_actionPictureBorderPanel.ipady = 0;
-        gbc_actionPictureBorderPanel.ipadx = 0;
-        gbc_actionPictureBorderPanel.insets = new Insets( 0, 0, 0, 0 );
-        gbc_actionPictureBorderPanel.gridx = 3;
-        gbc_actionPictureBorderPanel.gridy = 3;
-        gbc_actionPictureBorderPanel.anchor = GridBagConstraints.NORTHWEST;
-        gbc_actionPictureBorderPanel.fill = GridBagConstraints.BOTH;
-        this.add( actionPictureBorderPanel, gbc_actionPictureBorderPanel );
-        GridBagLayout gbl_actionPictureBorderPanel = new GridBagLayout();
-        boardPictureBorderPanel.setLayout( gbl_actionPictureBorderPanel );
+        GridBagConstraints gbc_actionBorderPanel = new GridBagConstraints();
+        gbc_actionBorderPanel.gridheight = 1;
+        gbc_actionBorderPanel.gridwidth = 3;
+        gbc_actionBorderPanel.ipady = 0;
+        gbc_actionBorderPanel.ipadx = 0;
+        gbc_actionBorderPanel.insets = new Insets( 0, 0, 0, 0 );
+        gbc_actionBorderPanel.gridx = 3;
+        gbc_actionBorderPanel.gridy = 5;
+        gbc_actionBorderPanel.anchor = GridBagConstraints.NORTHWEST;
+        gbc_actionBorderPanel.fill = GridBagConstraints.BOTH;
+        this.add( actionBorderPanel, gbc_actionBorderPanel );
+        boardPictureBorderPanel.setLayout( new BorderLayout() );
 
         // Generic JPanel to house the player picture that will go here
-        actionPicture     = new JPanel();
-        actionPictureBorderPanel.add( actionPicture );
-
-        /*
-         * Temporary text that goes inside the player picture field to test
-         * sizing...
-         */
-        tempActionPictureLabel = new JLabel(
-                "<html>ACTION PICTURE</html>" );
-        actionPicture.add( tempActionPictureLabel );
+        actionPanel     = new ActionPanel();
+        actionBorderPanel.add( actionPanel );
     }
 }
