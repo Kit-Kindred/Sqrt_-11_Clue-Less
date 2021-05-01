@@ -499,7 +499,7 @@ public class ClueLessServer extends Thread
                 turnTracker.move();
 
                 // Announce the move to all players
-                sendToAllPlayers(new Notification("Player " + mr.PlayerName
+                sendToAllPlayers(new Notification( mr.PlayerName
                 + " moved " + mr.moveDirection));
 
                 // Send the new board layout to all of the players

@@ -107,7 +107,7 @@ public class LobbyStatusPanel extends JPanel
       
       
       /// Lobby Join Button
-      startGameButton     = new JButton( "Join Game" );
+      startGameButton     = new JButton( "Start Game" );
       GridBagConstraints gbc_startGameButton = new GridBagConstraints();
       gbc_startGameButton.gridheight = 3;
       //gbc_startGameButton.weightx = 0.0;
