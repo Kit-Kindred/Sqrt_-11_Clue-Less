@@ -37,6 +37,28 @@ public class LobbyMain extends JFrame
       createEvents();
 
    }
+   
+   
+   /**
+    * Adding this method to bypass the lobby state. It's useful for viewing 
+    * how the client looks without having to spawn a bunch of client instances.
+    */
+   public LobbyMain(ClueLessClient c, Boolean test)
+   {
+      client = c;
+      setTitle( "ClueLess" );
+      initLobbyComponents();
+      // initGameComponents();
+      createEvents();
+      ( (CardLayout) mainLobbyPanel.getLayout() )
+      .next( mainLobbyPanel );
+      setBounds( 100, 100, 1000, 630 );
+      ( (CardLayout) contentPane.getLayout() )
+         .next( contentPane );
+   }
+
+   
+   
 
 
    /**
@@ -87,25 +109,6 @@ public class LobbyMain extends JFrame
 
       mainGamePanel.add( mainPanel, "name_mainGamePanel" );
       mainGamePanel.setLayout( card );
-
-   }
-
-
-   // Currently unused
-   // Remove this once I find out how to start the game state.
-   public void initGameComponents()
-   {
-      contentPane = new JPanel();
-      contentPane.setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
-      setContentPane( contentPane );
-      contentPane.setLayout( null );
-
-      JPanel gameControlFrame = new JPanel();
-      gameControlFrame.setBounds(
-         ( this.getBounds().width + this.getX() ) / 4,
-         ( this.getBounds().height - this.getY() ) / 4, this.getWidth() / 2,
-         this.getHeight() / 2 );
-      contentPane.add( gameControlFrame );
 
    }
 
@@ -226,5 +229,8 @@ public class LobbyMain extends JFrame
       });
 
    }
+   
+   
+
 
 }

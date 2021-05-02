@@ -26,8 +26,8 @@ public class ActionPanel extends JPanel
          * components while maintaining the grid structure.
          */
         GridBagLayout gbl_this = new GridBagLayout();
-        gbl_this.rowHeights = new int[] { 20, 110, 20};
-        gbl_this.columnWidths = new int[] {20, 130, 20, 130, 20, 130, 20 };
+        gbl_this.rowHeights = new int[] { 10, 80, 10};
+        gbl_this.columnWidths = new int[] {10, 60, 10, 10, 10, 60, 10 };
         this.setLayout( gbl_this );
 
         // Accuse Button
