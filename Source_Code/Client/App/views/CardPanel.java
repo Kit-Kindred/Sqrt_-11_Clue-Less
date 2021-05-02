@@ -60,7 +60,7 @@ public class CardPanel extends JComponent
       try
       {
          root = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
-         picture = ImageIO.read( new File( root, "/../Source_Code/Client/App/views/" + cardName + ".png") );
+         picture = ImageIO.read( new File( root, "/../Source_Code/Client/App/Resources/" + cardName + ".png") );
       } 
       catch( Exception e )
       {
