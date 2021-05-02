@@ -11,7 +11,7 @@ public class MainPanel extends JPanel
     JPanel boardPicture;
     JLabel tempBoardPictureLabel;
 
-    JPanel cardsPictureBorderPanel;
+    HandPanel cardsPictureBorderPanel;
     JPanel cardsPicture;
     JLabel tempCardsPictureLabel;
 
@@ -78,7 +78,7 @@ public class MainPanel extends JPanel
 
 
         // Basic Board that goes around the player picture
-        cardsPictureBorderPanel = new HandPanel(null);
+        cardsPictureBorderPanel = new HandPanel();
 //        cardsPictureBorderPanel.setBorder( new TitledBorder( null, "",
 //                TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
         GridBagConstraints gbc_cardsPictureBorderPanel = new GridBagConstraints();

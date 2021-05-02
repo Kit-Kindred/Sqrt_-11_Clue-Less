@@ -28,6 +28,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.SwingConstants;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.EmptyBorder;
 
 
 public class CardPanel extends JComponent 
@@ -39,13 +40,13 @@ public class CardPanel extends JComponent
    BufferedImage picture;
    JLabel cardPicture;
    JLabel label;
-   PropertyChangeSupport propertyChange;
+   private final PropertyChangeSupport propertyChange = new PropertyChangeSupport(this);;
    Boolean selectable = false; // Controls whether or not this has a "clickable" border
    Boolean selected = false;
    
-   
    public CardPanel( Card card )
    {
+      this.card = card;
       setLayout( new BorderLayout(0, 0) );
       setSize( 80, 100 );
       setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0) );
@@ -60,7 +61,9 @@ public class CardPanel extends JComponent
       try
       {
          root = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
-         picture = ImageIO.read( new File( root, "/../Source_Code/Client/App/views/" + cardName + ".png") );
+         // TEMP CHANGE - Remove once we have the images!
+         //picture = ImageIO.read( new File( root, "../../../../Sqrt_-11_Clue-Less/Source_Code/Client/App/views/" + cardName + ".png") );
+         picture = ImageIO.read( new File( root, "../../../../Sqrt_-11_Clue-Less/Source_Code/Client/App/views/COLONEL_MUSTARD.png") );
       } 
       catch( Exception e )
       {
@@ -98,6 +101,7 @@ public class CardPanel extends JComponent
    
    public void deselect()
    {
+      setBorder(null);
       selected = false;
    }
    
@@ -110,16 +114,10 @@ public class CardPanel extends JComponent
    }
    
    
-   public void toggleBorder()
+   public void select()
    {
-      if( selected )
-      {
-         this.setBorder(UIManager.getBorder("Tree.editorBorder"));
-      }
-      else
-      {
-         this.setBorder( null );
-      }
+      selected = true;
+      this.setBorder(new BevelBorder(BevelBorder.LOWERED));
    }
 
    
@@ -236,8 +234,8 @@ public class CardPanel extends JComponent
    {
       
       // We need to create our own listener for the selectable boolean
-      propertyChange = new PropertyChangeSupport(this);
-      propertyChange.addPropertyChangeListener( "selectable", new SelectableListener() );
+
+      addPropertyChangeListener( "selectable", new SelectableListener() );
       
       
       
@@ -250,10 +248,16 @@ public class CardPanel extends JComponent
           @Override
           public void mousePressed(MouseEvent e)
           {
-              CardPanel panel = (CardPanel) e.getSource();
+             // All of the logic for this event is in the hand pane
+             CardPanel panel = (CardPanel) e.getSource();
+
+             propertyChange.firePropertyChange("Select", null, panel);
+
+              System.out.println(((CardPanel)e.getSource()).cardName);
 
               if( panel.selectable )
               {
+                 //panel.select();//setBorder(new BevelBorder(BevelBorder.LOWERED));
                  System.out.println("Valid");
               }
              
@@ -267,7 +271,11 @@ public class CardPanel extends JComponent
       
       this.addMouseListener( ml );
    }
-      
+
+   public void addPropertyChangeListener(String val, PropertyChangeListener pcl)
+   {
+      propertyChange.addPropertyChangeListener(val, pcl);
+   }
 }
 
 class SelectableListener implements PropertyChangeListener
@@ -291,7 +299,7 @@ class SelectableListener implements PropertyChangeListener
       {
          cardPanel.label.setBorder( null );
          cardPanel.deselect();
-         cardPanel.toggleBorder();
+         //cardPanel.toggleBorder();
       }
 
 
