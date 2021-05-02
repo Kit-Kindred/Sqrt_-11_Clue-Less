@@ -123,7 +123,7 @@ public class LobbyInitialPanel extends JPanel
       gbc_serverIPLabel.anchor = GridBagConstraints.NORTHWEST;
       this.add( serverIPLabel, gbc_serverIPLabel );
 
-// PlayerName text field
+      // PlayerName text field
       serverIPTextField = new JTextField();
       serverIPTextField.setToolTipText( "Enter Server IP" );
       GridBagConstraints gbc_serverIPTextField = new GridBagConstraints();
@@ -148,7 +148,7 @@ public class LobbyInitialPanel extends JPanel
       gbc_serverPortLabel.anchor = GridBagConstraints.NORTHWEST;
       this.add( serverPortLabel, gbc_serverPortLabel );
 
-// PlayerName text field
+      // PlayerName text field
       serverPortTextField = new JTextField();
       serverPortTextField.setToolTipText( "Enter Server Port" );
       GridBagConstraints gbc_serverPortTextField = new GridBagConstraints();

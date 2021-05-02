@@ -748,7 +748,8 @@ public class ClueLessClient extends Thread
 //            System.out.println("End turn: 6");
 //            System.out.println("Accuse: 9");
 //            System.out.println("Exit: -1");
-            printGameInstructions();
+//            printGameInstructions();
+            Log(Color.ORANGE, "It's your turn!");
         }
         else
         {
