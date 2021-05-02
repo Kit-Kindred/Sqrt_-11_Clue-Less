@@ -279,7 +279,7 @@ public class ClueLessServer extends Thread
                 if(dc != null)
                 {
                     PlayerList.remove(dc);
-                    sendToAllPlayers(new PlayerConnection(dc.PlayerName, false));  // Let everyone know
+                    sendToAllPlayers(new PlayerConnection(dc.PlayerName, false, PlayerList.get(0).PlayerName, PlayerList.size()));  // Let everyone know
                 }
             }
         }
@@ -292,7 +292,7 @@ public class ClueLessServer extends Thread
                     if(p.ClientID == uid)  // Yup
                     {
                         p.PlayerConnected = false;
-                        sendToAllPlayers(new PlayerConnection(p.PlayerName, false));  // Let everyone know
+                        sendToAllPlayers(new PlayerConnection(p.PlayerName, false, PlayerList.get(0).PlayerName, PlayerList.size()));  // Let everyone know
                     }
                 }
             }
@@ -311,10 +311,14 @@ public class ClueLessServer extends Thread
     public void processAction(ActionRequest actionRequest)
     {
 
-        System.out.println("Process Action: Received ActionRequest");
+        System.out.println("Process Action: Received ActionRequest (" + actionRequest.getClass() + ")");
         if(actionRequest instanceof ConnectRequest)  // Process this one regardless of turn order
         {
             processConnectRequest((ConnectRequest) actionRequest);
+        }
+        if(actionRequest instanceof ChatFromClient)
+        {
+            processChatFromClient((ChatFromClient) actionRequest);
         }
         boolean newGame = false;
         for(Player p : PlayerList)  // Only process non-connection requests from players
@@ -361,6 +365,24 @@ public class ClueLessServer extends Thread
         // TODO: Actual in-game action requests
     }
 
+    public void processChatFromClient(ChatFromClient cfc)
+    {
+        for (Player p : PlayerList)
+        {
+            if(cfc.ToAll)
+            {
+                if(!p.PlayerName.equals("") && !p.PlayerName.equals(cfc.PlayerName))
+                {
+                    sendToPlayer(p.PlayerName, new ChatToClient(cfc.PlayerName, cfc.ChatMessage, true));
+                }
+            }
+            else if (p.PlayerName.equals(cfc.DestinationPlayer))
+            {
+                sendToPlayer(p.PlayerName, new ChatToClient(cfc.PlayerName, cfc.ChatMessage, false));
+                break;
+            }
+        }
+    }
 
     /**
      * A connected client wants to join the game
@@ -397,7 +419,7 @@ public class ClueLessServer extends Thread
                 synchronized (PlayerList)
                 {
                     // Yay, new player!
-                    sendToAllPlayers(new PlayerConnection(cr.PlayerName, true));  // Notify existing players
+                    sendToAllPlayers(new PlayerConnection(cr.PlayerName, true, PlayerList.size() > 0 ? PlayerList.get(0).PlayerName : cr.PlayerName, PlayerList.size()));  // Notify existing players
                     PlayerList.add(new Player(cr.PlayerName, cr.UniqueID));
                     sendToClient(cr.UniqueID, new ConnectRequestStatus(true, cr.PlayerName));  // Let player know they're in
                     return;
@@ -499,7 +521,7 @@ public class ClueLessServer extends Thread
                 turnTracker.move();
 
                 // Announce the move to all players
-                sendToAllPlayers(new Notification("Player " + mr.PlayerName
+                sendToAllPlayers(new Notification( mr.PlayerName
                 + " moved " + mr.moveDirection));
 
                 // Send the new board layout to all of the players

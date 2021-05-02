@@ -8,6 +8,9 @@ import Common.WeaponCard.WeaponType;
 import Common.Messages.*;
 import Common.Messages.StatusUpdates.*;
 
+import java.awt.*;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -309,16 +312,38 @@ public class ClueLessClient extends Thread
         }*/
     }
 
+    public class LogPair
+    {
+        public Color color;
+        public String msg;
+
+        LogPair()
+        {
+            this(Color.BLACK, "");
+        }
+        LogPair(Color c, String m)
+        {
+            color = c;
+            msg = m;
+        }
+    }
+
+    Color MEDIUM_GREEN = new Color(66, 105, 47);
+    Color PURPLE = new Color(78, 0, 142);
+
     public ClientSocketComms csc;  // TODO: Should be private
 
     ArrayBlockingQueue<StatusUpdate> UpdateQueue;
 
     static final int UpdateQueueDepth = 10;
 
-    private final String ServerIP;
-    private final int ServerPort;
+    ArrayBlockingQueue<LogPair> LogQueue;
+    static final int LogQueueDepth = 10;
 
-    private final Player UserPlayer;
+    private String ServerIP;
+    private int ServerPort;
+
+    private Player UserPlayer;
     
     private ConsoleInput reader = new ConsoleInput();
     
@@ -334,8 +359,22 @@ public class ClueLessClient extends Thread
 
     public boolean activeGame; // True if the game has started
 
+    private boolean initDone;
+
+    private boolean startPlayer;
+
+    private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
+
+    private Thread logThread;
+
+    public ClueLessClient()  // So we can instantiate a pointer to the object before we start the GUI
+    {
+        initDone = false;  // Not doing a real init
+    }
+
     public ClueLessClient(String serverIP, int serverPort)
     {
+        initDone= true;
         initialized = new Semaphore(0);
         ServerIP = serverIP;
         ServerPort = serverPort;
@@ -344,10 +383,49 @@ public class ClueLessClient extends Thread
         ConnectionRequested = false;
         activeGame = false;
         UserPlayer = new Player();
+        startPlayer = true;
+        setStartPlayer(false);
+        LogQueue = new ArrayBlockingQueue<LogPair>(LogQueueDepth);
+    }
+
+    public void init(String serverIP, int serverPort, String playerName)
+    {
+        if (!initDone)
+        {
+            initDone = true;
+            initialized = new Semaphore(0);
+            ServerIP = serverIP;
+            ServerPort = serverPort;
+            UpdateQueue = new ArrayBlockingQueue<StatusUpdate>(UpdateQueueDepth);
+            numUpdatesReceived = 0;
+            ConnectionRequested = false;
+            activeGame = false;
+            UserPlayer = new Player();
+            startPlayer = true;  // Flip flop this to initialize the Start Game button properly
+            setStartPlayer(false);
+            LogQueue = new ArrayBlockingQueue<LogPair>(LogQueueDepth);
+            setPlayerName(playerName);
+            start();  // Start processing
+            setPriority( 10 );
+
+            // Auto-connect to the server, but make sure we're initialized first
+            try
+            {
+                initialized.acquire();  // Sem wait
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            connect();
+        }
+
     }
 
     public void run()
     {
+        logThread = new Thread(this::LogThread);
+        logThread.start();
         csc = new ClientSocketComms(ServerIP, ServerPort, this::recvCallback);
         initialized.release();  // Ready to go; post the semaphore
         while(true)
@@ -366,6 +444,108 @@ public class ClueLessClient extends Thread
                 e.printStackTrace();  // We don't expect this. Log it and try to keep going
             }
         }
+    }
+
+    private void LogThread()
+    {
+        for(;;)
+        {
+            try
+            {
+                LogPair log = LogQueue.take();
+                pcs.firePropertyChange("LogReceived", null, log);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void Log(Color color, String msg)
+    {
+        try
+        {
+            LogQueue.put(new LogPair(color, msg));
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void addPropertyChangeListener(String val, PropertyChangeListener pcl)
+    {
+        pcs.addPropertyChangeListener(val, pcl);
+    }
+
+    public void removePropertyChangeListener(String val, PropertyChangeListener pcl)
+    {
+        pcs.removePropertyChangeListener(val, pcl);
+    }
+
+    public boolean getActiveGame()
+    {
+        return activeGame;
+    }
+
+    public void setActiveGame(boolean newValue)
+    {
+        boolean oldValue = activeGame;
+        activeGame = newValue;
+        this.pcs.firePropertyChange("activeGame", oldValue, newValue);
+    }
+
+    public boolean getStartPlayer()
+    {
+        return startPlayer;
+    }
+
+    public void setStartPlayer(boolean newValue)
+    {
+        boolean oldValue = startPlayer;
+        startPlayer = newValue;
+        this.pcs.firePropertyChange("startPlayer", oldValue, newValue);
+    }
+
+    public String getPlayerName()
+    {
+        return UserPlayer.PlayerName;
+    }
+
+    public void startGame()
+    {
+        csc.send(new GameStartRequest());
+    }
+
+    public void connect()
+    {
+        if(!ConnectionRequested)
+        {
+            System.out.println("Sending connect request...\n");
+            csc.send(new ConnectRequest(UserPlayer.PlayerName));
+            ConnectionRequested = true;
+        }
+        else
+        {
+            System.out.println("Connect request pending...\n");
+        }
+        printPreGameInstructions();
+    }
+
+    public void endTurn()
+    {
+        csc.send(new EndTurn(UserPlayer.PlayerName));
+    }
+
+    public void sendChatMessage(String to, String msg, boolean toAll)
+    {
+        if(toAll)
+        {
+            to = "All";
+        }
+        Log(Color.DARK_GRAY, "[To " + to + "] " + msg);
+        csc.send(new ChatFromClient(UserPlayer.PlayerName, to, msg, toAll));
     }
 
     /**
@@ -396,6 +576,7 @@ public class ClueLessClient extends Thread
             this.board = new Board();
             this.board.putPlayers(((PlayerUpdate) statUp).p);
             this.board.printBoard();
+            pcs.firePropertyChange("PlayerUpdate", null, ((PlayerUpdate) statUp).p);
             return;
         }
         else if(statUp instanceof ConnectRequestStatus)  // Response to our join request
@@ -420,16 +601,19 @@ public class ClueLessClient extends Thread
         else if(statUp instanceof Notification)  // Generic server print essentially
         {
             System.out.println("\t[Server] " + ((Notification) statUp).NotificationText);
+            Log(Color.BLACK, ((Notification) statUp).NotificationText);
         }
         //Notify all players of a suggestion (who, and what they are suggestion)
         else if( statUp instanceof SuggestNotification)
         {
             System.out.println((SuggestNotification) statUp);
+            Log(Color.BLUE, ((SuggestNotification) statUp).toString());
         }
         //Notify this player who refuted and what card they showed
         else if( statUp instanceof RefuteSuggestion)
         {
             System.out.println((RefuteSuggestion) statUp);
+            Log(Color.BLUE, ((RefuteSuggestion) statUp).toString());
         }
         // Let the player choose which card to use when refuting a suggestion
         else if( statUp instanceof RefuteSuggestionPicker )
@@ -440,11 +624,13 @@ public class ClueLessClient extends Thread
         else if( statUp instanceof SuggestionPassed)
         {
             System.out.println(((SuggestionPassed) statUp).PlayerName + " was not able to refute the suggestion");
+            Log(Color.RED, ((SuggestionPassed) statUp).PlayerName + " was not able to refute the suggestion");
         }
         //Notify all players that a given player was able to refute (WITHOUT THE SPECIFIC CARD)
         else if( statUp instanceof SuggestionWrong)
         {
             System.out.println(((SuggestionWrong) statUp).RefuterName + " was able to refute the suggestion");
+            Log(MEDIUM_GREEN, ((SuggestionWrong) statUp).RefuterName + " was able to refute the suggestion");
         }
 
         // Update the Board object based on updates received from the server
@@ -465,14 +651,21 @@ public class ClueLessClient extends Thread
         else if (statUp instanceof EnvelopePeakNotification)
         {
             System.out.println((EnvelopePeakNotification) statUp);
+            Log(Color.RED, ((EnvelopePeakNotification) statUp).toString());
         }
         // This is sent to a player to let them know they are out of the game.
         // Do we have to do anything else here?
         else if (statUp instanceof OutNotification)
         {
             System.out.println("You can no longer participate in the game.");
+            Log(Color.RED, "You can no longer participate in the game.");
             UserPlayer.PlayerActive = false;
             csc.send(new EndTurn( UserPlayer.PlayerName ));
+        }
+        else if (statUp instanceof ChatToClient)
+        {
+            String toAll = ((ChatToClient)statUp).ToAll ? " to all" : "";
+            Log(Color.DARK_GRAY, "[" + ((ChatToClient)statUp).SendingPlayer + toAll + "] " + ((ChatToClient)statUp).ChatMessage);
         }
 
 
@@ -490,11 +683,16 @@ public class ClueLessClient extends Thread
         if(pc.Connected)
         {
             System.out.println("\t[Server] " + pc.PlayerName + " joined the game!");
+            Log(PURPLE, pc.PlayerName + " joined the game!");
         }
         else
         {
             System.out.println("\t[Server] " + pc.PlayerName + " left the game!");
+            Log(PURPLE, pc.PlayerName + " left the game!");
         }
+
+        setStartPlayer(pc.StartPlayer.equals(UserPlayer.PlayerName));
+
     }
 
     public void processConnectionRequestStatus(ConnectRequestStatus crs)
@@ -517,10 +715,10 @@ public class ClueLessClient extends Thread
         if(gs.GameStarting && !activeGame )
         {
             System.out.println("\t[Server] Game starting!\n");
-
+            Log(Color.ORANGE, "Game started!");
             // Only instantiate the board after the game starts
             board = new Board();
-            activeGame = true;
+            setActiveGame(true);
         }
         else if( gs.GameStarting && activeGame )
         {
@@ -529,13 +727,14 @@ public class ClueLessClient extends Thread
         else
         {
             System.out.println("\t[Server] Game ending!\n");
-            activeGame = false;
+            Log(Color.ORANGE, "Game ending!");
+            setActiveGame(false);
         }
     }
 
     public void processTurnUpdate(TurnUpdate tu)
     {
-        activeGame = true;  // In case of disconnect and reconnect
+        setActiveGame(true);  // In case of disconnect and reconnect
         if(tu.TurnPlayer.equals(UserPlayer.PlayerName))
         {
             UserPlayer.PlayerTurn = true; // Set the turn status to true
@@ -555,9 +754,10 @@ public class ClueLessClient extends Thread
         {
             UserPlayer.PlayerTurn = false; // Set the turn status to false
             System.out.println( "\t[Server] It's " + tu.TurnPlayer + "'s turn.\n");
+            Log(Color.BLACK, "It's " + tu.TurnPlayer + "'s turn.");
         }
     }
-    
+
     
     /**
      * Steals the active thread to get the player to pick a card to refute the
@@ -567,6 +767,7 @@ public class ClueLessClient extends Thread
     * @throws TimeoutException 
     * @throws InterruptedException 
      */
+    // LOGGING NOT DONE
     public void processRefuteSuggestionPicker( RefuteSuggestionPicker rs ) throws TimeoutException
     {
         /* Tells the client to assume an interrupted state so that it
@@ -640,12 +841,14 @@ public class ClueLessClient extends Thread
         if ( accuseNotification.Correct )
         {
             System.out.println("\n\t[Server] That was correct!");
+            Log(MEDIUM_GREEN, accuseNotification.PlayerName + " was correct!");
         }
         // If incorrect
         else
         {
             System.out.println("\n\t[Server] That was incorrect!\n\t");
             System.out.println(accuseNotification.PlayerName + " was wrong! They are out of the game!\n");
+            Log(Color.RED, accuseNotification.PlayerName + " was wrong! They are out of the game!");
         }
     }
 
