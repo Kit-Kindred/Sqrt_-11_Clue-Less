@@ -40,8 +40,8 @@ public class MainPanel extends JPanel
          * components while maintaining the grid structure.
          */
         GridBagLayout gbl_this = new GridBagLayout();
-        gbl_this.rowHeights = new int[] { 33, 350, 10, 30, 33, 150, 33};
-        gbl_this.columnWidths = new int[] {33, 450, 34, 191, 34, 225, 33 };
+        gbl_this.rowHeights = new int[] { 10, 400, 10, 10, 23, 115, 30};
+        gbl_this.columnWidths = new int[] {10, 650, 50, 175, 150, 10, 30 };
         this.setLayout( gbl_this );
 
         //setBackground(Color.GREEN);
@@ -52,7 +52,7 @@ public class MainPanel extends JPanel
                 TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
         GridBagConstraints gbc_playerPictureBorderPanel = new GridBagConstraints();
         gbc_playerPictureBorderPanel.gridheight = 3;
-        gbc_playerPictureBorderPanel.gridwidth = 3;
+        gbc_playerPictureBorderPanel.gridwidth = 2;
         gbc_playerPictureBorderPanel.ipady = 0;
         gbc_playerPictureBorderPanel.ipadx = 0;
         gbc_playerPictureBorderPanel.insets = new Insets( 0, 0, 0, 0 );
@@ -78,9 +78,9 @@ public class MainPanel extends JPanel
 
 
         // Basic Board that goes around the player picture
-        cardsPictureBorderPanel = new JPanel();
-        cardsPictureBorderPanel.setBorder( new TitledBorder( null, "",
-                TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
+        cardsPictureBorderPanel = new HandPanel(null);
+//        cardsPictureBorderPanel.setBorder( new TitledBorder( null, "",
+//                TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
         GridBagConstraints gbc_cardsPictureBorderPanel = new GridBagConstraints();
         gbc_cardsPictureBorderPanel.gridheight = 1;
         gbc_cardsPictureBorderPanel.gridwidth = 1;
@@ -96,16 +96,16 @@ public class MainPanel extends JPanel
         boardPictureBorderPanel.setLayout( gbl_cardsPictureBorderPanel );
 
         // Generic JPanel to house the player picture that will go here
-        cardsPicture     = new JPanel();
-        cardsPictureBorderPanel.add( cardsPicture );
+//        cardsPicture     = new JPanel();
+//        cardsPictureBorderPanel.add( cardsPicture );
 
         /*
          * Temporary text that goes inside the player picture field to test
          * sizing...
          */
-        tempCardsPictureLabel = new JLabel(
-                "<html>CARDS PICTURE</html>" );
-        cardsPicture.add( tempCardsPictureLabel );
+//        tempCardsPictureLabel = new JLabel(
+//                "<html>CARDS PICTURE</html>" );
+//        cardsPicture.add( tempCardsPictureLabel );
 
         // JPanel to hold the log
         logBorderPanel = new JPanel();
@@ -113,11 +113,11 @@ public class MainPanel extends JPanel
                 TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
         GridBagConstraints gbc_logPictureBorderPanel = new GridBagConstraints();
         gbc_logPictureBorderPanel.gridheight = 1;
-        gbc_logPictureBorderPanel.gridwidth = 1;
+        gbc_logPictureBorderPanel.gridwidth = 2;
         gbc_logPictureBorderPanel.ipady = 0;
         gbc_logPictureBorderPanel.ipadx = 0;
-        gbc_logPictureBorderPanel.insets = new Insets( 0, 0, 0, 0 );
-        gbc_logPictureBorderPanel.gridx = 5;
+        gbc_logPictureBorderPanel.insets = new Insets( 0, 35, 0, 15);
+        gbc_logPictureBorderPanel.gridx = 3;
         gbc_logPictureBorderPanel.gridy = 1;
         gbc_logPictureBorderPanel.anchor = GridBagConstraints.NORTHWEST;
         gbc_logPictureBorderPanel.fill = GridBagConstraints.BOTH;
@@ -135,11 +135,11 @@ public class MainPanel extends JPanel
                 TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
         GridBagConstraints gbc_chatBoxPanel = new GridBagConstraints();
         gbc_chatBoxPanel.gridheight = 1;
-        gbc_chatBoxPanel.gridwidth = 1;
+        gbc_chatBoxPanel.gridwidth = 2;
         gbc_chatBoxPanel.ipady = 0;
         gbc_chatBoxPanel.ipadx = 0;
-        gbc_chatBoxPanel.insets = new Insets( 0, 0, 0, 0 );
-        gbc_chatBoxPanel.gridx = 5;
+        gbc_chatBoxPanel.insets = new Insets( 0, 35, 0, 15 );
+        gbc_chatBoxPanel.gridx = 3;
         gbc_chatBoxPanel.gridy = 3;
         gbc_chatBoxPanel.anchor = GridBagConstraints.NORTHWEST;
         gbc_chatBoxPanel.fill = GridBagConstraints.BOTH;
@@ -161,10 +161,10 @@ public class MainPanel extends JPanel
         gbc_actionBorderPanel.ipady = 0;
         gbc_actionBorderPanel.ipadx = 0;
         gbc_actionBorderPanel.insets = new Insets( 0, 0, 0, 0 );
-        gbc_actionBorderPanel.gridx = 3;
+        gbc_actionBorderPanel.gridx = 2;
         gbc_actionBorderPanel.gridy = 5;
-        gbc_actionBorderPanel.anchor = GridBagConstraints.NORTHWEST;
-        gbc_actionBorderPanel.fill = GridBagConstraints.BOTH;
+        gbc_actionBorderPanel.anchor = GridBagConstraints.CENTER;
+//        gbc_actionBorderPanel.fill = GridBagConstraints.BOTH;
         this.add( actionBorderPanel, gbc_actionBorderPanel );
         boardPictureBorderPanel.setLayout( new BorderLayout() );
 
