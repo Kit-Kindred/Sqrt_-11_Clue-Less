@@ -48,21 +48,25 @@ public class LobbyMain extends JFrame
     */
    public LobbyMain(ClueLessClient c, Boolean test)
    {
-      client = c;
-      setTitle( "ClueLess" );
-      initLobbyComponents();
-      // initGameComponents();
-      createEvents();
+      client = c;setTitle( "ClueLess" );
+      initLobbyComponents();createEvents();
       ( (CardLayout) mainLobbyPanel.getLayout() )
       .next( mainLobbyPanel );
       setBounds( 100, 100, 1000, 630 );
       ( (CardLayout) contentPane.getLayout() )
          .next( contentPane );
+      CardPanel[] cardsTest = new CardPanel[6];
+      cardsTest[0] = new CardPanel( new CharacterCard( CharacterCard.CharacterName.COLONEL_MUSTARD ) );
+      cardsTest[1] = new CardPanel( new CharacterCard( CharacterCard.CharacterName.MISS_SCARLET ) );
+      cardsTest[2] = new CardPanel( new RoomCard( RoomCard.RoomName.BALL_ROOM ) );
+      cardsTest[3] = new CardPanel( new RoomCard( RoomCard.RoomName.CONSERVATORY) );
+      cardsTest[4] = new CardPanel( new WeaponCard( WeaponCard.WeaponType.ROPE ) );
+      cardsTest[5] = new CardPanel( new WeaponCard( WeaponCard.WeaponType.KNIFE ) );
+      for( CardPanel card: cardsTest ){mainPanel.cardsPictureBorderPanel.add( card );}
    }
 
    
    
-
 
    /**
     * Creates and initializes the swing components that make up the
