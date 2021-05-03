@@ -46,17 +46,7 @@ public class HandPanel extends JPanel
       SelectedCard = null;
       //Selection = new SuggestHand((CharacterCard) null, (RoomCard) null, (WeaponCard) null);  // Casts to resolve constructor
       //pcs = new PropertyChangeSupport(this);
-      /*cardsTest[0] = new CardPanel( new CharacterCard( CharacterCard.CharacterName.COLONEL_MUSTARD ) );
-      cardsTest[1] = new CardPanel( new CharacterCard( CharacterCard.CharacterName.COLONEL_MUSTARD ) );
-      cardsTest[2] = new CardPanel( new CharacterCard( CharacterCard.CharacterName.COLONEL_MUSTARD ) );
-      cardsTest[3] = new CardPanel( new CharacterCard( CharacterCard.CharacterName.COLONEL_MUSTARD ) );
-      
-      
-      // TODO: replace cardsTest with cards after testing.
-      for( CardPanel card: cardsTest )
-      {
-         add( card );
-      }*/
+
 
    }
 

@@ -77,6 +77,7 @@ public class BoardRoom implements Serializable
     setName(name);
     this.players = new ArrayList<Player>();
   }
+  
   public BoardRoom(BoardRoom br)
   {
     name = br.name;

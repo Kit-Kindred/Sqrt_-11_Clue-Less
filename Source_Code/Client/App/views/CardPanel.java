@@ -31,7 +31,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
 
 
-public class CardPanel extends JComponent 
+public class CardPanel extends JComponent implements SelectablePanel
 {
    
    Card card;
@@ -62,8 +62,8 @@ public class CardPanel extends JComponent
       {
          root = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
 
-         picture = ImageIO.read( new File( root, "../../../../Sqrt_-11_Clue-Less/Source_Code/Client/App/Resources/" + cardName + ".png") );
-         //picture = ImageIO.read( new File( root, "/../Source_Code/Client/App/Resources/" + cardName + ".png") );
+         //picture = ImageIO.read( new File( root, "../../../../Sqrt_-11_Clue-Less/Source_Code/Client/App/Resources/Cards/" + cardName + ".png") );
+         picture = ImageIO.read( new File( root, "/../Source_Code/Client/App/Resources/Cards/" + cardName + ".png") );
 
       } 
       catch( Exception e )

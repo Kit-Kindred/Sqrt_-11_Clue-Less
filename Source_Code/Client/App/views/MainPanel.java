@@ -47,7 +47,7 @@ public class MainPanel extends JPanel
         //setBackground(Color.GREEN);
 
         // Basic Board that goes around the player picture
-        boardPictureBorderPanel = new JPanel();
+        boardPictureBorderPanel = new GameBoardPanel();
         boardPictureBorderPanel.setBorder( new TitledBorder( null, "",
                 TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
         GridBagConstraints gbc_playerPictureBorderPanel = new GridBagConstraints();
@@ -60,21 +60,21 @@ public class MainPanel extends JPanel
         gbc_playerPictureBorderPanel.gridy = 1;
         gbc_playerPictureBorderPanel.anchor = GridBagConstraints.NORTHWEST;
         gbc_playerPictureBorderPanel.fill = GridBagConstraints.BOTH;
-        this.add( boardPictureBorderPanel, gbc_playerPictureBorderPanel );
-        GridBagLayout gbl_playerPictureBorderPanel = new GridBagLayout();
-        boardPictureBorderPanel.setLayout( gbl_playerPictureBorderPanel );
+        this.add( new GameBoardPanel() , gbc_playerPictureBorderPanel );
+//        GridBagLayout gbl_playerPictureBorderPanel = new GridBagLayout();
+//        boardPictureBorderPanel.setLayout( gbl_playerPictureBorderPanel );
 
         // Generic JPanel to house the player picture that will go here
-        boardPicture     = new JPanel();
-        boardPictureBorderPanel.add( boardPicture );
+//        boardPicture     = new JPanel();
+//        boardPictureBorderPanel.add( boardPicture );
 
         /*
          * Temporary text that goes inside the player picture field to test
          * sizing...
          */
-        tempBoardPictureLabel = new JLabel(
-                "<html>BOARD PICTURE</html>" );
-        boardPicture.add( tempBoardPictureLabel );
+//        tempBoardPictureLabel = new JLabel(
+//                "<html>BOARD PICTURE</html>" );
+//        boardPicture.add( tempBoardPictureLabel );
 
 
         // Basic Board that goes around the player picture
