@@ -1,12 +1,15 @@
 package Common;
+
+import Common.BoardHallwayHorizontal;
+import Common.BoardHallwayVertical;
 import Common.Messages.ActionRequests.MoveRequest;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * This class defines the set up of the Clue-less board with some useful helper 
+ * This class defines the set up of the Clue-less board with some useful helper
  * classes so that other
- * 
+ *
  * @author Steve Nilla
  */
 public class Board implements Serializable
@@ -15,10 +18,10 @@ public class Board implements Serializable
    * Make board object serializable
    */
   private static final long serialVersionUID = 1792196563360444459L;
-  
+
   // set up board
   public BoardRoom board[][] = new BoardRoom[5][5];
- 
+
   /**
    * The method to move a player on the board
    *
@@ -79,12 +82,12 @@ public class Board implements Serializable
         {
           newX = 0;
           newY = 4;
-        }  
+        }
         else if ((currX == 0) && (currY == 4))
         {
           newX = 4;
           newY = 0;
-        }  
+        }
         else
         {
           throw new IllegalArgumentException("Invalid move request");
@@ -333,36 +336,36 @@ public class Board implements Serializable
    * Default class constructor
    */
   public Board()
-  {     
-    // board row 1 
+  {
+    // board row 1
     board[0][0] = new BoardRoom("Study");
-    board[0][1] = new BoardHallway();
+    board[0][1] = new BoardHallwayHorizontal();
     board[0][2] = new BoardRoom("Hall");
-    board[0][3] = new BoardHallway();
+    board[0][3] = new BoardHallwayHorizontal();
     board[0][4] = new BoardRoom("Lounge");
 
     // board row 2
-    board[1][0] = new BoardHallway();
-    board[1][2] = new BoardHallway();
-    board[1][4] = new BoardHallway();
+    board[1][0] = new BoardHallwayVertical();
+    board[1][2] = new BoardHallwayVertical();
+    board[1][4] = new BoardHallwayVertical();
 
     // board row 3
     board[2][0] = new BoardRoom("Library");
-    board[2][1] = new BoardHallway();
+    board[2][1] = new BoardHallwayHorizontal();
     board[2][2] = new BoardRoom("Billiard Room");
-    board[2][3] = new BoardHallway();
+    board[2][3] = new BoardHallwayHorizontal();
     board[2][4] = new BoardRoom("Dining Room");
 
     // board row 4
-    board[3][0] = new BoardHallway();
-    board[3][2] = new BoardHallway();
-    board[3][4] = new BoardHallway();
+    board[3][0] = new BoardHallwayVertical();
+    board[3][2] = new BoardHallwayVertical();
+    board[3][4] = new BoardHallwayVertical();
 
     // board row 5
     board[4][0] = new BoardRoom("Conservatory");
-    board[4][1] = new BoardHallway();
+    board[4][1] = new BoardHallwayHorizontal();
     board[4][2] = new BoardRoom("Ball Room");
-    board[4][3] = new BoardHallway();
+    board[4][3] = new BoardHallwayHorizontal();
     board[4][4] = new BoardRoom("Kitchen");
   }
 
