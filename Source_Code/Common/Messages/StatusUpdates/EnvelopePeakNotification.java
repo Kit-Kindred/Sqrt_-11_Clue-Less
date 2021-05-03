@@ -21,7 +21,7 @@ public class EnvelopePeakNotification extends StatusUpdate
         String outString = "";
         outString += "The correct answer is that ";
         outString += this.EnvelopeHand.getCharacterName();
-        outString += " dit it in the ";
+        outString += " did it in the ";
         outString += this.EnvelopeHand.getRoomName();
         outString += " with the ";
         outString += this.EnvelopeHand.getWeaponType();

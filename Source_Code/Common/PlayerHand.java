@@ -146,7 +146,14 @@ public class PlayerHand implements Serializable
       this.weapon.clear();
    }
    
-   
+   public ArrayList<Card> getCards()
+   {
+      ArrayList<Card> fullHand = new ArrayList<Card>();
+      fullHand.addAll(character);
+      fullHand.addAll(weapon);
+      fullHand.addAll(room);
+      return fullHand;
+   }
    
    /**
     * To string method returning a string of all the cards in the hand instance.

@@ -69,6 +69,19 @@ public class RoomCard extends Card
 
    }
 
+   @Override
+   public boolean equals(Object obj)
+   {
+      if(obj == null)
+      {
+         return false;
+      }
+      if (obj.getClass() != this.getClass())
+      {
+         return false;
+      }
+      return (((RoomCard)obj).roomName == roomName);
+   }
 
    /**
     * Looks into a custom file, reads the name associated with the assigned

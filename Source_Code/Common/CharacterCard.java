@@ -72,6 +72,19 @@ public class CharacterCard extends Card
 
    }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        if(obj == null)
+        {
+            return false;
+        }
+        if (obj.getClass() != this.getClass())
+        {
+            return false;
+        }
+        return (((CharacterCard)obj).characterName == characterName);
+    }
 
    /**
     * Instantiate the character card with the specific character name and pass

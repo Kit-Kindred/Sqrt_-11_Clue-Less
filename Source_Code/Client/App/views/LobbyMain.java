@@ -1,7 +1,8 @@
 package Client.App.views;
 
 import Client.ClueLessClient;
-import Common.Player;
+import Common.*;
+import Common.Messages.StatusUpdates.PlayerHandUpdate;
 
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
@@ -9,8 +10,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 
@@ -23,6 +23,9 @@ public class LobbyMain extends JFrame
    private MainPanel            mainPanel;
    private LobbyInitialPanel    joinPanel;
    private LobbyStatusPanel     statusPanel;
+
+   private AccuseDialog accuseDialog;
+
    private final ClueLessClient client;
 
    /**
@@ -45,21 +48,25 @@ public class LobbyMain extends JFrame
     */
    public LobbyMain(ClueLessClient c, Boolean test)
    {
-      client = c;
-      setTitle( "ClueLess" );
-      initLobbyComponents();
-      // initGameComponents();
-      createEvents();
+      client = c;setTitle( "ClueLess" );
+      initLobbyComponents();createEvents();
       ( (CardLayout) mainLobbyPanel.getLayout() )
       .next( mainLobbyPanel );
       setBounds( 100, 100, 1000, 630 );
       ( (CardLayout) contentPane.getLayout() )
          .next( contentPane );
+      CardPanel[] cardsTest = new CardPanel[6];
+      cardsTest[0] = new CardPanel( new CharacterCard( CharacterCard.CharacterName.COLONEL_MUSTARD ) );
+      cardsTest[1] = new CardPanel( new CharacterCard( CharacterCard.CharacterName.MISS_SCARLET ) );
+      cardsTest[2] = new CardPanel( new RoomCard( RoomCard.RoomName.BALL_ROOM ) );
+      cardsTest[3] = new CardPanel( new RoomCard( RoomCard.RoomName.CONSERVATORY) );
+      cardsTest[4] = new CardPanel( new WeaponCard( WeaponCard.WeaponType.ROPE ) );
+      cardsTest[5] = new CardPanel( new WeaponCard( WeaponCard.WeaponType.KNIFE ) );
+      for( CardPanel card: cardsTest ){mainPanel.cardsPictureBorderPanel.add( card );}
    }
 
    
    
-
 
    /**
     * Creates and initializes the swing components that make up the
@@ -109,6 +116,8 @@ public class LobbyMain extends JFrame
 
       mainGamePanel.add( mainPanel, "name_mainGamePanel" );
       mainGamePanel.setLayout( card );
+
+      accuseDialog = new AccuseDialog(this, "Accuse");
 
    }
 
@@ -175,6 +184,13 @@ public class LobbyMain extends JFrame
          }
       });
 
+      mainPanel.actionPanel.accuseButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
+            accuse();
+         }
+      });
+
       // Whenever a player connects
       client.addPropertyChangeListener("startPlayer", new PropertyChangeListener() {
 
@@ -228,8 +244,55 @@ public class LobbyMain extends JFrame
          }
       });
 
+      client.addPropertyChangeListener("PlayerHand", new PropertyChangeListener() {
+         @Override
+         public void propertyChange(PropertyChangeEvent evt) {
+            //for(Card c : ((PlayerHand)evt.getNewValue()).getCards())
+            //{
+            //   mainPanel.cardsPictureBorderPanel.addCard(c);
+            //}
+            for(RoomCard r : ((PlayerHand)evt.getNewValue()).getRooms())
+            {
+               mainPanel.cardsPictureBorderPanel.addCard(r);
+            }
+            for(WeaponCard w : ((PlayerHand)evt.getNewValue()).getWeapons())
+            {
+               mainPanel.cardsPictureBorderPanel.addCard(w);
+            }
+            for(CharacterCard c : ((PlayerHand)evt.getNewValue()).getCharacters())
+            {
+               mainPanel.cardsPictureBorderPanel.addCard(c);
+            }
+         }
+      });
+
+      client.addPropertyChangeListener("PlayerTurn", new PropertyChangeListener() {
+         @Override
+         public void propertyChange(PropertyChangeEvent evt) {
+            //System.out.println("Received Player Turn");
+            mainPanel.actionPanel.accuseButton.setEnabled((boolean) evt.getNewValue());
+            mainPanel.actionPanel.suggestButton.setEnabled((boolean) evt.getNewValue());
+            mainPanel.actionPanel.endTurnButton.setEnabled((boolean) evt.getNewValue());
+            /*if((boolean) evt.getNewValue()){
+
+            }
+            else
+            {
+               mainPanel.cardsPictureBorderPanel.emptySelection();
+            }*/
+         }
+      });
    }
-   
+
+   public void accuse()
+   {
+      accuseDialog.open();
+      SuggestHand accuseHand = accuseDialog.getAccuseHand();
+      if (accuseHand != null)
+      {
+         client.accuse(accuseHand);
+      }
+   }
    
 
 

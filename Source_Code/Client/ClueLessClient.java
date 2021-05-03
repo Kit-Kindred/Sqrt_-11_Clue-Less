@@ -538,6 +538,11 @@ public class ClueLessClient extends Thread
         csc.send(new EndTurn(UserPlayer.PlayerName));
     }
 
+    public void accuse(SuggestHand accuseHand)
+    {
+        csc.send(new AccuseRequest(UserPlayer.PlayerName, accuseHand));
+    }
+
     public void sendChatMessage(String to, String msg, boolean toAll)
     {
         if(toAll)
@@ -595,6 +600,8 @@ public class ClueLessClient extends Thread
         {
             UserPlayer.setHand( ((PlayerHandUpdate) statUp).getHandUpdate() );
             System.out.println( UserPlayer.getAllCardsString() + "\n");
+            pcs.firePropertyChange("PlayerHand", null, UserPlayer.getHand());
+            //pcs.firePropertyChange("PlayerTurn", false, UserPlayer.PlayerTurn);  // So first player can select cards
            //System.out.println( ((PlayerHandUpdate) statUp).getHandUpdate() + "\n");
         }
         // These just print stuff, so I guess just leave them
@@ -737,6 +744,7 @@ public class ClueLessClient extends Thread
         setActiveGame(true);  // In case of disconnect and reconnect
         if(tu.TurnPlayer.equals(UserPlayer.PlayerName))
         {
+            boolean oldValue = UserPlayer.PlayerTurn;
             UserPlayer.PlayerTurn = true; // Set the turn status to true
 //            System.out.println( "\n[Server] It is now your turn.");
 //            System.out.println("\n\n****Enter a command****");
@@ -750,12 +758,15 @@ public class ClueLessClient extends Thread
 //            System.out.println("Exit: -1");
 //            printGameInstructions();
             Log(Color.ORANGE, "It's your turn!");
+            pcs.firePropertyChange("PlayerTurn", oldValue, UserPlayer.PlayerTurn);
         }
         else
         {
+            boolean oldValue = UserPlayer.PlayerTurn;
             UserPlayer.PlayerTurn = false; // Set the turn status to false
             System.out.println( "\t[Server] It's " + tu.TurnPlayer + "'s turn.\n");
             Log(Color.BLACK, "It's " + tu.TurnPlayer + "'s turn.");
+            pcs.firePropertyChange("PlayerTurn", oldValue, UserPlayer.PlayerTurn);
         }
     }
 
