@@ -6,6 +6,8 @@ import java.awt.*;
 
 public class ActionPanel extends JPanel
 {
+    public MoveDPad dPad;
+
     public JButton accuseButton;
     public JButton suggestButton;
     public JButton endTurnButton;
@@ -27,8 +29,31 @@ public class ActionPanel extends JPanel
          */
         GridBagLayout gbl_this = new GridBagLayout();
         gbl_this.rowHeights = new int[] { 10, 80, 10};
-        gbl_this.columnWidths = new int[] {10, 60, 10, 10, 10, 60, 10 };
+        /*gbl_this.columnWidths = new int[] {10, 60, 10, 10,
+                                           10, 60, 10, 10,
+                                           10, 60, 10, 10,
+                                           10, 60, 10, 10,
+                                           10, 60, 10, 10,
+                                           10, 60, 10, 10,
+                                           10, 60, 10, 10,
+                                           10, 60, 10, 10,
+                                           10, 60, 10, 10};*/
+        gbl_this.columnWidths = new int[] {10, 60, 10, 60, 10, 60, 10, 60, 10 };
         this.setLayout( gbl_this );
+
+        // Dpad
+        dPad     = new MoveDPad();
+        GridBagConstraints gbc_dPad = new GridBagConstraints();
+        gbc_dPad.gridheight = 1;
+        gbc_dPad.gridwidth = 1;
+        gbc_dPad.anchor = GridBagConstraints.NORTHWEST;
+        gbc_dPad.ipady = 0;
+        gbc_dPad.ipadx = 0;
+        gbc_dPad.gridx = 7;
+        gbc_dPad.gridy = 1;
+        gbc_dPad.insets = new Insets( 0, 0, 0, 0 );
+        gbc_dPad.fill = GridBagConstraints.BOTH;
+        this.add( dPad, gbc_dPad );
 
         // Accuse Button
         accuseButton     = new JButton( "Accuse" );

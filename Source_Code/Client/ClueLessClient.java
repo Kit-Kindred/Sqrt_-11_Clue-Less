@@ -24,10 +24,10 @@ public class ClueLessClient extends Thread
      * then allow the user to run some test commands
      *
      * @param args - Unused
-    * @throws IOException 
-    * @throws NumberFormatException 
-    * @throws TimeoutException 
-    * @throws InterruptedException 
+    * @throws IOException
+    * @throws NumberFormatException
+    * @throws TimeoutException
+    * @throws InterruptedException
      *
      */
     public static void main(String[] args) throws NumberFormatException, IOException, TimeoutException, InterruptedException
@@ -73,10 +73,10 @@ public class ClueLessClient extends Thread
         // BEGIN TEMPORARY - Just to let us test out the interface
         // Read user input from CLI and perform appropriate action
         int input = 0;
-        
+
         System.out.println();
         printPreGameInstructions();
-        
+
         while(input != -1 && !clientApplication.activeGame)
         {
 
@@ -167,15 +167,15 @@ public class ClueLessClient extends Thread
            // Quick turn validation to make sure it's the player's turn
            if( clientApplication.UserPlayer.PlayerTurn )
            {
-              
+
               if( !clientApplication.UpdateQueue.isEmpty() || interrupted )
               {
                  break;
               }
-              
+
               switch (input)
               {
-                       
+
                 case 1 ->
                         {
                             System.out.println("Sending move left request...\n");
@@ -293,7 +293,7 @@ public class ClueLessClient extends Thread
            }
 
            input = Integer.parseInt( reader.read() );
-           
+
         }
         while(input != -1 && clientApplication.activeGame );
 
@@ -344,11 +344,11 @@ public class ClueLessClient extends Thread
     private int ServerPort;
 
     private Player UserPlayer;
-    
+
     private ConsoleInput reader = new ConsoleInput();
-    
+
     private static Boolean interrupted = false; //Am I busy responding to a request?
-    
+
     private Board board;
 
     private boolean ConnectionRequested;  // Wait for a response before asking to connect again
@@ -543,6 +543,11 @@ public class ClueLessClient extends Thread
         csc.send(new AccuseRequest(UserPlayer.PlayerName, accuseHand));
     }
 
+    public void move(MoveRequest.Move m)
+    {
+        csc.send(new MoveRequest(UserPlayer.PlayerName, m));
+    }
+
     public void sendChatMessage(String to, String msg, boolean toAll)
     {
         if(toAll)
@@ -557,7 +562,7 @@ public class ClueLessClient extends Thread
      * Process status updates sent to the client
      *
      * @param statUp - Received status update
-    * @throws TimeoutException 
+    * @throws TimeoutException
      */
     public void updateStatus(StatusUpdate statUp) throws TimeoutException
     {
@@ -624,7 +629,7 @@ public class ClueLessClient extends Thread
         }
         // Let the player choose which card to use when refuting a suggestion
         else if( statUp instanceof RefuteSuggestionPicker )
-        {   
+        {
             processRefuteSuggestionPicker( (RefuteSuggestionPicker) statUp );
         }
         //Notify all players that a given player was unable to refute
@@ -681,7 +686,7 @@ public class ClueLessClient extends Thread
             System.out.println("\t[Server] Update Status: Received StatusUpdate");
         }
         numUpdatesReceived++;
-        
+
         return;
     }
 
@@ -770,14 +775,14 @@ public class ClueLessClient extends Thread
         }
     }
 
-    
+
     /**
      * Steals the active thread to get the player to pick a card to refute the
      * suggestion
      * @param rs The specific RefuteSuggestionPicker message with the possible
      *   Cards to use in the refute process
-    * @throws TimeoutException 
-    * @throws InterruptedException 
+    * @throws TimeoutException
+    * @throws InterruptedException
      */
     // LOGGING NOT DONE
     public void processRefuteSuggestionPicker( RefuteSuggestionPicker rs ) throws TimeoutException
@@ -786,7 +791,7 @@ public class ClueLessClient extends Thread
          * disregards user input for all other things.
          */
         interrupted = true;
-       
+
         System.out.println( "\n\t[Server] You have multiple cards that can refute the"
            + " suggestion; please pick one:");
 
@@ -795,11 +800,11 @@ public class ClueLessClient extends Thread
          * hand into one arraylist for easier iterations.
          */
         ArrayList<Card> cardChoices = new ArrayList<Card>();
-        
+
         cardChoices.addAll( rs.getHand().getCharacters() );
         cardChoices.addAll( rs.getHand().getRooms() ) ;
         cardChoices.addAll( rs.getHand().getWeapons() );
-        
+
         for( int i = 1; i <= cardChoices.size(); i++ )
         {
            System.out.print( "[" + i + "] " );
@@ -817,34 +822,34 @@ public class ClueLessClient extends Thread
            }
 
         }
-        
-        // In case of errors, defaults to sending the first card found 
+
+        // In case of errors, defaults to sending the first card found
         int userInput = 1;
 
         try
         {
            userInput = Integer.parseInt( reader.read() );
-        } 
+        }
         catch( NumberFormatException e )
         {
            e.printStackTrace();
-        } 
+        }
         catch( IOException e )
         {
            e.printStackTrace();
         }
-        
-        
+
+
 //        System.out.println("About to send...");
         csc.send( new RefuteSuggestionResponse( UserPlayer.PlayerName, rs.getPlayer(), cardChoices.get( userInput - 1 ) ) );
 
-        
+
         interrupted = false; // All done!
-        
+
         return;
-        
+
     }
-    
+
     public void processAccuseNotification(AccuseNotification accuseNotification)
     {
         // Tell them about the accusation
@@ -891,7 +896,7 @@ public class ClueLessClient extends Thread
     {
         UserPlayer.PlayerName = name;
     }
-    
+
     /**
      * Prints the lobby instructions for the player.
      */
@@ -904,8 +909,8 @@ public class ClueLessClient extends Thread
        System.out.println("Request Start Game: 4");
        System.out.println("Exit: -1\n");
     }
-    
-    
+
+
     /**
      * Prints the game play instructions for the player.
      */
@@ -923,7 +928,7 @@ public class ClueLessClient extends Thread
        System.out.println("Accuse: 9");
        System.out.println("Exit: -1\n");
    }
-    
+
 
     /**
      * Kill the client
@@ -934,10 +939,10 @@ public class ClueLessClient extends Thread
         interrupt();  // Then kill our action processing
     }
 
-    // treating board as 
+    // treating board as
     public void setBoard(Board board)
     {
         this.board = board;
     }
-    
+
 }
