@@ -166,7 +166,7 @@ public class MainPanel extends JPanel
         gbc_actionBorderPanel.anchor = GridBagConstraints.CENTER;
 //        gbc_actionBorderPanel.fill = GridBagConstraints.BOTH;
         this.add( actionBorderPanel, gbc_actionBorderPanel );
-        boardPictureBorderPanel.setLayout( new BorderLayout() );
+        actionBorderPanel.setLayout( new BorderLayout() );
 
         // Generic JPanel to house the player picture that will go here
         actionPanel     = new ActionPanel();

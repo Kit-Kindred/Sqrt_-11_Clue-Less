@@ -192,7 +192,7 @@ public class LobbyMain extends JFrame
          }
       });
 
-      mainPanel.actionPanel.moveLeftButton.addActionListener(new ActionListener() {
+      mainPanel.actionPanel.dPad.moveLeftButton.addActionListener(new ActionListener() {
           @Override
           public void actionPerformed(ActionEvent e)
           {
@@ -200,7 +200,7 @@ public class LobbyMain extends JFrame
           }
       });
 
-    mainPanel.actionPanel.moveRightButton.addActionListener(new ActionListener() {
+    mainPanel.actionPanel.dPad.moveRightButton.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e)
       {
@@ -208,7 +208,7 @@ public class LobbyMain extends JFrame
       }
     });
 
-    mainPanel.actionPanel.moveUpButton.addActionListener(new ActionListener() {
+    mainPanel.actionPanel.dPad.moveUpButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e)
         {
@@ -216,7 +216,7 @@ public class LobbyMain extends JFrame
         }
     });
 
-    mainPanel.actionPanel.moveDownButton.addActionListener(new ActionListener() {
+    mainPanel.actionPanel.dPad.moveDownButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e)
         {
@@ -224,7 +224,7 @@ public class LobbyMain extends JFrame
         }
     });
 
-    mainPanel.actionPanel.moveShortcutButton.addActionListener(new ActionListener() {
+    mainPanel.actionPanel.dPad.moveShortcutButton.addActionListener(new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e)
         {
@@ -254,7 +254,7 @@ public class LobbyMain extends JFrame
          public void propertyChange(PropertyChangeEvent evt) {
             if ((boolean) evt.getNewValue())  // Server started game
             {
-               setBounds( 100, 100, 1000, 630 );
+               setBounds( 100, 100, 1200, 900 );
                ( (CardLayout) contentPane.getLayout() )
                        .next( contentPane );
             }
@@ -314,6 +314,7 @@ public class LobbyMain extends JFrame
             mainPanel.actionPanel.accuseButton.setEnabled((boolean) evt.getNewValue());
             mainPanel.actionPanel.suggestButton.setEnabled((boolean) evt.getNewValue());
             mainPanel.actionPanel.endTurnButton.setEnabled((boolean) evt.getNewValue());
+            mainPanel.actionPanel.dPad.enableDpad((boolean) evt.getNewValue());
             /*if((boolean) evt.getNewValue()){
 
             }
