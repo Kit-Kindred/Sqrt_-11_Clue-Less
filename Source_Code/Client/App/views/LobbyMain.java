@@ -2,6 +2,7 @@ package Client.App.views;
 
 import Client.ClueLessClient;
 import Common.*;
+import Common.Messages.ActionRequests.MoveRequest;
 import Common.Messages.StatusUpdates.PlayerHandUpdate;
 
 import java.awt.CardLayout;
@@ -40,10 +41,10 @@ public class LobbyMain extends JFrame
       createEvents();
 
    }
-   
-   
+
+
    /**
-    * Adding this method to bypass the lobby state. It's useful for viewing 
+    * Adding this method to bypass the lobby state. It's useful for viewing
     * how the client looks without having to spawn a bunch of client instances.
     */
    public LobbyMain(ClueLessClient c, Boolean test)
@@ -65,8 +66,8 @@ public class LobbyMain extends JFrame
       for( CardPanel card: cardsTest ){mainPanel.cardsPictureBorderPanel.add( card );}
    }
 
-   
-   
+
+
 
    /**
     * Creates and initializes the swing components that make up the
@@ -191,6 +192,46 @@ public class LobbyMain extends JFrame
          }
       });
 
+      mainPanel.actionPanel.moveLeftButton.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+              move(MoveRequest.Move.LEFT);
+          }
+      });
+
+    mainPanel.actionPanel.moveRightButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+          move(MoveRequest.Move.RIGHT);
+      }
+    });
+
+    mainPanel.actionPanel.moveUpButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            move(MoveRequest.Move.UP);
+        }
+    });
+
+    mainPanel.actionPanel.moveDownButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+          move(MoveRequest.Move.DOWN);
+        }
+    });
+
+    mainPanel.actionPanel.moveShortcutButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e)
+        {
+            move(MoveRequest.Move.SHORTCUT);
+        }
+    });
+
       // Whenever a player connects
       client.addPropertyChangeListener("startPlayer", new PropertyChangeListener() {
 
@@ -293,7 +334,9 @@ public class LobbyMain extends JFrame
          client.accuse(accuseHand);
       }
    }
-   
 
-
+   public void move(MoveRequest.Move m)
+   {
+      client.move( m );
+   }
 }
