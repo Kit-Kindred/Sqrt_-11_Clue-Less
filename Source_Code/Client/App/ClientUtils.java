@@ -26,12 +26,11 @@ public class ClientUtils
          {
             try
             {
-               LobbyMain gui = new LobbyMain(client);
-//               LobbyMain gui = new LobbyMain( client, true ); // This is used for
+//               LobbyMain gui = new LobbyMain(client);
+               LobbyMain gui = new LobbyMain( client, true ); // This is used for
                                                         // testing to bypass
                                                         // the lobby state.
                gui.setVisible( true );
-               
             } catch( Exception e )
             {
                e.printStackTrace();
@@ -39,6 +38,7 @@ public class ClientUtils
 
          }
 
+         
       } );
       
    }

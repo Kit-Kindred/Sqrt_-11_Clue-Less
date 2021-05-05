@@ -133,7 +133,12 @@ public class CharacterCard extends Card
     */
    public String getCharacterName()
    {
-      return String.valueOf( this.characterName );
+      
+      String output = String.valueOf( this.characterName );
+      output.toLowerCase();
+      output.replace( "_", "\s" );
+      System.out.println(output);
+      return output;
 
    }
 
