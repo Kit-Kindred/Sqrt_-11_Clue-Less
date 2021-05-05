@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Semaphore;
 
 /**
  * This is the main server application. It initializes ServerSocketComms, then waits to receive ActionRequests.
@@ -145,7 +146,12 @@ public class ClueLessServer extends Thread
      */
     private ServerState ServState;
 
+    private final Semaphore BoardUpdateSem = new Semaphore(0);
+    private Thread boardUpdateThread;
+
     private final TurnTracker turnTracker;
+
+    private final Board board = new Board();
 
     /**
      * The index of the player who's turn it is currently. This index corresponds to the
@@ -156,7 +162,7 @@ public class ClueLessServer extends Thread
     /**
     * The solution sealed in the envelope before the start of the Game
     */
-    private SolutionHand EnvelopeHand;
+    private SuggestHand EnvelopeHand;
 
     /**
      * Initialize the ClueLessServer. Set up game state
@@ -177,6 +183,12 @@ public class ClueLessServer extends Thread
     public void run()
     {
         ssc = new ServerSocketComms(ServerPort, this::recvCallback, this::onClientDisconnect);  // Initialize SSC
+
+        // More threads
+        boardUpdateThread = new Thread(this::boardUpdateThreadFunc);
+        boardUpdateThread.start();
+
+        // Start message listener
         while(true)  // Keep trying to execute commands forever
         {
             try
@@ -195,6 +207,26 @@ public class ClueLessServer extends Thread
         }
     }
 
+    public void boardUpdateThreadFunc()
+    {
+        for(;;)  // Go, go, go
+        {
+            try
+            {
+
+                BoardUpdateSem.acquire();  // Wait for someone to ask us to update the board. Which is actually sending out player updates. Go figure
+                synchronized (PlayerList)  // Synchronization on this is really half-assed throughout. Oh well
+                {
+                    sendToAllPlayers(new PlayerUpdate(PlayerList));
+                    System.out.println("Sent board");
+                }
+            }
+            catch(InterruptedException e)
+            {
+                return;  // Someone called close; time to die
+            }
+        }
+    }
 
     /**
      * SSC just received something from a client. Parse it and pass it to where it needs to go
@@ -247,7 +279,7 @@ public class ClueLessServer extends Thread
                 if(dc != null)
                 {
                     PlayerList.remove(dc);
-                    sendToAllPlayers(new PlayerConnection(dc.PlayerName, false));  // Let everyone know
+                    sendToAllPlayers(new PlayerConnection(dc.PlayerName, false, PlayerList.get(0).PlayerName, PlayerList.size()));  // Let everyone know
                 }
             }
         }
@@ -260,7 +292,7 @@ public class ClueLessServer extends Thread
                     if(p.ClientID == uid)  // Yup
                     {
                         p.PlayerConnected = false;
-                        sendToAllPlayers(new PlayerConnection(p.PlayerName, false));  // Let everyone know
+                        sendToAllPlayers(new PlayerConnection(p.PlayerName, false, PlayerList.get(0).PlayerName, PlayerList.size()));  // Let everyone know
                     }
                 }
             }
@@ -279,20 +311,31 @@ public class ClueLessServer extends Thread
     public void processAction(ActionRequest actionRequest)
     {
 
-        System.out.println("Process Action: Received ActionRequest");
+        System.out.println("Process Action: Received ActionRequest (" + actionRequest.getClass() + ")");
         if(actionRequest instanceof ConnectRequest)  // Process this one regardless of turn order
         {
             processConnectRequest((ConnectRequest) actionRequest);
         }
+        if(actionRequest instanceof ChatFromClient)
+        {
+            processChatFromClient((ChatFromClient) actionRequest);
+        }
+        boolean newGame = false;
         for(Player p : PlayerList)  // Only process non-connection requests from players
         {
             if(actionRequest.UniqueID == p.ClientID)
             {
                 if(actionRequest instanceof GameStartRequest)
                 {
-                    processGameStartRequest((GameStartRequest) actionRequest);
+                    newGame = processGameStartRequest((GameStartRequest) actionRequest);
                 }
-                if(PlayerList.get( CurrentPlayerIndex ).PlayerName.equals(p.PlayerName))  // Only the player who's turn it is can do these
+
+                else if(actionRequest instanceof RefuteSuggestionResponse)
+                {
+                    processRefuteSuggestionResponse((RefuteSuggestionResponse) actionRequest);
+                }
+
+                else if(PlayerList.get( CurrentPlayerIndex ).PlayerName.equals(p.PlayerName))  // Only the player who's turn it is can do these
                 {
                     if(actionRequest instanceof MoveRequest)
                     {
@@ -315,9 +358,31 @@ public class ClueLessServer extends Thread
             }
         }
 
+        if (newGame)
+        {
+            fillPlayers();
+        }
         // TODO: Actual in-game action requests
     }
 
+    public void processChatFromClient(ChatFromClient cfc)
+    {
+        for (Player p : PlayerList)
+        {
+            if(cfc.ToAll)
+            {
+                if(!p.PlayerName.equals("") && !p.PlayerName.equals(cfc.PlayerName))
+                {
+                    sendToPlayer(p.PlayerName, new ChatToClient(cfc.PlayerName, cfc.ChatMessage, true));
+                }
+            }
+            else if (p.PlayerName.equals(cfc.DestinationPlayer))
+            {
+                sendToPlayer(p.PlayerName, new ChatToClient(cfc.PlayerName, cfc.ChatMessage, false));
+                break;
+            }
+        }
+    }
 
     /**
      * A connected client wants to join the game
@@ -354,7 +419,7 @@ public class ClueLessServer extends Thread
                 synchronized (PlayerList)
                 {
                     // Yay, new player!
-                    sendToAllPlayers(new PlayerConnection(cr.PlayerName, true));  // Notify existing players
+                    sendToAllPlayers(new PlayerConnection(cr.PlayerName, true, PlayerList.size() > 0 ? PlayerList.get(0).PlayerName : cr.PlayerName, PlayerList.size()));  // Notify existing players
                     PlayerList.add(new Player(cr.PlayerName, cr.UniqueID));
                     sendToClient(cr.UniqueID, new ConnectRequestStatus(true, cr.PlayerName));  // Let player know they're in
                     return;
@@ -369,7 +434,7 @@ public class ClueLessServer extends Thread
      *
      * @param gsr - Request
      */
-    public void processGameStartRequest(GameStartRequest gsr)
+    public boolean processGameStartRequest(GameStartRequest gsr)
     {
         if(ServState == ServerState.Lobby)
         {
@@ -382,10 +447,10 @@ public class ClueLessServer extends Thread
 
                     // Update player objects with all the cards in the deck
                     EnvelopeHand = CardDeck.shuffleAndAssignCards( PlayerList );
-
-                    // sendToClient( PlayerList.get( CurrentPlayerIndex ).ClientID, new TurnUpdate(true) );
-
-
+                    
+                    // Notify the players of the first turn
+                    sendToAllPlayers( new TurnUpdate(PlayerList.get( CurrentPlayerIndex ).PlayerName) );
+                    
                     // Send the player hands to their respective clients
                     for( Player p : PlayerList )
                     {
@@ -393,37 +458,92 @@ public class ClueLessServer extends Thread
                        sendToClient( p.ClientID, new PlayerHandUpdate( p.getHand() ) );
                     }
 
-                    // Notify the players of the first turn
-                    sendToAllPlayers( new TurnUpdate(PlayerList.get( CurrentPlayerIndex ).PlayerName) );
-
+                    return true;
                 }
                 else
                 {
                     sendToClient(gsr.UniqueID, new Notification("Need at least " + MinPlayers + " players!"));
+                    return false;
                 }
             }
             else
             {
                 sendToClient(gsr.UniqueID, new Notification("Only " + PlayerList.get(0).PlayerName + " can start the game"));
+                return false;
             }
         }
         else
         {
             sendToClient(gsr.UniqueID, new Notification("Game in-progress!"));
+            return false;
         }
     }
 
+    public void fillPlayers()
+    {
+        // Fill in non-players, assign characters to players. After cards are dealt, so hopefully OK
+        int toAdd = MaxPlayers - PlayerList.size();
+        for (int i = 0; i < toAdd; i++)
+        {
+            PlayerList.add(new Player("", -13, false, false));
+        }
+        for(int i = 0; i < PlayerList.size(); i++)
+        {
+            PlayerList.get(i).assignCharacter(CharacterName.values()[i]);
+        }
+        System.out.println("Filled players " + PlayerList.size());
+        board.putPlayers(PlayerList);
+        for (Player p : PlayerList)
+        {
+            if(!p.PlayerName.equals(""))
+            {
+                sendToAllPlayers(new Notification(p.PlayerName + " is " + String.valueOf(p.charName)));
+            }
+        }
+        BoardUpdateSem.release();  // Send out a board update
+    }
 
     public void processMoveRequest( MoveRequest mr )
     {
         // processAction now checks if the sending player is allowed to move
         if(turnTracker.CanMove)
-        {
-            // TODO: update player location. Only update the turn tracker on valid moves
-            turnTracker.move();
-            // Announce the move to all players
-            sendToAllPlayers(new Notification("Player " + mr.PlayerName
-                    + " moved " + mr.moveDirection));
+        {   
+            // try to move player
+            try 
+            {
+                // get current player instance
+                Player player = PlayerList.get(CurrentPlayerIndex);
+                
+                // update player location on the board
+                board.movePlayer(player, mr);
+
+                // toggle to next player
+                turnTracker.move();
+
+                // Announce the move to all players
+                sendToAllPlayers(new Notification( mr.PlayerName
+                + " moved " + mr.moveDirection));
+
+                // Send the new board layout to all of the players
+//                for( Player p : PlayerList )
+//                {
+//                    //sendToClient( p.ClientID, new BoardUpdate( board ) );
+//                    //sendToAllPlayers(new PlayerUpdate(PlayerList));
+//                    System.out.println(p.PlayerName);
+//                    System.out.println(p.charName);
+//                    System.out.println(p.xPos);
+//                    System.out.println(p.yPos);
+//                }
+
+                //sendToAllPlayers( new PlayerUpdate(PlayerList) );
+                //board.printBoard();
+                BoardUpdateSem.release();
+            }
+            // illegal move attempted
+            catch (IllegalArgumentException e)
+            {
+                sendToClient(mr.UniqueID, new Notification("Sorry, you cannot move there."));
+            }       
         }
         else
         {
@@ -442,49 +562,80 @@ public class ClueLessServer extends Thread
 
             sendToAllPlayers( new SuggestNotification( sr ) );
 
+            movePlayerByName(sr.Hand.character.getCharacterEnum(), sr.xPos, sr.yPos);
+
             for (int i = 1; i < PlayerList.size(); i++)  // Start at 1 to start with the next player. Don't check the current player
             {
                 Player p = PlayerList.get((CurrentPlayerIndex + i) % PlayerList.size());
-                PlayerHand possibleRefutations = sr.checkRefutations( p.getHand() );
+                if(!p.PlayerName.equals(""))  // Skip dummy players
+                {
+                    PlayerHand possibleRefutations = sr.checkRefutations(p.getHand());
 
-                if (!possibleRefutations.isEmpty() )
-                {
-                    sendToAllPlayers( new SuggestionWrong( sr.PlayerName, p.PlayerName ) );
-                    if ( !possibleRefutations.getCharacters().isEmpty() )
-                    {
-                        sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getCharacters().get( 0 ) ) );
+
+                    if (!possibleRefutations.isEmpty()) {
+
+                        sendToAllPlayers(new PlayerUpdate(PlayerList));
+                        /**
+                         * This checks to see if the player has more than one card to refute the
+                         * suggestion. If there's only one card that can refute the suggestion,
+                         * we don't bother asking the player to choose.
+                         * TODO: Clean this up a bit
+                         */
+                        if (possibleRefutations.numberOfCards() == 1) {
+                            if (!possibleRefutations.getCharacters().isEmpty()) {
+                                sendToPlayer(PlayerList.get(CurrentPlayerIndex).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getCharacters().get(0)));
+                            } else if (!(possibleRefutations.getRooms().isEmpty())) {
+                                sendToPlayer(PlayerList.get(CurrentPlayerIndex).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getRooms().get(0)));
+                            } else if (!(possibleRefutations.getWeapons().isEmpty())) {
+                                sendToPlayer(PlayerList.get(CurrentPlayerIndex).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getWeapons().get(0)));
+                            }
+                        }
+
+                        // Ask the player which card to use to refute the suggestion
+                        else {
+                            System.out.println(possibleRefutations);
+                            sendToPlayer(p.PlayerName, new RefuteSuggestionPicker(sr.PlayerName, possibleRefutations));
+                        }
+
+                        System.out.println(possibleRefutations);
+
+                        // Tell all other players
+                        sendToAllPlayers(new SuggestionWrong(sr.PlayerName, p.PlayerName));
+
+                        // We found a player who can refute the suggestion, so we're done here.
+                        break;
+                    } else {
+                        sendToAllPlayers(new PlayerUpdate(PlayerList));
+                        sendToAllPlayers(new SuggestionPassed(p.PlayerName));
                     }
-                    else if ( ! ( possibleRefutations.getRooms().isEmpty()) )
-                    {
-                        sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getRooms().get( 0 ) ) );
-                    }
-                    else if ( ! ( possibleRefutations.getWeapons().isEmpty()) )
-                    {
-                        sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getWeapons().get( 0 ) ) );
-                    }
-                    break;
-                }
-                else
-                {
-                    sendToAllPlayers(new SuggestionPassed( p.PlayerName ));
                 }
             }
             // If it comes back to us, do we lie or do nothing? I think do nothing is better?
             //sendToAllPlayers(new SuggestionPassed( PlayerList.get(CurrentPlayerIndex).PlayerName));
+
         }
         else
         {
             sendToClient(sr.UniqueID, new Notification("You've already suggested this turn!"));
         }
     }
-
-    public void processAccuseRequest( AccuseRequest acccuseRequest )
+    
+    
+    public void processRefuteSuggestionResponse( RefuteSuggestionResponse rsr )
+    {
+       System.out.println("Received Refute Suggest Response from " + rsr.PlayerName );
+       sendToPlayer( rsr.getToPlayer(), new RefuteSuggestion( rsr.PlayerName, rsr.getCard() ) );
+       
+    }
+    
+    
+    public void processAccuseRequest( AccuseRequest accuseRequest )
     {
         // prep the AccuseNotification here with who and what they are guessing.
-        AccuseNotification accuseNotification = new AccuseNotification(acccuseRequest.PlayerName, acccuseRequest.AccuseHand);
+        AccuseNotification accuseNotification = new AccuseNotification(accuseRequest.PlayerName, accuseRequest.AccuseHand);
 
         // Check to see if the person is correct
-        if (EnvelopeHand.isEqual(acccuseRequest.AccuseHand))
+        if (EnvelopeHand.isEqual(accuseRequest.AccuseHand))
         {
             // If correct, tell everyone, end game
             accuseNotification.setCorrect(true);
@@ -505,6 +656,19 @@ public class ClueLessServer extends Thread
             sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new EnvelopePeakNotification( this.EnvelopeHand ) );
             // Tell the player who accused (incorrectly) that their "Out"
             sendToPlayer( PlayerList.get ( CurrentPlayerIndex ).PlayerName, new OutNotification( PlayerList.get ( CurrentPlayerIndex ).PlayerName ) );
+        }
+    }
+
+    public void movePlayerByName(CharacterName cn, int x, int y)
+    {
+        for (Player p : PlayerList){
+            if(p.charName == cn)
+            {
+                p.xPos = x;
+                p.yPos = y;
+                board.putPlayer(p);
+                BoardUpdateSem.release();
+            }
         }
     }
 
@@ -586,6 +750,7 @@ public class ClueLessServer extends Thread
     public void close()
     {
         ssc.close();  // Kill server comms
+        boardUpdateThread.interrupt();  // Kill the board updates
         interrupt();  // Then kill our action processing
     }
 }

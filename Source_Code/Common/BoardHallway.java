@@ -1,18 +1,20 @@
 package Common;
 
+import java.io.Serializable;
+
 /**
  * This class defines the hallway type as an extension of the room type
- * 
+ *
  * @author Steve Nilla
  */
-public class BoardHallway extends BoardRoom 
-{ 
-  /** 
+public class BoardHallway extends BoardRoom implements Serializable
+{
+  /**
    * Get the occupied state of the hallway
-   * 
+   *
    * @return occupied
    */
-  public boolean isOccupied() 
+  public boolean isOccupied()
   {
     return !getPlayers().isEmpty();
   }
@@ -23,5 +25,15 @@ public class BoardHallway extends BoardRoom
   public BoardHallway()
   {
     super("Hallway");
+  }
+
+  public BoardHallway(String s)
+  {
+      super(s);
+  }
+
+  public BoardHallway(BoardHallway b)
+  {
+    super(b);
   }
 }

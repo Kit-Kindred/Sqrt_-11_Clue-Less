@@ -1,17 +1,17 @@
 package Common.Messages.StatusUpdates;
 
-import Common.SolutionHand;
+import Common.SuggestHand;
 
 public class EnvelopePeakNotification extends StatusUpdate
 {
-    public SolutionHand EnvelopeHand;
+    public SuggestHand EnvelopeHand;
 
     public EnvelopePeakNotification()
     {
         super();
     }
 
-    public EnvelopePeakNotification(SolutionHand hand)
+    public EnvelopePeakNotification(SuggestHand hand)
     {
         this.EnvelopeHand = hand;
     }
@@ -21,7 +21,7 @@ public class EnvelopePeakNotification extends StatusUpdate
         String outString = "";
         outString += "The correct answer is that ";
         outString += this.EnvelopeHand.getCharacterName();
-        outString += " dit it in the ";
+        outString += " did it in the ";
         outString += this.EnvelopeHand.getRoomName();
         outString += " with the ";
         outString += this.EnvelopeHand.getWeaponType();

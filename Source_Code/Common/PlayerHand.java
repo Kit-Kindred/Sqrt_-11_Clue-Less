@@ -124,7 +124,37 @@ public class PlayerHand implements Serializable
    {
       return (character.isEmpty() && room.isEmpty() && weapon.isEmpty());
    }
+   
 
+   /**
+    * Method to check the number of cards in the player's hand
+    * @return Number of cards in the player's hand
+    */
+   public int numberOfCards()
+   {
+      return this.character.size() + this.room.size() + this.weapon.size();
+   }
+   
+   
+   /**
+    * Empties the player's hand.
+    */
+   public void clearHand()
+   {
+      this.character.clear();
+      this.room.clear();
+      this.weapon.clear();
+   }
+   
+   public ArrayList<Card> getCards()
+   {
+      ArrayList<Card> fullHand = new ArrayList<Card>();
+      fullHand.addAll(character);
+      fullHand.addAll(weapon);
+      fullHand.addAll(room);
+      return fullHand;
+   }
+   
    /**
     * To string method returning a string of all the cards in the hand instance.
     */
@@ -157,7 +187,11 @@ public class PlayerHand implements Serializable
       }
 
       // Remove trailing comma and space
-      outString = outString.substring( 0, outString.lastIndexOf( ", " ) );
+      if( outString.endsWith( ", " ))
+      {
+         outString = outString.substring( 0, outString.lastIndexOf( ", " ) );
+      }
+
 
       return outString;
    }

@@ -1,5 +1,5 @@
 package Common;
-
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -8,8 +8,9 @@ import java.util.ArrayList;
  * @author Kit Kindred & Steve Nilla
  *
  */
-public class Player
+public class Player implements Serializable
 {
+    private static final long serialVersionUID = -9155126928314372511L; // make serialized id
     public boolean PlayerActive;  // true if the player is in; false if the player is out
     public boolean PlayerConnected;  // true if the player is connected; false otherwise
     public boolean PlayerTurn; // True is it's the player's turn. This should be set by the server.
@@ -22,7 +23,9 @@ public class Player
     public int yPos; // y position of player on the board
     
     protected PlayerHand hand;
-    
+
+    public CharacterCard.CharacterName charName;
+
     public Player()
     {
         this("", -1);
@@ -37,10 +40,72 @@ public class Player
         PlayerTurn = false;
         hand = new PlayerHand();
     }
+
+    public Player(String playerName, int clientID, boolean conn, boolean act)
+    {
+        PlayerName = playerName;
+        ClientID = clientID;
+        PlayerActive = act;
+        PlayerConnected = conn;
+        PlayerTurn = false;
+        hand = new PlayerHand();
+    }
+
+    public Player(Player other)
+    {
+        PlayerName = other.PlayerName;
+        ClientID = other.ClientID;
+        PlayerActive = other.PlayerActive;
+        PlayerConnected = other.PlayerConnected;
+        PlayerTurn = other.PlayerTurn;
+        hand = other.getHand();
+        xPos = other.xPos;
+        yPos = other.yPos;
+        charName = other.charName;
+    }
     
     public void setPlayerTurn( boolean turn )
     {
        this.PlayerTurn = turn;
+    }
+
+
+    public void assignCharacter(CharacterCard.CharacterName name)
+    {
+        charName = name;
+        switch(name)
+        {
+            case MR_GREEN ->
+                    {
+                        xPos = 1;
+                        yPos = 4;
+                    }
+            case MRS_WHITE ->
+                    {
+                        xPos = 3;
+                        yPos = 4;
+                    }
+            case MRS_PEACOCK ->
+                    {
+                        xPos = 0;
+                        yPos = 3;
+                    }
+            case MISS_SCARLET ->
+                    {
+                        xPos = 3;
+                        yPos = 0;
+                    }
+            case PROFESSOR_PLUM ->
+                    {
+                        xPos = 0;
+                        yPos = 1;
+                    }
+            case COLONEL_MUSTARD ->
+                    {
+                        xPos = 4;
+                        yPos = 1;
+                    }
+        }
     }
 
     /**
