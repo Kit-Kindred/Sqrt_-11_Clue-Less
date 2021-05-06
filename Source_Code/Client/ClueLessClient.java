@@ -653,6 +653,7 @@ public class ClueLessClient extends Thread
             //((BoardUpdate) statUp).getBoard().printBoard();
             // display board
             //this.board.printBoard();
+            pcs.firePropertyChange("BoardUpdate", null, ((BoardUpdate) statUp));
         }
         // Notify players about an accusation
         else if (statUp instanceof AccuseNotification)

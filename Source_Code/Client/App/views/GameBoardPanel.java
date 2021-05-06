@@ -72,10 +72,10 @@ public class GameBoardPanel extends JPanel
     *
     * @param board
     */
-   public void updateBoard( Board board )
+   public void updateBoard( Board b )
    {
       pcs.firePropertyChange(
-         new PropertyChangeEvent( board, "GameBoard", this.board, board ) );
+         new PropertyChangeEvent( b, "GameBoard", this.board, b ) );
       this.board = board;
 
    }
