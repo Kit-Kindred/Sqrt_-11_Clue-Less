@@ -133,7 +133,22 @@ public class CharacterCard extends Card
     */
    public String getCharacterName()
    {
-      return String.valueOf( this.characterName );
+      
+      String str = String.valueOf( this.characterName );
+      str = str.toLowerCase();
+      if( str.contains( "_" ) )
+      {
+         str = str.replace( "_", "\s" );
+      }
+   
+      StringBuilder output = new StringBuilder( str );
+      int i = 0;
+      do {
+         output.replace(i, i + 1, output.substring(i,i + 1).toUpperCase());
+         i =  output.indexOf(" ", i) + 1;
+      } while (i > 0 && i < output.length());
+      
+      return output.toString();
 
    }
 

@@ -26,6 +26,7 @@ public class LobbyMain extends JFrame
    private LobbyStatusPanel     statusPanel;
 
    private AccuseDialog accuseDialog;
+  private SuggestDialog suggestDialog;
 
    private final ClueLessClient client;
 
@@ -119,6 +120,7 @@ public class LobbyMain extends JFrame
       mainGamePanel.setLayout( card );
 
       accuseDialog = new AccuseDialog(this, "Accuse");
+     suggestDialog = new SuggestDialog(this, "Suggest");
 
    }
 
@@ -182,6 +184,13 @@ public class LobbyMain extends JFrame
                                    mainPanel.chatBox.sendBox.getText(),
                                    mainPanel.chatBox.sendTo.getSelectedIndex() == 0);
             mainPanel.chatBox.sendBox.setText("");
+         }
+      });
+
+      mainPanel.actionPanel.suggestButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
+           suggest();
          }
       });
 
@@ -335,6 +344,20 @@ public class LobbyMain extends JFrame
          client.accuse(accuseHand);
       }
    }
+
+  public void suggest()
+  {
+     RoomCard cr = client.getRoom();
+     if (cr != null)
+     {
+        suggestDialog.open(cr);
+        SuggestHand suggestHand = suggestDialog.getSuggestHand();
+        if (suggestHand != null)
+        {
+           client.suggest(suggestHand);
+        }
+     }
+  }
 
    public void move(MoveRequest.Move m)
    {

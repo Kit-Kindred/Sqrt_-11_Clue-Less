@@ -105,12 +105,12 @@ public class ClueLessClient extends Thread
                         {
                             System.out.println("Sending action request...\n");
                             clientApplication.csc.send(new ActionRequest());
-                            printPreGameInstructions();
+//                            printPreGameInstructions();
                         }
                 case 2 ->
                         {
                             System.out.println("Num status updates received: " + clientApplication.numUpdatesReceived + "\n");
-                            printPreGameInstructions();
+//                            printPreGameInstructions();
                         }
                 case 3 ->
                         {
@@ -124,7 +124,7 @@ public class ClueLessClient extends Thread
                             {
                                 System.out.println("Connect request pending...\n");
                             }
-                            printPreGameInstructions();
+//                            printPreGameInstructions();
 
                         }
                 case 4 ->
@@ -145,7 +145,7 @@ public class ClueLessClient extends Thread
                             }
 
                             input = Integer.parseInt( reader.read() );
-                            printPreGameInstructions();
+//                            printPreGameInstructions();
                         }
                 case -1 ->
                         {
@@ -154,7 +154,7 @@ public class ClueLessClient extends Thread
                 default ->
                         {
                             System.out.println("Sorry, that option isn't currently supported. Please try again\n");
-                            printPreGameInstructions();
+//                            printPreGameInstructions();
                         }
             }
         }
@@ -536,6 +536,16 @@ public class ClueLessClient extends Thread
     public void endTurn()
     {
         csc.send(new EndTurn(UserPlayer.PlayerName));
+    }
+
+    public RoomCard getRoom()
+    {
+        return board.getPlayerRoom(UserPlayer);
+    }
+
+    public void suggest(SuggestHand suggestHand)
+    {
+        csc.send(new SuggestRequest(UserPlayer.PlayerName, suggestHand, UserPlayer.xPos, UserPlayer.yPos));
     }
 
     public void accuse(SuggestHand accuseHand)

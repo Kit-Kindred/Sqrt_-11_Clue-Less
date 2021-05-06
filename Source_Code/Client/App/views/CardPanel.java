@@ -48,7 +48,7 @@ public class CardPanel extends JComponent implements SelectablePanel
    {
       this.card = card;
       setLayout( new BorderLayout(0, 0) );
-      setSize( 80, 100 );
+      setSize( 80, 105 );
       setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0) );
 
       
@@ -218,7 +218,7 @@ public class CardPanel extends JComponent implements SelectablePanel
                .addPreferredGap(ComponentPlacement.RELATED, 5, Short.MAX_VALUE)
                .addComponent(label)
 //               .addComponent( button ).addComponent( button2 ) // TODO: Remove these buttons after testing.
-               .addGap(2))
+               .addGap(7))
       );
       
       Image dimg = picture.getScaledInstance( 80, 110,
