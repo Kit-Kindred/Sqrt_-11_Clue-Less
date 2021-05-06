@@ -4,6 +4,7 @@ import Client.ClueLessClient;
 import Common.*;
 import Common.Messages.ActionRequests.MoveRequest;
 import Common.Messages.StatusUpdates.PlayerHandUpdate;
+import Common.Messages.StatusUpdates.BoardUpdate;
 
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
@@ -292,6 +293,13 @@ public class LobbyMain extends JFrame
                }
             }
          }
+      });
+
+      client.addPropertyChangeListener("BoardUpate", new PropertyChangeListener() {
+         @Override
+         public void propertyChange(PropertyChangeEvent evt) {
+             ((GameBoardPanel) mainPanel.boardPictureBorderPanel).updateBoard(((BoardUpdate) evt.getNewValue()).getBoard());
+        }
       });
 
       client.addPropertyChangeListener("PlayerHand", new PropertyChangeListener() {

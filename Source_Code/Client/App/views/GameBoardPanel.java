@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import Common.Board;
 import Common.BoardHallway;
+import Common.BoardRoom;
 
 
 /**
@@ -23,6 +24,7 @@ public class GameBoardPanel extends JPanel
 {
 
    Board                 board;
+   RoomPanel[][]         rooms;
    PropertyChangeSupport pcs;
 
 
@@ -31,32 +33,35 @@ public class GameBoardPanel extends JPanel
 //      setSize( 875, 420 );
       pcs = new PropertyChangeSupport( this );
 
-      board = new Board();
+      this.board = new Board();
+      this.rooms = new RoomPanel[5][5];
+      this.updateRooms();
 
       GridLayout grid = new GridLayout( 5, 5, 5, 5);
       this.setLayout( grid );
 
       // Add all the rooms to this panel one by one (in order!)
+
       for( int i = 0; i <= 4; i++ )
       {
          for( int j = 0; j <= 4; j++ )
          {
-            if (board.board[i][j] instanceof BoardHallway )
+            if (this.board.board[i][j] instanceof BoardHallway )
             {
-               add( new RoomPanel( board.board[i][j] ) );
-               System.out.println("Adding... " + board.board[i][j].getName());
+                add( rooms[i][j]  );
+                System.out.println("Adding... " + this.board.board[i][j].getName());
             }
 
             else if (board.board[i][j] != null)
             {
-               add( new RoomPanel( board.board[i][j] ) );
-               System.out.println("Adding... " + board.board[i][j].getName());
+                add( rooms[i][j]  );
+                System.out.println("Adding... " + this.board.board[i][j].getName());
             }
 
             else
             {
-               add( new RoomPanel( "" ) );
-               System.out.println("Adding empty space ");
+                add( rooms[i][j]  );
+                System.out.println("Adding empty space ");
             }
          }
       }
@@ -75,9 +80,37 @@ public class GameBoardPanel extends JPanel
    public void updateBoard( Board b )
    {
       pcs.firePropertyChange(
-         new PropertyChangeEvent( b, "GameBoard", this.board, b ) );
-      this.board = board;
+         new PropertyChangeEvent( b, "BoardUpate", this.board, b ) );
+      this.board = b;
+      this.updateRooms();
 
+   }
+
+   /**
+   * Updates each of the rooms from the current board object
+   */
+   public void updateRooms()
+   {
+       for( int i = 0; i <= 4; i++ )
+       {
+          for( int j = 0; j <= 4; j++ )
+          {
+             if (this.board.board[i][j] instanceof BoardHallway )
+             {
+                 rooms[i][j] = new RoomPanel( (BoardRoom) this.board.board[i][j] );
+             }
+
+             else if (board.board[i][j] != null)
+             {
+                 rooms[i][j] = new RoomPanel( (BoardRoom) this.board.board[i][j] );
+             }
+
+             else
+             {
+                 rooms[i][j] = new RoomPanel( "" );
+             }
+          }
+       }
    }
 
 
@@ -88,15 +121,9 @@ public class GameBoardPanel extends JPanel
     *        The specific Board instance to draw.
     * @return
     */
-   public void drawBoard( Board board )
+   public void drawBoard( Board b )
    {
-       for( int i = 0; i <= 4; i++ )
-       {
-          for( int j = 0; j <= 4; j++ )
-          {
-              board[ii][jj].addPlayerPieces();
-          }
-      }
+       this.board = b;
    }
 
 
@@ -143,7 +170,7 @@ class GameBoardListener implements PropertyChangeListener
    public void propertyChange( PropertyChangeEvent evt )
    {
 
-      if( evt.getPropertyName().equals( "GameBoard" ) )
+      if( evt.getPropertyName().equals( "BoardUpate" ) )
       {
          ( (GameBoardPanel) evt.getSource() )
             .drawBoard( (Board) evt.getNewValue() );

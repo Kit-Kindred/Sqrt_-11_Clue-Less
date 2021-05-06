@@ -40,43 +40,43 @@ public class RoomPanel extends JComponent implements SelectablePanel
    Boolean selected = false;
 
    // Ideally we dont use this one
-   // RoomPanel( String name )
-   // {
-   //
-   //    this.room = new BoardRoom( name );
-   //    this.roomName = name;
-   //    setLayout( new BorderLayout(0, 0) );
-   //    setSize( 75, 90 );
-   //    setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0) );
-   //
-   //    pcs = new PropertyChangeSupport(this);
-   //
-   //
-   //    /* There are occasional "blanks" on the board that don't have a room or hallway.
-   //     * For these, we just want an empy panel
-   //     */
-   //    if( !name.equals( "" ) )
-   //    {
-   //       File root = null;
-   //       try
-   //       {
-   //          root = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
-   //
-   //          //picture = ImageIO.read( new File( root, "../../../../Sqrt_-11_Clue-Less/Source_Code/Client/App/Resources/Cards/" + cardName + ".png") );
-   //          picture = ImageIO.read( new File( root, "/../Source_Code/Client/App/Resources/Rooms/" + roomName + ".png") );
-   //
-   //       }
-   //       catch( Exception e )
-   //       {
-   //          e.printStackTrace();
-   //          System.out.println(root + "\n" + roomName);
-   //       }
-   //
-   //       createComponents();
-   //       createEvents();
-   //    }
-   //
-   // }
+   RoomPanel( String name )
+   {
+
+      this.room = new BoardRoom( name );
+      this.roomName = name;
+      setLayout( new BorderLayout(0, 0) );
+      setSize( 75, 90 );
+      setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0) );
+
+      pcs = new PropertyChangeSupport(this);
+
+
+      /* There are occasional "blanks" on the board that don't have a room or hallway.
+       * For these, we just want an empy panel
+       */
+      if( !name.equals( "" ) )
+      {
+         File root = null;
+         try
+         {
+            root = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
+
+            //picture = ImageIO.read( new File( root, "../../../../Sqrt_-11_Clue-Less/Source_Code/Client/App/Resources/Cards/" + cardName + ".png") );
+            picture = ImageIO.read( new File( root, "/../Source_Code/Client/App/Resources/Rooms/" + roomName + ".png") );
+
+         }
+         catch( Exception e )
+         {
+            e.printStackTrace();
+            System.out.println(root + "\n" + roomName);
+         }
+
+         createComponents();
+         createEvents();
+      }
+
+   }
 
    // New Constructor to take a BoardRoom in
    RoomPanel( BoardRoom br )
@@ -200,18 +200,21 @@ public class RoomPanel extends JComponent implements SelectablePanel
            // For each character
            for (int ii = 0; ii < this.room.players.size(); ii++)
            {
+               File root = null;
+
                try
                {
+                    root = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
+
                     // grab the picture
-                    File root = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
                     BufferedImage pieceImage = ImageIO.read( new File( root, "/../Source_Code/Client/App/Resources/Pieces/" + this.room.players.get(ii).charName + ".png") );
-                    pieceImage = resizeImage(pieceImage, pieceWidth, pieceHeight);
+                    pieceImage = resizeImage(pieceImage, this.picture.getWidth() / 2 , this.picture.getHeight() / 3 );
 
                     // paste it on the correct spot
-                    Graphics2D g_roomImage = this.picture.createGraphics();
-                    g_roomImage.drawImage(this.picture, 0, 0, null);
-                    g_roomImage.drawImage(pieceImage, (ii / 3) * this.picture.getWidth() / 2, (ii % 3) * his.picture.getHeight() / 3, null);
-                    g_roomImage.dispose();
+                    Graphics2D g2d_roomImage = this.picture.createGraphics();
+                    g2d_roomImage.drawImage(this.picture, 0, 0, null);
+                    g2d_roomImage.drawImage(pieceImage, (ii / 3) * this.picture.getWidth() / 2, (ii % 3) * this.picture.getHeight() / 3, null);
+                    g2d_roomImage.dispose();
                }
                catch( Exception e )
                {
