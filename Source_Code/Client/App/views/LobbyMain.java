@@ -190,7 +190,7 @@ public class LobbyMain extends JFrame
       mainPanel.actionPanel.suggestButton.addActionListener(new ActionListener() {
          @Override
          public void actionPerformed(ActionEvent e) {
-//            suggest();
+           suggest();
          }
       });
 
