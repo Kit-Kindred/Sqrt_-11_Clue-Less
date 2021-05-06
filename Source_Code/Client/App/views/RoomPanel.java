@@ -85,6 +85,10 @@ public class RoomPanel extends JComponent implements SelectablePanel
       roomPicture = new JLabel();
       roomPicture.setBorder(UIManager.getBorder("Tree.editorBorder"));
 
+      if( roomName.contains( "Hallway" ) )
+      {
+         roomName = "Hallway";
+      }
       
       // Get the card name and add/align EVERYTHING
       label = new JLabel( "<html>" + roomName + "</html>" );

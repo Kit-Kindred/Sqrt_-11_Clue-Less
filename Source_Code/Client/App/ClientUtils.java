@@ -31,7 +31,6 @@ public class ClientUtils
                                                         // testing to bypass
                                                         // the lobby state.
                gui.setVisible( true );
-               
             } catch( Exception e )
             {
                e.printStackTrace();
@@ -39,6 +38,7 @@ public class ClientUtils
 
          }
 
+         
       } );
       
    }
