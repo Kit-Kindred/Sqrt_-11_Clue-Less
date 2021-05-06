@@ -538,16 +538,6 @@ public class ClueLessClient extends Thread
         csc.send(new EndTurn(UserPlayer.PlayerName));
     }
 
-    public RoomCard getRoom()
-    {
-        return board.getPlayerRoom(UserPlayer);
-    }
-
-    public void suggest(SuggestHand suggestHand)
-    {
-        csc.send(new SuggestRequest(UserPlayer.PlayerName, suggestHand, UserPlayer.xPos, UserPlayer.yPos));
-    }
-
     public void accuse(SuggestHand accuseHand)
     {
         csc.send(new AccuseRequest(UserPlayer.PlayerName, accuseHand));

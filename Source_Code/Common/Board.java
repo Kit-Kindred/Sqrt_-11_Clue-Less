@@ -132,16 +132,6 @@ public class Board implements Serializable
     return !(board[p.yPos][p.xPos] instanceof BoardHallway) && (board[p.yPos][p.xPos] != null);
   }
 
-  public RoomCard getPlayerRoom(Player p)
-  {
-      if(inRoom(p))
-      {
-          RoomCard.RoomName rn = boardTextToRoomEnum(board[p.yPos][p.xPos]);
-          return new RoomCard(rn);
-      }
-      return null;
-  }
-
   public RoomCard.RoomName boardTextToRoomEnum(BoardRoom b)
   {
     switch(b.name)
