@@ -5,10 +5,12 @@ import javax.swing.border.TitledBorder;
 import javax.swing.text.BadLocationException;
 import java.awt.*;
 
+import Client.App.views.GameBoardPanel;
+
 public class MainPanel extends JPanel
 {
     JPanel boardPictureBorderPanel;
-    JPanel boardPicture;
+    GameBoardPanel boardPicture;
     JLabel tempBoardPictureLabel;
 
     HandPanel cardsPictureBorderPanel;
@@ -60,7 +62,11 @@ public class MainPanel extends JPanel
         gbc_playerPictureBorderPanel.gridy = 1;
         gbc_playerPictureBorderPanel.anchor = GridBagConstraints.NORTHWEST;
         gbc_playerPictureBorderPanel.fill = GridBagConstraints.BOTH;
-        this.add( new GameBoardPanel() , gbc_playerPictureBorderPanel );
+
+        this.add( boardPictureBorderPanel , gbc_playerPictureBorderPanel );
+
+        boardPicture = new GameBoardPanel();
+        boardPictureBorderPanel.add(boardPicture);
 //        GridBagLayout gbl_playerPictureBorderPanel = new GridBagLayout();
 //        boardPictureBorderPanel.setLayout( gbl_playerPictureBorderPanel );
 
@@ -93,7 +99,7 @@ public class MainPanel extends JPanel
         gbc_cardsPictureBorderPanel.fill = GridBagConstraints.BOTH;
         this.add( cardsPictureBorderPanel, gbc_cardsPictureBorderPanel );
         GridBagLayout gbl_cardsPictureBorderPanel = new GridBagLayout();
-        boardPictureBorderPanel.setLayout( gbl_cardsPictureBorderPanel );
+        cardsPictureBorderPanel.setLayout( gbl_cardsPictureBorderPanel );
 
         // Generic JPanel to house the player picture that will go here
 //        cardsPicture     = new JPanel();

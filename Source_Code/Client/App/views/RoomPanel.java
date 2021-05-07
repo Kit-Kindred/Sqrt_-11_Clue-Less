@@ -8,6 +8,8 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.util.ArrayList;
+
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -23,6 +25,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.BevelBorder;
 
 import Common.BoardRoom;
+import Common.Player;
 
 public class RoomPanel extends JComponent implements SelectablePanel
 {
@@ -36,7 +39,7 @@ public class RoomPanel extends JComponent implements SelectablePanel
    private final PropertyChangeSupport pcs;
    Boolean selectable = false; // Controls whether or not this has a "clickable" border
    Boolean selected = false;
-   
+
    RoomPanel( String name )
    {
 
@@ -45,10 +48,10 @@ public class RoomPanel extends JComponent implements SelectablePanel
       setLayout( new BorderLayout(0, 0) );
       setSize( 75, 90 );
       setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0) );
-      
+
       pcs = new PropertyChangeSupport(this);
 
-      
+
       /* There are occasional "blanks" on the board that don't have a room or hallway.
        * For these, we just want an empy panel
        */
@@ -62,17 +65,38 @@ public class RoomPanel extends JComponent implements SelectablePanel
             //picture = ImageIO.read( new File( root, "../../../../Sqrt_-11_Clue-Less/Source_Code/Client/App/Resources/Cards/" + cardName + ".png") );
             picture = ImageIO.read( new File( root, "/../Source_Code/Client/App/Resources/Rooms/" + roomName + ".png") );
 
-         } 
+         }
          catch( Exception e )
          {
             e.printStackTrace();
             System.out.println(root + "\n" + roomName);
          }
-         
+
          createComponents();
          createEvents();
       }
-      
+
+   }
+
+   public void updatePlayers(ArrayList<Player> players)
+   {
+       for (Player p : players)
+       {
+           File root = null;
+           try
+           {
+               root = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
+               picture = ImageIO.read( new File( root, "/../Source_Code/Client/App/Resources/Pieces/" + p.charName + ".png") );
+               Image dimg = picture.getScaledInstance( 75, 90, Image.SCALE_SMOOTH );
+               roomPicture.setIcon( new ImageIcon( dimg ) );
+           }
+           catch( Exception e )
+           {
+              e.printStackTrace();
+              System.out.println(root + "\n" + roomName);
+           }
+       }
+       repaint();
    }
 
    private void createComponents()
@@ -80,7 +104,7 @@ public class RoomPanel extends JComponent implements SelectablePanel
       content = new JPanel();
       content.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
       add(content);
-      
+
       // Start adding our components into the panel
       roomPicture = new JLabel();
       roomPicture.setBorder(UIManager.getBorder("Tree.editorBorder"));
@@ -89,7 +113,7 @@ public class RoomPanel extends JComponent implements SelectablePanel
       {
          roomName = "Hallway";
       }
-      
+
       // Get the card name and add/align EVERYTHING
       label = new JLabel( "<html>" + roomName + "</html>" );
       label.setHorizontalAlignment(SwingConstants.CENTER);
@@ -112,21 +136,21 @@ public class RoomPanel extends JComponent implements SelectablePanel
                .addComponent(label)
                .addGap(1))
       );
-      
+
       Image dimg = picture.getScaledInstance( 75, 90,
          Image.SCALE_SMOOTH );
-      
+
       roomPicture.setIcon( new ImageIcon( dimg ) );
-      
+
       content.setLayout(gl_cardContent);
    }
-   
+
    private void createEvents()
    {
 
       // We need to create our own listener for the selectable boolean
       addPropertyChangeListener( "selectable", new SelectableListener() );
-      
+
       /*
        * Listen for the user clicks. We'll use this to help with movement
        */
@@ -136,24 +160,24 @@ public class RoomPanel extends JComponent implements SelectablePanel
           public void mousePressed(MouseEvent e)
           {
               RoomPanel panel = (RoomPanel) e.getSource();
-              
+
               if( panel.selectable )
               {
                  System.out.println("Valid");
               }
-             
+
               else
               {
                  System.out.println("Invalid");
               }
-              
+
           }
       };
-      
+
       this.addMouseListener( ml );
 
-      
-      
+
+
    }
 
 
@@ -176,7 +200,7 @@ public class RoomPanel extends JComponent implements SelectablePanel
       setBorder(null);
       selected = false;
    }
-   
-   
-   
+
+
+
 }
