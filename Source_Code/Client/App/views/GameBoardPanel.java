@@ -38,21 +38,30 @@ public class GameBoardPanel extends JPanel
       this.setLayout( grid );
 
       // Add all the rooms to this panel one by one (in order!)
+
+      this.rooms = new RoomPanel[5][5];
+
+
       for( int i = 0; i <= 4; i++ )
       {
          for( int j = 0; j <= 4; j++ )
          {
+             System.out.plrintln(board.board[i][j]);
+
+             
             if (board.board[i][j] instanceof BoardHallway )
             {
-                rooms[i][j] = new RoomPanel( board.board[i][j].getName() );
-               add( rooms[i][j] );
+                this.rooms[i][j] = new RoomPanel( board.board[i][j].getName() );
+               add( this.rooms[i][j] );
                System.out.println("Adding... " + board.board[i][j].getName());
             }
 
+
+
             else if (board.board[i][j] != null)
             {
-                rooms[i][j] = new RoomPanel( board.board[i][j].getName() );
-               add( rooms[i][j] );
+                this.rooms[i][j] = new RoomPanel( board.board[i][j].getName() );
+               add( this.rooms[i][j] );
                System.out.println("Adding... " + board.board[i][j].getName());
             }
 
