@@ -142,8 +142,6 @@ public class LobbyMain extends JFrame
          @Override
          public void actionPerformed( ActionEvent e )
          {
-            // TODO: add error checking just in case. But like, probably won't get to it...
-
             String serverIP = joinPanel.serverIPTextField.getText();
             int serverPort = Integer.parseInt(joinPanel.serverPortTextField.getText());
             String playerName = joinPanel.playerNameTextField.getText();

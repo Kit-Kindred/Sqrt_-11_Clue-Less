@@ -132,69 +132,7 @@ public class CardPanel extends JComponent implements SelectablePanel
       
       // Start adding our components into the panel
       cardPicture = new JLabel();
-      cardPicture.setBorder(UIManager.getBorder("Tree.editorBorder"));
-      
-      
-      /*
-       *  TEST
-       *  These two buttons are just simulating network events that SHOULD happen in the future.
-       *  TODO: remove this testing section once network interface has been integrated.
-       */
-//      
-//      JButton button = new JButton("selected");
-//      button.addActionListener( new ActionListener()
-//         {
-//
-//            @Override
-//            public void actionPerformed( ActionEvent e )
-//            {
-//               if( selectable )
-//               {
-//                  setBorder( new BevelBorder(BevelBorder.RAISED, null, null, null, null) );
-//                  if( !selected )
-//                  {
-//                     selected = true;
-//                  }
-//                  else
-//                  {
-//                     selected = false;
-//                  }
-//               }
-//               
-//               else
-//               {
-//                  selected = false ;
-//               }
-//               
-//               toggleBorder();
-//               System.out.println("Selecated changed to " + selected);
-//
-//            }
-//            
-//         }
-//         );
-//      
-//      
-//      JButton button2 = new JButton("selectable");
-//      button2.addActionListener( new ActionListener()
-//         {
-//
-//            @Override
-//            public void actionPerformed( ActionEvent e )
-//            {               
-//               toggleSelectable();
-//               System.out.println("Selectable changed to " + selectable);
-//
-//            }
-//            
-//         }
-//         );
-      
-      
-      /*
-       *  TEST END
-       */
-      
+      cardPicture.setBorder(UIManager.getBorder("Tree.editorBorder"));      
       
       // Get the card name and add/align EVERYTHING
       label = new JLabel( "<html>" + cardName + "</html>" );
@@ -207,7 +145,6 @@ public class CardPanel extends JComponent implements SelectablePanel
                .addGroup(gl_cardContent.createParallelGroup(Alignment.TRAILING)
                   .addComponent(label, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 80, Short.MAX_VALUE)
                   .addComponent(cardPicture, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-//               .addComponent( button ).addComponent( button2 ) // TODO: Remove these buttons after testing.
                .addGap(2))
       );
       gl_cardContent.setVerticalGroup(
@@ -217,7 +154,6 @@ public class CardPanel extends JComponent implements SelectablePanel
                .addComponent(cardPicture, GroupLayout.PREFERRED_SIZE, 95, GroupLayout.PREFERRED_SIZE)
                .addPreferredGap(ComponentPlacement.RELATED, 5, Short.MAX_VALUE)
                .addComponent(label)
-//               .addComponent( button ).addComponent( button2 ) // TODO: Remove these buttons after testing.
                .addGap(7))
       );
       

@@ -32,9 +32,6 @@ public class ClueLessClient extends Thread
      */
     public static void main(String[] args) throws NumberFormatException, IOException, TimeoutException, InterruptedException
     {
-        // Can pass these in from the command line if you want
-        // TODO: Error-check these
-//        Scanner scan = new Scanner(System.in);
         ConsoleInput reader = new ConsoleInput();
         String server;
         String name;
@@ -134,7 +131,6 @@ public class ClueLessClient extends Thread
 
                             // Using a sleep here to wait for the active game status to be updated.
                             // There's probably a better way of doing this.
-                            // TODO: reduce the sleep time if possible
                             try
                             {
                                Thread.sleep( 500 );
@@ -331,7 +327,7 @@ public class ClueLessClient extends Thread
     Color MEDIUM_GREEN = new Color(66, 105, 47);
     Color PURPLE = new Color(78, 0, 142);
 
-    public ClientSocketComms csc;  // TODO: Should be private
+    public ClientSocketComms csc;  // Should be private.... too bad
 
     ArrayBlockingQueue<StatusUpdate> UpdateQueue;
 
@@ -883,9 +879,6 @@ public class ClueLessClient extends Thread
      * CSC just received something from the server. Parse it and pass it to where it needs to go
      *
      * @param msg - The message received from the server
-     *
-     * TODO: Stub
-     *
      */
     public void recvCallback(Message msg)
     {
