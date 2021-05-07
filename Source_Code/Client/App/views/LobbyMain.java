@@ -4,6 +4,7 @@ import Client.ClueLessClient;
 import Common.*;
 import Common.Messages.ActionRequests.MoveRequest;
 import Common.Messages.StatusUpdates.PlayerHandUpdate;
+import Common.Messages.StatusUpdates.RefuteSuggestionPicker;
 
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
@@ -26,7 +27,7 @@ public class LobbyMain extends JFrame
    private LobbyStatusPanel     statusPanel;
 
    private AccuseDialog accuseDialog;
-  private SuggestDialog suggestDialog;
+   private SuggestDialog suggestDialog;
 
    private final ClueLessClient client;
 
@@ -120,8 +121,7 @@ public class LobbyMain extends JFrame
       mainGamePanel.setLayout( card );
 
       accuseDialog = new AccuseDialog(this, "Accuse");
-     suggestDialog = new SuggestDialog(this, "Suggest");
-
+      suggestDialog = new SuggestDialog(this, "Suggest");
    }
 
 
@@ -277,6 +277,13 @@ public class LobbyMain extends JFrame
          }
       });
 
+      client.addPropertyChangeListener("RefuteSuggestionPicker", new PropertyChangeListener() {
+          @Override
+          public void propertyChange(PropertyChangeEvent evt) {
+              refute((RefuteSuggestionPicker) evt.getNewValue());
+          }
+      });
+
       client.addPropertyChangeListener("PlayerUpdate", new PropertyChangeListener() {
          @Override
          public void propertyChange(PropertyChangeEvent evt) {
@@ -289,6 +296,7 @@ public class LobbyMain extends JFrame
                   mainPanel.chatBox.sendTo.addItem(p.PlayerName);
                }
             }
+            tryEnableSuggestButton();
          }
       });
 
@@ -319,7 +327,10 @@ public class LobbyMain extends JFrame
          public void propertyChange(PropertyChangeEvent evt) {
             //System.out.println("Received Player Turn");
             mainPanel.actionPanel.accuseButton.setEnabled((boolean) evt.getNewValue());
-            mainPanel.actionPanel.suggestButton.setEnabled((boolean) evt.getNewValue());
+
+            boolean canSuggest = (boolean) evt.getNewValue() && client.getRoom() != null;
+            mainPanel.actionPanel.suggestButton.setEnabled(canSuggest);
+
             mainPanel.actionPanel.endTurnButton.setEnabled((boolean) evt.getNewValue());
             mainPanel.actionPanel.dPad.enableDpad((boolean) evt.getNewValue());
             /*if((boolean) evt.getNewValue()){
@@ -355,6 +366,21 @@ public class LobbyMain extends JFrame
            client.suggest(suggestHand);
         }
      }
+  }
+
+  public void tryEnableSuggestButton()
+  {
+      mainPanel.actionPanel.suggestButton.setEnabled(client.isTurn() && client.getRoom() != null);
+  }
+
+  public void refute(RefuteSuggestionPicker rs)
+  {
+      RefuteDialog refuteDialog = new RefuteDialog(this, "Refute", rs);
+      Card selection = refuteDialog.getRefutationChoice();
+      if(selection != null)
+      {
+          client.refute(rs.getPlayer(), selection);
+      }
   }
 
    public void move(MoveRequest.Move m)

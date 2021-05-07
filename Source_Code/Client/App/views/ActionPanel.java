@@ -82,6 +82,7 @@ public class ActionPanel extends JPanel
         gbc_suggestButton.insets = new Insets( 0, 0, 0, 0 );
         gbc_suggestButton.fill = GridBagConstraints.BOTH;
         this.add( suggestButton, gbc_suggestButton );
+        suggestButton.setEnabled(false);  // Nobody starts in a room
 
         // End Turn Button
         endTurnButton     = new JButton( "End Turn" );
