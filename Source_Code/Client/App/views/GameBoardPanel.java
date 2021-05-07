@@ -46,9 +46,9 @@ public class GameBoardPanel extends JPanel
       {
          for( int j = 0; j <= 4; j++ )
          {
-             System.out.plrintln(board.board[i][j]);
+             System.out.println(board.board[i][j]);
 
-             
+
             if (board.board[i][j] instanceof BoardHallway )
             {
                 this.rooms[i][j] = new RoomPanel( board.board[i][j].getName() );
