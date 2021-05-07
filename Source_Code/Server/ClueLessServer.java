@@ -21,9 +21,6 @@ import java.util.concurrent.Semaphore;
  * It will then serially handle action requests in the order they are received.
  *
  * @author Kit Kindred
- *
- * TODO: Most of the contents of this file are stubs for the game logic to tie into later
- *
  */
 public class ClueLessServer extends Thread
 {
@@ -35,7 +32,6 @@ public class ClueLessServer extends Thread
      */
     public static void main(String[] args)
     {
-        // TODO: Error-check this
         Scanner scan = new Scanner(System.in);
         System.out.println("Enter server port");
         int port = scan.nextInt();
@@ -232,9 +228,6 @@ public class ClueLessServer extends Thread
      * SSC just received something from a client. Parse it and pass it to where it needs to go
      *
      * @param msg - The message received from a client
-     *
-     * TODO: Maybe complete for now?
-     *
      */
     public void recvCallback(Message msg)
     {
@@ -304,9 +297,6 @@ public class ClueLessServer extends Thread
      * This gets called serially from the main ClueLessServer thread everytime we add something to the action queue
      *
      * @param actionRequest - The action that we have been requested to perform
-     *
-     * TODO: Stub
-     *
      */
     public void processAction(ActionRequest actionRequest)
     {
@@ -362,7 +352,6 @@ public class ClueLessServer extends Thread
         {
             fillPlayers();
         }
-        // TODO: Actual in-game action requests
     }
 
     public void processChatFromClient(ChatFromClient cfc)
@@ -404,7 +393,6 @@ public class ClueLessServer extends Thread
                             p.ClientID = cr.UniqueID;  // Assign the new client to the existing player
                             p.PlayerConnected = true;  // Player is connected again
                             sendToPlayer(p.PlayerName, new ConnectRequestStatus(true, p.PlayerName));  // Let player know they're in
-                            // TODO: Update the player on the current status of the game
                         }
                         else
                         {
@@ -557,7 +545,6 @@ public class ClueLessServer extends Thread
         {
             turnTracker.suggest();
             // processAction now checks if the sending player is allowed to move
-            // TODO - Extend to give players choice of which card to use to refute
             // right now we are just sending back the first refutation
 
             sendToAllPlayers( new SuggestNotification( sr ) );

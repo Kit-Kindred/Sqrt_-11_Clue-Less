@@ -198,7 +198,7 @@ public class ServerSocketComms extends Thread
                     try
                     {
                         client.SendQueue.put(msg);  // Give it a go
-                        return true;  // TODO: Doesn't actually verify send; just queue addition
+                        return true;
                     }
                     catch (Exception e)
                     {
@@ -218,7 +218,7 @@ public class ServerSocketComms extends Thread
      * @return - True if added to every queue, false otherwise
      *
      */
-    public boolean sendToAll(Message msg)  // TODO: If one fails, they all fail. Track individual pass/fail in future
+    public boolean sendToAll(Message msg)
     {
         boolean status = true;  // Assume all good unless told otherwise
         synchronized (ClientList)  // No additions or removals during global send
