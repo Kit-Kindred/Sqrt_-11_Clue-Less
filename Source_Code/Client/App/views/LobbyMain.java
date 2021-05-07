@@ -261,7 +261,7 @@ public class LobbyMain extends JFrame
          public void propertyChange(PropertyChangeEvent evt) {
             if ((boolean) evt.getNewValue())  // Server started game
             {
-               setBounds( 100, 100, 1200, 900 );
+               setSize( 1200, 900 );
                ( (CardLayout) contentPane.getLayout() )
                        .next( contentPane );
             }
