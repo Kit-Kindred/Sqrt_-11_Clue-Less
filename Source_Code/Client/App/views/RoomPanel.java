@@ -1,6 +1,7 @@
 package Client.App.views;
 
 import java.awt.BorderLayout;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -8,6 +9,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -159,29 +161,47 @@ public class RoomPanel extends JComponent implements SelectablePanel
 
    public void updateRoom(BoardRoom br)
    {
-       String roomName = br.name;
-       for (Player p : br.players )
+       if ()!br.players.isEmpty())
        {
-           File root = null;
-           try
+           for (int ii = 0; ii < br.players.size(); ii++)
            {
-              root = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
+               File root = null;
+               try
+               {
+                  root = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
+                  this.picture = ImageIO.read( new File( root, "/../Source_Code/Client/App/Resources/Rooms/" + br.name + ".png") );
 
-              //picture = ImageIO.read( new File( root, "../../../../Sqrt_-11_Clue-Less/Source_Code/Client/App/Resources/Cards/" + cardName + ".png") );
-              picture = ImageIO.read( new File( root, "/../Source_Code/Client/App/Resources/Rooms/" + roomName + ".png") );
-              Image dimg = picture.getScaledInstance( 75, 90, Image.SCALE_SMOOTH );
-              roomPicture.setIcon( new ImageIcon( dimg ) );
-           }
-           catch( Exception e )
-           {
-              e.printStackTrace();
-              System.out.println(root + "\n" + roomName);
+                  BufferedImage pieceImage = ImageIO.read( new File( root, "/../Source_Code/Client/App/Resources/Pieces/" + this.room.players.get(ii).charName + ".png") );
+                  pieceImage = resizeImage(pieceImage, this.picture.getWidth() / 2 , this.picture.getHeight() / 3 );
+
+                  // paste it on the correct spot
+                  Graphics2D g2d_roomImage = this.picture.createGraphics();
+                  g2d_roomImage.drawImage(this.picture, 0, 0, null);
+                  g2d_roomImage.drawImage(pieceImage, (ii / 3) * this.picture.getWidth() / 2, (ii % 3) * this.picture.getHeight() / 3, null);
+                  g2d_roomImage.dispose();
+
+                  Image dimg = picture.getScaledInstance( 75, 90, Image.SCALE_SMOOTH );
+                  roomPicture.setIcon( new ImageIcon( dimg ) );
+               }
+               catch( Exception e )
+               {
+                  e.printStackTrace();
+                  System.out.println(root + "\n" + roomName);
+               }
            }
        }
-
-
        repaint();
    }
+
+   // https://www.baeldung.com/java-resize-image
+   BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) throws IOException
+   {
+        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics2D = resizedImage.createGraphics();
+        graphics2D.drawImage(originalImage, 0, 0, targetWidth, targetHeight, null);
+        graphics2D.dispose();
+        return resizedImage;
+    }
 
 
    @Override
