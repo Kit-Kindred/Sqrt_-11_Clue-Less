@@ -38,7 +38,6 @@ public class HandPanel extends JPanel
       setBorder( new TitledBorder( null, "", TitledBorder.LEADING,
          TitledBorder.TOP, null, null ) );
       
-      
       /*
        * Test config to just load a few cards into the player's hand
        */
@@ -46,7 +45,6 @@ public class HandPanel extends JPanel
       SelectedCard = null;
       //Selection = new SuggestHand((CharacterCard) null, (RoomCard) null, (WeaponCard) null);  // Casts to resolve constructor
       //pcs = new PropertyChangeSupport(this);
-
 
    }
 
