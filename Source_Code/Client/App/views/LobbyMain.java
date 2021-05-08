@@ -30,7 +30,7 @@ public class LobbyMain extends JFrame
 
    private AccuseDialog accuseDialog;
    private SuggestDialog suggestDialog;
-   
+
    private EndGameDialog endDialog;
 
    private final ClueLessClient client;
@@ -127,7 +127,7 @@ public class LobbyMain extends JFrame
       accuseDialog = new AccuseDialog(this, "Accuse");
       suggestDialog = new SuggestDialog(this, "Suggest");
       endDialog = new EndGameDialog( this, "Game Over!");
-      
+
    }
 
 
@@ -244,7 +244,7 @@ public class LobbyMain extends JFrame
             move(MoveRequest.Move.SHORTCUT);
         }
     });
-    
+
     // Ok button will change GUI back to start game frame
     endDialog.addButtonListener( new ActionListener()
        {
@@ -255,9 +255,9 @@ public class LobbyMain extends JFrame
             setSize( 500, 362 );
             ( (CardLayout) contentPane.getLayout() )
             .previous( contentPane );
-            
+
          }
-       
+
        });
 
       // Whenever a player connects
@@ -317,9 +317,20 @@ public class LobbyMain extends JFrame
                   mainPanel.chatBox.sendTo.addItem(p.PlayerName);
                }
             }
+
+            mainPanel.boardPicture.updateBoard(client.getBoard());
+            
             tryEnableSuggestButton();
          }
       });
+
+      // client.addPropertyChangeListener("GameBoard", new PropertyChangeListener() {
+      //    @Override
+      //    public void propertyChange(PropertyChangeEvent evt) {
+      //        System.out.println("got the GameBoard");
+      //       mainPanel.boardPicture.updateBoard((Board) evt.getNewValue());
+      //    }
+      // });
 
       client.addPropertyChangeListener("PlayerHand", new PropertyChangeListener() {
          @Override
@@ -363,11 +374,11 @@ public class LobbyMain extends JFrame
             }*/
          }
       });
-      
+
       client.addPropertyChangeListener("EndGame", new PropertyChangeListener() {
          @Override
          public void propertyChange(PropertyChangeEvent evt) {
-            
+
             /* This is most likely not the best medium to accomplish this type
              * of event, but we don't have too much time to experiment with other
              * listeners.
@@ -420,7 +431,7 @@ public class LobbyMain extends JFrame
    {
       client.move( m );
    }
-   
+
    public void processGameEnd( AccuseNotification accuseNotification )
    {
       endDialog.addPlayer( accuseNotification.PlayerName );
