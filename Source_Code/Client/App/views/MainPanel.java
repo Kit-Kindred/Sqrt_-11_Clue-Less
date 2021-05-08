@@ -8,7 +8,7 @@ import java.awt.*;
 public class MainPanel extends JPanel
 {
     JPanel boardPictureBorderPanel;
-    JPanel boardPicture;
+    GameBoardPanel boardPicture;
     JLabel tempBoardPictureLabel;
 
     HandPanel cardsPictureBorderPanel;
@@ -50,17 +50,19 @@ public class MainPanel extends JPanel
         boardPictureBorderPanel = new GameBoardPanel();
         boardPictureBorderPanel.setBorder( new TitledBorder( null, "",
                 TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
-        GridBagConstraints gbc_playerPictureBorderPanel = new GridBagConstraints();
-        gbc_playerPictureBorderPanel.gridheight = 3;
-        gbc_playerPictureBorderPanel.gridwidth = 2;
-        gbc_playerPictureBorderPanel.ipady = 0;
-        gbc_playerPictureBorderPanel.ipadx = 0;
-        gbc_playerPictureBorderPanel.insets = new Insets( 0, 0, 0, 0 );
-        gbc_playerPictureBorderPanel.gridx = 1;
-        gbc_playerPictureBorderPanel.gridy = 1;
-        gbc_playerPictureBorderPanel.anchor = GridBagConstraints.NORTHWEST;
-        gbc_playerPictureBorderPanel.fill = GridBagConstraints.BOTH;
-        this.add( new GameBoardPanel() , gbc_playerPictureBorderPanel );
+        GridBagConstraints gbc_boardPictureBorderPanel = new GridBagConstraints();
+        gbc_boardPictureBorderPanel.gridheight = 3;
+        gbc_boardPictureBorderPanel.gridwidth = 2;
+        gbc_boardPictureBorderPanel.ipady = 0;
+        gbc_boardPictureBorderPanel.ipadx = 0;
+        gbc_boardPictureBorderPanel.insets = new Insets( 0, 0, 0, 0 );
+        gbc_boardPictureBorderPanel.gridx = 1;
+        gbc_boardPictureBorderPanel.gridy = 1;
+        gbc_boardPictureBorderPanel.anchor = GridBagConstraints.NORTHWEST;
+        gbc_boardPictureBorderPanel.fill = GridBagConstraints.BOTH;
+
+        boardPicture = new GameBoardPanel();
+        this.add( boardPicture, gbc_boardPictureBorderPanel );
 //        GridBagLayout gbl_playerPictureBorderPanel = new GridBagLayout();
 //        boardPictureBorderPanel.setLayout( gbl_playerPictureBorderPanel );
 
