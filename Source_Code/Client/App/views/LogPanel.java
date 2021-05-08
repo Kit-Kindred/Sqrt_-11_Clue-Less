@@ -40,6 +40,8 @@ public class LogPanel extends JPanel
 
             Document doc = logDisplay.getStyledDocument();
             doc.insertString(doc.getLength(), logString, attributeSet);
+            JScrollBar vertical = logPane.getVerticalScrollBar();
+            vertical.setValue( vertical.getMaximum() );
         }
         catch (BadLocationException e)
         {

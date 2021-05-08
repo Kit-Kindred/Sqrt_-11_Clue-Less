@@ -436,6 +436,14 @@ public class ClueLessServer extends Thread
                     // Update player objects with all the cards in the deck
                     EnvelopeHand = CardDeck.shuffleAndAssignCards( PlayerList );
                     
+                    
+                    /*  Enable God Mode
+                     *  Eliminate all the guess work!!
+                     */
+                    System.out.println( EnvelopeHand.getCharacterName() + "\n" +
+                       EnvelopeHand.getRoomName() + "\n" + 
+                       EnvelopeHand.getWeaponType());
+                    
                     // Notify the players of the first turn
                     sendToAllPlayers( new TurnUpdate(PlayerList.get( CurrentPlayerIndex ).PlayerName) );
                     
@@ -562,27 +570,9 @@ public class ClueLessServer extends Thread
                     if (!possibleRefutations.isEmpty()) {
 
                         sendToAllPlayers(new PlayerUpdate(PlayerList));
-                        /**
-                         * This checks to see if the player has more than one card to refute the
-                         * suggestion. If there's only one card that can refute the suggestion,
-                         * we don't bother asking the player to choose.
-                         * TODO: Clean this up a bit
-                         */
-                        if (possibleRefutations.numberOfCards() == 1) {
-                            if (!possibleRefutations.getCharacters().isEmpty()) {
-                                sendToPlayer(PlayerList.get(CurrentPlayerIndex).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getCharacters().get(0)));
-                            } else if (!(possibleRefutations.getRooms().isEmpty())) {
-                                sendToPlayer(PlayerList.get(CurrentPlayerIndex).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getRooms().get(0)));
-                            } else if (!(possibleRefutations.getWeapons().isEmpty())) {
-                                sendToPlayer(PlayerList.get(CurrentPlayerIndex).PlayerName, new RefuteSuggestion(p.PlayerName, possibleRefutations.getWeapons().get(0)));
-                            }
-                        }
 
-                        // Ask the player which card to use to refute the suggestion
-                        else {
-                            System.out.println(possibleRefutations);
-                            sendToPlayer(p.PlayerName, new RefuteSuggestionPicker(sr.PlayerName, possibleRefutations));
-                        }
+                        System.out.println(possibleRefutations);
+                        sendToPlayer(p.PlayerName, new RefuteSuggestionPicker(sr.PlayerName, possibleRefutations));
 
                         System.out.println(possibleRefutations);
 

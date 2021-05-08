@@ -3,7 +3,9 @@ package Client.App.views;
 import Client.ClueLessClient;
 import Common.*;
 import Common.Messages.ActionRequests.MoveRequest;
+import Common.Messages.StatusUpdates.AccuseNotification;
 import Common.Messages.StatusUpdates.PlayerHandUpdate;
+import Common.Messages.StatusUpdates.RefuteSuggestionPicker;
 
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
@@ -13,6 +15,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.basic.BasicOptionPaneUI.ButtonActionListener;
 
 
 public class LobbyMain extends JFrame
@@ -26,7 +29,9 @@ public class LobbyMain extends JFrame
    private LobbyStatusPanel     statusPanel;
 
    private AccuseDialog accuseDialog;
-  private SuggestDialog suggestDialog;
+   private SuggestDialog suggestDialog;
+   
+   private EndGameDialog endDialog;
 
    private final ClueLessClient client;
 
@@ -120,8 +125,9 @@ public class LobbyMain extends JFrame
       mainGamePanel.setLayout( card );
 
       accuseDialog = new AccuseDialog(this, "Accuse");
-     suggestDialog = new SuggestDialog(this, "Suggest");
-
+      suggestDialog = new SuggestDialog(this, "Suggest");
+      endDialog = new EndGameDialog( this, "Game Over!");
+      
    }
 
 
@@ -238,6 +244,21 @@ public class LobbyMain extends JFrame
             move(MoveRequest.Move.SHORTCUT);
         }
     });
+    
+    // Ok button will change GUI back to start game frame
+    endDialog.addButtonListener( new ActionListener()
+       {
+
+         @Override
+         public void actionPerformed( ActionEvent e )
+         {
+            setSize( 500, 362 );
+            ( (CardLayout) contentPane.getLayout() )
+            .previous( contentPane );
+            
+         }
+       
+       });
 
       // Whenever a player connects
       client.addPropertyChangeListener("startPlayer", new PropertyChangeListener() {
@@ -277,6 +298,13 @@ public class LobbyMain extends JFrame
          }
       });
 
+      client.addPropertyChangeListener("RefuteSuggestionPicker", new PropertyChangeListener() {
+          @Override
+          public void propertyChange(PropertyChangeEvent evt) {
+              refute((RefuteSuggestionPicker) evt.getNewValue());
+          }
+      });
+
       client.addPropertyChangeListener("PlayerUpdate", new PropertyChangeListener() {
          @Override
          public void propertyChange(PropertyChangeEvent evt) {
@@ -289,6 +317,7 @@ public class LobbyMain extends JFrame
                   mainPanel.chatBox.sendTo.addItem(p.PlayerName);
                }
             }
+            tryEnableSuggestButton();
          }
       });
 
@@ -319,7 +348,10 @@ public class LobbyMain extends JFrame
          public void propertyChange(PropertyChangeEvent evt) {
             //System.out.println("Received Player Turn");
             mainPanel.actionPanel.accuseButton.setEnabled((boolean) evt.getNewValue());
-            mainPanel.actionPanel.suggestButton.setEnabled((boolean) evt.getNewValue());
+
+            boolean canSuggest = (boolean) evt.getNewValue() && client.getRoom() != null;
+            mainPanel.actionPanel.suggestButton.setEnabled(canSuggest);
+
             mainPanel.actionPanel.endTurnButton.setEnabled((boolean) evt.getNewValue());
             mainPanel.actionPanel.dPad.enableDpad((boolean) evt.getNewValue());
             /*if((boolean) evt.getNewValue()){
@@ -329,6 +361,18 @@ public class LobbyMain extends JFrame
             {
                mainPanel.cardsPictureBorderPanel.emptySelection();
             }*/
+         }
+      });
+      
+      client.addPropertyChangeListener("EndGame", new PropertyChangeListener() {
+         @Override
+         public void propertyChange(PropertyChangeEvent evt) {
+            
+            /* This is most likely not the best medium to accomplish this type
+             * of event, but we don't have too much time to experiment with other
+             * listeners.
+             */
+            processGameEnd( (AccuseNotification) evt.getNewValue() );
          }
       });
    }
@@ -357,8 +401,31 @@ public class LobbyMain extends JFrame
      }
   }
 
+  public void tryEnableSuggestButton()
+  {
+      mainPanel.actionPanel.suggestButton.setEnabled(client.isTurn() && client.getRoom() != null);
+  }
+
+  public void refute(RefuteSuggestionPicker rs)
+  {
+      RefuteDialog refuteDialog = new RefuteDialog(this, "Refute", rs);
+      Card selection = refuteDialog.getRefutationChoice();
+      if(selection != null)
+      {
+          client.refute(rs.getPlayer(), selection);
+      }
+  }
+
    public void move(MoveRequest.Move m)
    {
       client.move( m );
+   }
+   
+   public void processGameEnd( AccuseNotification accuseNotification )
+   {
+      endDialog.addPlayer( accuseNotification.PlayerName );
+      endDialog.addSolution( accuseNotification.AccuseHand );
+      endDialog.setContent();
+      endDialog.open();
    }
 }

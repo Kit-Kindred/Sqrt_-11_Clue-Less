@@ -7,10 +7,14 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.basic.BasicOptionPaneUI.ButtonActionListener;
 
 import Common.Player;
+import Common.RoomCard;
+import Common.SuggestHand;
 import Server.EnvelopeHand;
 
 import javax.swing.JLabel;
@@ -20,6 +24,11 @@ public class EndGameDialog extends JDialog
 {
 
    private final JPanel contentPanel = new JPanel();
+   private JFrame parent;
+   private String player;
+   private SuggestHand hand;
+   private JButton okButton;
+   private JLabel gameOverText;
    
 
    /**
@@ -29,38 +38,80 @@ public class EndGameDialog extends JDialog
     * @param player
     * @param cards
     */
-   public EndGameDialog( Player player, EnvelopeHand cards )
+   public EndGameDialog( JFrame frame, String title )
    {
-      setBounds( 100, 100, 450, 300 );
+      super(frame, title, true);
+      this.parent = frame;
+      gameOverText = new JLabel();
+      okButton = new JButton( "OK" );
       getContentPane().setLayout( new BorderLayout() );
+   }
+   
+   
+   /**
+    * We set these once we figure out who made the correct accusation.
+    */
+   public void setContent()
+   {
+
+      setBounds( parent.getBounds().x + parent.getWidth()/2, 
+         parent.getBounds().y + parent.getHeight()/2, 600, 300 );
       contentPanel.setLayout( new FlowLayout() );
       contentPanel.setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
       getContentPane().add( contentPanel, BorderLayout.CENTER );
 
       {
-         JLabel gameOverText = new JLabel();
-         gameOverText.setText( player.PlayerName + " has correctly accused "
-            + cards.getCharacterName() + " of committing the murder in the "
-            + cards.getRoomName() + " using the " + cards.getWeaponType()
+         gameOverText.setText( "<html>" + player + " has correctly accused "
+            + hand.getCharacterName() + " of committing the murder in the "
+            + hand.getRoomName() + " using the " + hand.getWeaponType()
             + "!" +
-            "\n\nThe game is now over.");
+            "\n\nThe game is now over." + "</html>");
          ;
          contentPanel.add( gameOverText );
       }
 
       {
          JPanel buttonPane = new JPanel();
-         buttonPane.setLayout( new FlowLayout( FlowLayout.RIGHT ) );
+         buttonPane.setLayout( new FlowLayout( FlowLayout.CENTER ) );
          getContentPane().add( buttonPane, BorderLayout.SOUTH );
 
          {
-            JButton okButton = new JButton( "OK" );
             buttonPane.add( okButton );
             getRootPane().setDefaultButton( okButton );
          }
+         
+         okButton.addActionListener( new ActionListener() {
+
+            @Override
+            public void actionPerformed( ActionEvent e )
+            {
+               setVisible(false);
+            }
+            
+         });
 
       }
-
    }
-
+   
+   
+   public void addPlayer( String player )
+   {
+      this.player = player;
+   }
+   
+   
+   public void addSolution( SuggestHand hand )
+   {
+      this.hand = hand;
+   }
+   
+   public void open()
+   {
+       setVisible(true);
+   }
+   
+   public void addButtonListener( ActionListener actionListener )
+   {
+      this.okButton.addActionListener( actionListener );
+   }
 }
