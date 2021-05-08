@@ -877,6 +877,8 @@ public class ClueLessClient extends Thread
         {
             System.out.println("\n\t[Server] That was correct!");
             Log(MEDIUM_GREEN, accuseNotification.PlayerName + " was correct!");
+            activeGame = false;
+            pcs.firePropertyChange("EndGame", null, accuseNotification );
         }
         // If incorrect
         else

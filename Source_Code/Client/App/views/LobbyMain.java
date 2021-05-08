@@ -3,6 +3,7 @@ package Client.App.views;
 import Client.ClueLessClient;
 import Common.*;
 import Common.Messages.ActionRequests.MoveRequest;
+import Common.Messages.StatusUpdates.AccuseNotification;
 import Common.Messages.StatusUpdates.PlayerHandUpdate;
 import Common.Messages.StatusUpdates.RefuteSuggestionPicker;
 
@@ -14,6 +15,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.basic.BasicOptionPaneUI.ButtonActionListener;
 
 
 public class LobbyMain extends JFrame
@@ -28,6 +30,8 @@ public class LobbyMain extends JFrame
 
    private AccuseDialog accuseDialog;
    private SuggestDialog suggestDialog;
+   
+   private EndGameDialog endDialog;
 
    private final ClueLessClient client;
 
@@ -122,6 +126,8 @@ public class LobbyMain extends JFrame
 
       accuseDialog = new AccuseDialog(this, "Accuse");
       suggestDialog = new SuggestDialog(this, "Suggest");
+      endDialog = new EndGameDialog( this, "Game Over!");
+      
    }
 
 
@@ -238,6 +244,21 @@ public class LobbyMain extends JFrame
             move(MoveRequest.Move.SHORTCUT);
         }
     });
+    
+    // Ok button will change GUI back to start game frame
+    endDialog.addButtonListener( new ActionListener()
+       {
+
+         @Override
+         public void actionPerformed( ActionEvent e )
+         {
+            setSize( 500, 362 );
+            ( (CardLayout) contentPane.getLayout() )
+            .previous( contentPane );
+            
+         }
+       
+       });
 
       // Whenever a player connects
       client.addPropertyChangeListener("startPlayer", new PropertyChangeListener() {
@@ -261,7 +282,7 @@ public class LobbyMain extends JFrame
          public void propertyChange(PropertyChangeEvent evt) {
             if ((boolean) evt.getNewValue())  // Server started game
             {
-               setBounds( 100, 100, 1200, 900 );
+               setSize( 1200, 900 );
                ( (CardLayout) contentPane.getLayout() )
                        .next( contentPane );
             }
@@ -342,6 +363,18 @@ public class LobbyMain extends JFrame
             }*/
          }
       });
+      
+      client.addPropertyChangeListener("EndGame", new PropertyChangeListener() {
+         @Override
+         public void propertyChange(PropertyChangeEvent evt) {
+            
+            /* This is most likely not the best medium to accomplish this type
+             * of event, but we don't have too much time to experiment with other
+             * listeners.
+             */
+            processGameEnd( (AccuseNotification) evt.getNewValue() );
+         }
+      });
    }
 
    public void accuse()
@@ -386,5 +419,13 @@ public class LobbyMain extends JFrame
    public void move(MoveRequest.Move m)
    {
       client.move( m );
+   }
+   
+   public void processGameEnd( AccuseNotification accuseNotification )
+   {
+      endDialog.addPlayer( accuseNotification.PlayerName );
+      endDialog.addSolution( accuseNotification.AccuseHand );
+      endDialog.setContent();
+      endDialog.open();
    }
 }

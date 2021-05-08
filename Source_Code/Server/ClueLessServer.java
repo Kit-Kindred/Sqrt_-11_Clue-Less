@@ -436,6 +436,14 @@ public class ClueLessServer extends Thread
                     // Update player objects with all the cards in the deck
                     EnvelopeHand = CardDeck.shuffleAndAssignCards( PlayerList );
                     
+                    
+                    /*  Enable God Mode
+                     *  Eliminate all the guess work!!
+                     */
+                    System.out.println( EnvelopeHand.getCharacterName() + "\n" +
+                       EnvelopeHand.getRoomName() + "\n" + 
+                       EnvelopeHand.getWeaponType());
+                    
                     // Notify the players of the first turn
                     sendToAllPlayers( new TurnUpdate(PlayerList.get( CurrentPlayerIndex ).PlayerName) );
                     
