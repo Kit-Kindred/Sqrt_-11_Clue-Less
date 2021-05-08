@@ -52,18 +52,18 @@ public class MainPanel extends JPanel
         boardPictureBorderPanel = new GameBoardPanel();
         boardPictureBorderPanel.setBorder( new TitledBorder( null, "",
                 TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
-        GridBagConstraints gbc_playerPictureBorderPanel = new GridBagConstraints();
-        gbc_playerPictureBorderPanel.gridheight = 3;
-        gbc_playerPictureBorderPanel.gridwidth = 2;
-        gbc_playerPictureBorderPanel.ipady = 0;
-        gbc_playerPictureBorderPanel.ipadx = 0;
-        gbc_playerPictureBorderPanel.insets = new Insets( 0, 0, 0, 0 );
-        gbc_playerPictureBorderPanel.gridx = 1;
-        gbc_playerPictureBorderPanel.gridy = 1;
-        gbc_playerPictureBorderPanel.anchor = GridBagConstraints.NORTHWEST;
-        gbc_playerPictureBorderPanel.fill = GridBagConstraints.BOTH;
+        GridBagConstraints gbc_boardPictureBorderPanel = new GridBagConstraints();
+        gbc_boardPictureBorderPanel.gridheight = 3;
+        gbc_boardPictureBorderPanel.gridwidth = 2;
+        gbc_boardPictureBorderPanel.ipady = 0;
+        gbc_boardPictureBorderPanel.ipadx = 0;
+        gbc_boardPictureBorderPanel.insets = new Insets( 0, 0, 0, 0 );
+        gbc_boardPictureBorderPanel.gridx = 1;
+        gbc_boardPictureBorderPanel.gridy = 1;
+        gbc_boardPictureBorderPanel.anchor = GridBagConstraints.NORTHWEST;
+        gbc_boardPictureBorderPanel.fill = GridBagConstraints.BOTH;
 
-        this.add( boardPictureBorderPanel , gbc_playerPictureBorderPanel );
+        this.add( boardPictureBorderPanel , gbc_boardPictureBorderPanel );
 
         boardPicture = new GameBoardPanel();
         boardPictureBorderPanel.add(boardPicture);
