@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import Common.Board;
 import Common.BoardHallway;
 import Common.BoardRoom;
+import Client.App.views.RoomPanel;
 
 /**
  * This is the panel that houses the game board. It holds a Board object

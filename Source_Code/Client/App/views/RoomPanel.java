@@ -149,7 +149,7 @@ public class RoomPanel extends JComponent implements SelectablePanel
    {
 
       // We need to create our own listener for the selectable boolean
-      addPropertyChangeListener( "selectable", new SelectableListener() );
+      // addPropertyChangeListener( "selectable", new SelectableListener() );
 
       /*
        * Listen for the user clicks. We'll use this to help with movement

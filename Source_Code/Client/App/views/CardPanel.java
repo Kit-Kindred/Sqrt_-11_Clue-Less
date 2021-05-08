@@ -33,7 +33,7 @@ import javax.swing.border.EmptyBorder;
 
 public class CardPanel extends JComponent implements SelectablePanel
 {
-   
+
    Card card;
    String cardName;
    JPanel cardContent;
@@ -43,7 +43,7 @@ public class CardPanel extends JComponent implements SelectablePanel
    private final PropertyChangeSupport propertyChange = new PropertyChangeSupport(this);;
    Boolean selectable = false; // Controls whether or not this has a "clickable" border
    Boolean selected = false;
-   
+
    public CardPanel( Card card )
    {
       this.card = card;
@@ -51,7 +51,7 @@ public class CardPanel extends JComponent implements SelectablePanel
       setSize( 80, 105 );
       setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0) );
 
-      
+
       /*
        * Currently, we use the enum values to map the images. We need to make sure
        * the images for each character, room, weapon all have names that match their respective enums.
@@ -65,19 +65,19 @@ public class CardPanel extends JComponent implements SelectablePanel
          //picture = ImageIO.read( new File( root, "../../../../Sqrt_-11_Clue-Less/Source_Code/Client/App/Resources/Cards/" + cardName + ".png") );
          picture = ImageIO.read( new File( root, "/../Source_Code/Client/App/Resources/Cards/" + cardName + ".png") );
 
-      } 
+      }
       catch( Exception e )
       {
          e.printStackTrace();
          System.out.println(root);
       }
-      
+
       createComponents();
       createEvents();
-     
+
    } // End CardPanel Constructor
-   
-   
+
+
    /**
     * This method handles processing of the card passed to create this cardPanel
     */
@@ -87,53 +87,53 @@ public class CardPanel extends JComponent implements SelectablePanel
       {
          this.cardName = ((CharacterCard) card).getCharacterName();
       }
-      
+
       if( card instanceof RoomCard )
       {
          this.cardName = ((RoomCard) card).getRoomName();
       }
-      
+
       if( card instanceof WeaponCard )
       {
          this.cardName = ((WeaponCard) card).getWeaponType();
       }
    }
-   
-   
+
+
    public void deselect()
    {
       setBorder(null);
       selected = false;
    }
-   
-   
+
+
    // Uses PropertyChangeSupport to fire the event
    public void toggleSelectable()
    {
       propertyChange.firePropertyChange( new PropertyChangeEvent( this, "selectable", this.selectable, !this.selectable ) );
       selectable = !selectable;
    }
-   
-   
+
+
    public void select()
    {
       selected = true;
       this.setBorder(new BevelBorder(BevelBorder.LOWERED));
    }
 
-   
-   
+
+
    public void createComponents()
    {
-      
+
       cardContent = new JPanel();
       cardContent.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
       add(cardContent);
-      
+
       // Start adding our components into the panel
       cardPicture = new JLabel();
-      cardPicture.setBorder(UIManager.getBorder("Tree.editorBorder"));      
-      
+      cardPicture.setBorder(UIManager.getBorder("Tree.editorBorder"));
+
       // Get the card name and add/align EVERYTHING
       label = new JLabel( "<html>" + cardName + "</html>" );
       label.setHorizontalAlignment(SwingConstants.CENTER);
@@ -156,26 +156,26 @@ public class CardPanel extends JComponent implements SelectablePanel
                .addComponent(label)
                .addGap(7))
       );
-      
+
       Image dimg = picture.getScaledInstance( 80, 110,
          Image.SCALE_SMOOTH );
-      
+
       cardPicture.setIcon( new ImageIcon( dimg ) );
-      
+
       cardContent.setLayout(gl_cardContent);
    }
 
 
-   
+
    public void createEvents()
    {
-      
+
       // We need to create our own listener for the selectable boolean
 
-      addPropertyChangeListener( "selectable", new SelectableListener() );
+      // addPropertyChangeListener( "selectable", new SelectableListener() );
       
-      
-      
+
+
       /* This is how we make this card panel selectable.
        * This doesn't currently do anything, but network stuff for suggestions
        * should go here.
@@ -197,15 +197,15 @@ public class CardPanel extends JComponent implements SelectablePanel
                  //panel.select();//setBorder(new BevelBorder(BevelBorder.LOWERED));
                  System.out.println("Valid");
               }
-             
+
               else
               {
                  System.out.println("Invalid");
               }
-              
+
           }
       };
-      
+
       this.addMouseListener( ml );
    }
 
@@ -222,16 +222,16 @@ class SelectableListener implements PropertyChangeListener
    public void propertyChange( PropertyChangeEvent evt )
    {
       CardPanel cardPanel = (CardPanel) evt.getSource();
-      
+
       if ( evt.getPropertyName().equals("selectable") ) {
          System.out.println(evt.getNewValue().toString() );
       }
-      
+
       if( (boolean) evt.getNewValue() )
       {
          cardPanel.label.setBorder( new BevelBorder(BevelBorder.RAISED, null, null, null, null) );
       }
-      
+
       else
       {
          cardPanel.label.setBorder( null );
@@ -241,5 +241,5 @@ class SelectableListener implements PropertyChangeListener
 
 
    }
-   
+
 }
