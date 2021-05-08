@@ -549,9 +549,19 @@ public class ClueLessClient extends Thread
         csc.send(new AccuseRequest(UserPlayer.PlayerName, accuseHand));
     }
 
+    public void refute(String to, Card card)
+    {
+        csc.send( new RefuteSuggestionResponse( UserPlayer.PlayerName, to, card) );
+    }
+
     public void move(MoveRequest.Move m)
     {
         csc.send(new MoveRequest(UserPlayer.PlayerName, m));
+    }
+
+    public boolean isTurn()
+    {
+        return UserPlayer.PlayerTurn;
     }
 
     public void sendChatMessage(String to, String msg, boolean toAll)
@@ -793,10 +803,11 @@ public class ClueLessClient extends Thread
     // LOGGING NOT DONE
     public void processRefuteSuggestionPicker( RefuteSuggestionPicker rs ) throws TimeoutException
     {
+        // Leaving this in in case anyone needs to go back to the text-based for something
         /* Tells the client to assume an interrupted state so that it
          * disregards user input for all other things.
          */
-        interrupted = true;
+        /*interrupted = true;
 
         System.out.println( "\n\t[Server] You have multiple cards that can refute the"
            + " suggestion; please pick one:");
@@ -804,7 +815,7 @@ public class ClueLessClient extends Thread
         /* I think I want to move this level of processing elsewhere (maybe another
          * object type. Not sure yet. We want to blend all the cards from the
          * hand into one arraylist for easier iterations.
-         */
+         *//*
         ArrayList<Card> cardChoices = new ArrayList<Card>();
 
         cardChoices.addAll( rs.getHand().getCharacters() );
@@ -852,7 +863,8 @@ public class ClueLessClient extends Thread
 
         interrupted = false; // All done!
 
-        return;
+        return;*/
+        pcs.firePropertyChange("RefuteSuggestionPicker", null, rs);
 
     }
 

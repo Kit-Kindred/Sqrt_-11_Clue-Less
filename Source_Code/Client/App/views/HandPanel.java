@@ -26,7 +26,7 @@ public class HandPanel extends JPanel
 
    ArrayList<CardPanel> Cards;
    //SuggestHand Selection;  // Can only ever have one of each selected, so this works well
-   //PropertyChangeSupport pcs;
+   PropertyChangeSupport pcs = new PropertyChangeSupport(this);
    CardPanel SelectedCard;
 
    /**
@@ -86,6 +86,7 @@ public class HandPanel extends JPanel
             SelectedCard = cp;
          }
       }
+      pcs.firePropertyChange("CardClicked", null, cp.card);
    }
 
    public void setCardsSelectable()
@@ -104,6 +105,24 @@ public class HandPanel extends JPanel
          cp.selectable = false;
          cp.deselect();
       }
+   }
+
+   public void defaultSelect()
+   {
+      if (SelectedCard == null)
+      {
+         SelectedCard = Cards.get(0);
+      }
+   }
+
+   public void removeAllCards()
+   {
+      Cards.clear();
+   }
+
+   public void addPropertyChangeListener(String val, PropertyChangeListener pcl)
+   {
+      pcs.addPropertyChangeListener(val, pcl);
    }
 
    /*   This was wrong, but leaving in case I want to reference it for something else
