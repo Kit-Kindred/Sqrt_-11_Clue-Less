@@ -9,6 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class AccuseDialog extends JDialog
 {
@@ -16,6 +18,8 @@ public class AccuseDialog extends JDialog
     HandPanel RoomCards;
     HandPanel WeaponCards;
     HandPanel CharacterCards;
+
+    boolean pressedAccuse;
 
     AccuseDialog(JFrame frame, String title)
     {
@@ -33,6 +37,15 @@ public class AccuseDialog extends JDialog
         addButtons();
 
         //add( new JLabel ("Click button to continue."));
+        addWindowListener(new WindowAdapter()
+        {
+            public void windowClosing(WindowEvent e)
+            {
+                onClose();
+            }
+        });
+
+        pressedAccuse = false;
 
         setSize(1000,500);
     }
@@ -46,6 +59,7 @@ public class AccuseDialog extends JDialog
     {
         if(RoomCards.SelectedCard != null && WeaponCards.SelectedCard != null && CharacterCards.SelectedCard != null)
         {
+            pressedAccuse = false;
             return new SuggestHand(
                     (CharacterCard)CharacterCards.SelectedCard.card,
                     (RoomCard) RoomCards.SelectedCard.card,
@@ -130,7 +144,8 @@ public class AccuseDialog extends JDialog
                 // Only close this if the accusation is valid
                 if(RoomCards.SelectedCard != null && WeaponCards.SelectedCard != null && CharacterCards.SelectedCard != null)
                 {
-                    setVisible(false);
+                    pressedAccuse = true;
+                    onClose();
                 }
             }
         });
@@ -151,19 +166,7 @@ public class AccuseDialog extends JDialog
         {
             public void actionPerformed( ActionEvent e )
             {
-                if(RoomCards.SelectedCard != null)
-                {
-                    RoomCards.SelectedCard.deselect();
-                }
-                if(WeaponCards.SelectedCard != null)
-                {
-                    WeaponCards.SelectedCard.deselect();
-                }
-                if(CharacterCards.SelectedCard != null)
-                {
-                    CharacterCards.SelectedCard.deselect();
-                }
-                setVisible(false);
+                onClose();
             }
         });
 
@@ -177,6 +180,31 @@ public class AccuseDialog extends JDialog
         gbc_cancel.gridy = 5;
         gbc_cancel.anchor = GridBagConstraints.CENTER;
         this.add( cancel, gbc_cancel );
+    }
+
+    public void onClose()
+    {
+        if (!pressedAccuse)
+        {
+            //System.out.println("Cancel pressed");
+            if(RoomCards.SelectedCard != null)
+            {
+                RoomCards.SelectedCard.deselect();
+                RoomCards.SelectedCard = null;
+            }
+            if(WeaponCards.SelectedCard != null)
+            {
+                WeaponCards.SelectedCard.deselect();
+                WeaponCards.SelectedCard = null;
+            }
+            if(CharacterCards.SelectedCard != null)
+            {
+                CharacterCards.SelectedCard.deselect();
+                CharacterCards.SelectedCard = null;
+            }
+        }
+        pressedAccuse = false;
+        setVisible(false);
     }
 
 }
