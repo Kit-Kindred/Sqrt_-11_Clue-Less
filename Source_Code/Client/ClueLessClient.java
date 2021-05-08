@@ -975,4 +975,9 @@ public class ClueLessClient extends Thread
         this.board = board;
     }
 
+    public Board getBoard()
+    {
+        return this.board;
+    }
+
 }
