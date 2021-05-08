@@ -359,6 +359,8 @@ public class ClueLessClient extends Thread
 
     private boolean startPlayer;
 
+    private boolean suggestedThisTurn;
+
     private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
     private Thread logThread;
@@ -368,6 +370,7 @@ public class ClueLessClient extends Thread
         initDone = false;  // Not doing a real init
     }
 
+    // Deprecated
     public ClueLessClient(String serverIP, int serverPort)
     {
         initDone= true;
@@ -384,6 +387,7 @@ public class ClueLessClient extends Thread
         LogQueue = new ArrayBlockingQueue<LogPair>(LogQueueDepth);
     }
 
+    // Proper way to instantiate
     public void init(String serverIP, int serverPort, String playerName)
     {
         if (!initDone)
@@ -396,7 +400,9 @@ public class ClueLessClient extends Thread
             numUpdatesReceived = 0;
             ConnectionRequested = false;
             activeGame = false;
+            suggestedThisTurn = false;
             UserPlayer = new Player();
+            pcs.firePropertyChange("PlayerTurn", true, UserPlayer.PlayerTurn);  // Make sure the client knows this starts as false
             startPlayer = true;  // Flip flop this to initialize the Start Game button properly
             setStartPlayer(false);
             LogQueue = new ArrayBlockingQueue<LogPair>(LogQueueDepth);
@@ -468,6 +474,11 @@ public class ClueLessClient extends Thread
         {
             e.printStackTrace();
         }
+    }
+
+    public boolean canSuggest()
+    {
+        return getRoom() != null && isTurn() && !suggestedThisTurn;
     }
 
     public void addPropertyChangeListener(String val, PropertyChangeListener pcl)
@@ -542,6 +553,7 @@ public class ClueLessClient extends Thread
     public void suggest(SuggestHand suggestHand)
     {
         csc.send(new SuggestRequest(UserPlayer.PlayerName, suggestHand, UserPlayer.xPos, UserPlayer.yPos));
+        suggestedThisTurn = true;
     }
 
     public void accuse(SuggestHand accuseHand)
@@ -778,6 +790,7 @@ public class ClueLessClient extends Thread
 //            System.out.println("Accuse: 9");
 //            System.out.println("Exit: -1");
 //            printGameInstructions();
+            suggestedThisTurn = false;
             Log(Color.ORANGE, "It's your turn!");
             pcs.firePropertyChange("PlayerTurn", oldValue, UserPlayer.PlayerTurn);
         }
