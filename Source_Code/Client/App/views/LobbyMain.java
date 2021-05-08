@@ -403,7 +403,7 @@ public class LobbyMain extends JFrame
 
   public void tryEnableSuggestButton()
   {
-      mainPanel.actionPanel.suggestButton.setEnabled(client.isTurn() && client.getRoom() != null);
+      mainPanel.actionPanel.suggestButton.setEnabled(client.canSuggest());
   }
 
   public void refute(RefuteSuggestionPicker rs)
