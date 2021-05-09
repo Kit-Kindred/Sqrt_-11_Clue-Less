@@ -174,7 +174,7 @@ public class LobbyMain extends JFrame
          public void actionPerformed(ActionEvent e) 
          {
             System.out.println("Colonel Mustard Selected");
-            client.sendCharacterSelect(statusPanel.colMusButton.getActionCommand());
+            client.sendCharacterSelect(CharacterCard.CharacterName.COLONEL_MUSTARD);
          }
       });   
 
@@ -183,7 +183,7 @@ public class LobbyMain extends JFrame
          public void actionPerformed(ActionEvent e) 
          {
             System.out.println("Miss Scarlet Selected");
-            client.sendCharacterSelect(statusPanel.msScarButton.getActionCommand());
+            client.sendCharacterSelect(CharacterCard.CharacterName.MISS_SCARLET);
          }
       });   
 
@@ -192,7 +192,7 @@ public class LobbyMain extends JFrame
          public void actionPerformed(ActionEvent e) 
          {
             System.out.println("Professor Plum Selected");
-            client.sendCharacterSelect(statusPanel.profPlumButton.getActionCommand());
+            client.sendCharacterSelect(CharacterCard.CharacterName.PROFESSOR_PLUM);
          }
       });   
 
@@ -201,7 +201,7 @@ public class LobbyMain extends JFrame
          public void actionPerformed(ActionEvent e) 
          {
             System.out.println("Mr. Green Selected");
-            client.sendCharacterSelect(statusPanel.mrGreenButton.getActionCommand());
+            client.sendCharacterSelect(CharacterCard.CharacterName.MR_GREEN);
          }
       });   
 
@@ -210,7 +210,7 @@ public class LobbyMain extends JFrame
          public void actionPerformed(ActionEvent e) 
          {
             System.out.println("Mrs. White Selected");
-            client.sendCharacterSelect(statusPanel.mrsWhiteButton.getActionCommand());
+            client.sendCharacterSelect(CharacterCard.CharacterName.MRS_WHITE);
          }
       });   
 
@@ -219,7 +219,7 @@ public class LobbyMain extends JFrame
          public void actionPerformed(ActionEvent e) 
          {
             System.out.println("Mrs. Pea Selected");
-            client.sendCharacterSelect(statusPanel.mrsPeaButton.getActionCommand());
+            client.sendCharacterSelect(CharacterCard.CharacterName.MRS_PEACOCK);
          }
       });   
 
@@ -398,12 +398,9 @@ public class LobbyMain extends JFrame
       client.addPropertyChangeListener("CharacterUpdate", new PropertyChangeListener() {
          @Override
          public void propertyChange(PropertyChangeEvent evt) {
-            
-            
-            
             boolean[] newList = (boolean[]) evt.getNewValue();
 
-            // System.out.println((boolean[]) evt.getNewValue());
+            //System.out.println(newList[0] + " " + newList[1] + " " +newList[2] + " " + newList[3] + " " + newList[4] + " " + newList[5]);
             
             statusPanel.colMusButton.setEnabled(newList[0]);
             statusPanel.msScarButton.setEnabled(newList[1]);

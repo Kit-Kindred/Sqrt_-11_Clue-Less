@@ -1,10 +1,12 @@
 package Common.Messages.ActionRequests;
 
+import Common.CharacterCard;
+
 public class SelectCharacterRequest extends ActionRequest
 {
-    public String RequestedCharacter;
+    public CharacterCard.CharacterName RequestedCharacter;
 
-    public SelectCharacterRequest(String from, String character)
+    public SelectCharacterRequest(String from, CharacterCard.CharacterName character)
     {
         super(from);
         RequestedCharacter = character;

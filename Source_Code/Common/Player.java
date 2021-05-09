@@ -39,6 +39,7 @@ public class Player implements Serializable
         PlayerConnected = true;
         PlayerTurn = false;
         hand = new PlayerHand();
+        charName = null;
     }
 
     public Player(String playerName, int clientID, boolean conn, boolean act)
@@ -49,6 +50,7 @@ public class Player implements Serializable
         PlayerConnected = conn;
         PlayerTurn = false;
         hand = new PlayerHand();
+        charName = null;
     }
 
     public Player(Player other)

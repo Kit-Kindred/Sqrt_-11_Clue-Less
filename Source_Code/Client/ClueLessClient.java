@@ -586,7 +586,7 @@ public class ClueLessClient extends Thread
         csc.send(new ChatFromClient(UserPlayer.PlayerName, to, msg, toAll));
     }
 
-    public void sendCharacterSelect(String character)
+    public void sendCharacterSelect(CharacterName character)
     {
         csc.send(new SelectCharacterRequest(UserPlayer.PlayerName, character));
     }
@@ -714,10 +714,9 @@ public class ClueLessClient extends Thread
         }
         else if (statUp instanceof CharacterUpdate)
         {
-            boolean[] oldValue = null;
-            boolean[] newValue = ((CharacterUpdate) statUp).charEnabled;
-            
-            this.pcs.firePropertyChange("CharacterUpdate", oldValue, newValue);
+            //System.out.println(((CharacterUpdate) statUp).charEnabled[0] + " " + ((CharacterUpdate) statUp).charEnabled[1] + " " +((CharacterUpdate) statUp).charEnabled[2] + " " +
+            //        ((CharacterUpdate) statUp).charEnabled[3] + " " + ((CharacterUpdate) statUp).charEnabled[4] + " " + ((CharacterUpdate) statUp).charEnabled[5]);
+            this.pcs.firePropertyChange("CharacterUpdate", null, ((CharacterUpdate) statUp).charEnabled);
         }
         else  // Something else. Eventually this'll be an error case, but it's fine for now
         {

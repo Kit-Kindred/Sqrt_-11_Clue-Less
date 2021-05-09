@@ -13,7 +13,7 @@ package Client.App.views;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import Server.ClueLessServer;
+
 
 /**
  * This is the initial panel that is displayed in the middle of the screen
