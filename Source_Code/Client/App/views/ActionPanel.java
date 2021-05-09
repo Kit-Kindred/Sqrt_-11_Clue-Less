@@ -40,7 +40,7 @@ public class ActionPanel extends JPanel
                                            10, 60, 10, 10,
                                            10, 60, 10, 10,
                                            10, 60, 10, 10};*/
-        gbl_this.columnWidths = new int[] {10, 50, 10, 50, 10, 50, 10, 50, 10, 50, 10 };
+        gbl_this.columnWidths = new int[] {10, 50, 10, 50, 10, 50, 10, 50, 10, 50, 5 };
         this.setLayout( gbl_this );
 
         // Dpad
@@ -102,7 +102,7 @@ public class ActionPanel extends JPanel
         
         
         // Detective Pad Button
-        detectivePadButton     = new JButton( "Detective\nPad" );
+        detectivePadButton     = new JButton( "Detective Pad" );
         GridBagConstraints gbc_detectivePadButton = new GridBagConstraints();
         gbc_detectivePadButton.gridheight = 1;
         gbc_detectivePadButton.gridwidth = 1;
