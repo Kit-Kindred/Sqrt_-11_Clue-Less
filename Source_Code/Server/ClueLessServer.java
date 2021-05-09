@@ -493,7 +493,7 @@ public class ClueLessServer extends Thread
         {
             if(!p.PlayerName.equals(""))
             {
-                sendToAllPlayers(new Notification(p.PlayerName + " is " + String.valueOf(p.charName)));
+                sendToAllPlayers(new Notification(p.PlayerName + " is " + p.getCharacterName()));
             }
         }
         BoardUpdateSem.release();  // Send out a board update
