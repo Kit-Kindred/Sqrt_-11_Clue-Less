@@ -160,6 +160,12 @@ public class ClueLessServer extends Thread
     */
     private SuggestHand EnvelopeHand;
 
+
+    /**
+     * list of states for selectable characters
+     */
+    public static boolean[] AvailableCharacters = {true, true, true, true, true, true};
+
     /**
      * Initialize the ClueLessServer. Set up game state
      */
@@ -306,6 +312,10 @@ public class ClueLessServer extends Thread
         {
             processConnectRequest((ConnectRequest) actionRequest);
         }
+        if(actionRequest instanceof SelectCharacterRequest)  // Process this one regardless of turn order
+        {
+            processCharacterSelectFromClient((SelectCharacterRequest) actionRequest);
+        }        
         if(actionRequest instanceof ChatFromClient)
         {
             processChatFromClient((ChatFromClient) actionRequest);
@@ -371,6 +381,49 @@ public class ClueLessServer extends Thread
                 break;
             }
         }
+    }
+
+    public void processCharacterSelectFromClient(SelectCharacterRequest scr)
+    {
+        // convert from GUI item to character enum-like string
+        int availIndex;
+        switch (scr.RequestedCharacter)
+        {
+            case "Colonel Mustard":
+                availIndex = 0;
+                break;
+            case "Miss Scarlet":
+                availIndex = 1;
+                break;
+            case "Professor Plum":
+                availIndex = 2;
+                break;
+            case "Mr. Green":
+                availIndex = 3;
+                break;
+            case "Mrs. White":
+                availIndex = 4;
+                break;
+            case "Mrs. Peacock":
+                availIndex = 5;
+                break;
+            default:
+                availIndex = -1;
+        } 
+
+        // assign character to player
+        PlayerList.get(CurrentPlayerIndex).assignCharacter(CharacterName.values()[availIndex]);
+        
+        // remove character from availability to clients 
+        ClueLessServer.AvailableCharacters[availIndex] = false;
+        
+        // update available character list for all clients
+        sendToAllPlayers(new CharacterUpdate(ClueLessServer.AvailableCharacters));
+
+        // send player image to client
+
+
+
     }
 
     /**

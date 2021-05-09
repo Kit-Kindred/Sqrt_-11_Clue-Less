@@ -3,7 +3,6 @@ package Client.App.views;
 import Client.ClueLessClient;
 import Common.*;
 import Common.Messages.ActionRequests.MoveRequest;
-import Common.Messages.StatusUpdates.PlayerHandUpdate;
 
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
@@ -26,7 +25,7 @@ public class LobbyMain extends JFrame
    private LobbyStatusPanel     statusPanel;
 
    private AccuseDialog accuseDialog;
-  private SuggestDialog suggestDialog;
+   private SuggestDialog suggestDialog;
 
    private final ClueLessClient client;
 
@@ -120,7 +119,7 @@ public class LobbyMain extends JFrame
       mainGamePanel.setLayout( card );
 
       accuseDialog = new AccuseDialog(this, "Accuse");
-     suggestDialog = new SuggestDialog(this, "Suggest");
+      suggestDialog = new SuggestDialog(this, "Suggest");
 
    }
 
@@ -156,6 +155,61 @@ public class LobbyMain extends JFrame
          }
 
       } );
+
+      statusPanel.colMusButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) 
+         {
+            System.out.println("Colonel Mustard Selected");
+            client.sendCharacterSelect(statusPanel.colMusButton.getActionCommand());
+         }
+      });   
+
+      statusPanel.msScarButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) 
+         {
+            System.out.println("Miss Scarlet Selected");
+            client.sendCharacterSelect(statusPanel.msScarButton.getActionCommand());
+         }
+      });   
+
+      statusPanel.profPlumButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) 
+         {
+            System.out.println("Professor Plum Selected");
+            client.sendCharacterSelect(statusPanel.profPlumButton.getActionCommand());
+         }
+      });   
+
+      statusPanel.mrGreenButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) 
+         {
+            System.out.println("Mr. Green Selected");
+            client.sendCharacterSelect(statusPanel.mrGreenButton.getActionCommand());
+         }
+      });   
+
+      statusPanel.mrsWhiteButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) 
+         {
+            System.out.println("Mrs. White Selected");
+            client.sendCharacterSelect(statusPanel.mrsWhiteButton.getActionCommand());
+         }
+      });   
+
+      statusPanel.mrsPeaButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) 
+         {
+            System.out.println("Mrs. Pea Selected");
+            client.sendCharacterSelect(statusPanel.mrsPeaButton.getActionCommand());
+         }
+      });   
+
 
       statusPanel.startGameButton.addActionListener(new ActionListener()
       {
@@ -289,6 +343,25 @@ public class LobbyMain extends JFrame
                   mainPanel.chatBox.sendTo.addItem(p.PlayerName);
                }
             }
+         }
+      });
+
+      client.addPropertyChangeListener("CharacterUpdate", new PropertyChangeListener() {
+         @Override
+         public void propertyChange(PropertyChangeEvent evt) {
+            
+            
+            
+            boolean[] newList = (boolean[]) evt.getNewValue();
+
+            // System.out.println((boolean[]) evt.getNewValue());
+            
+            statusPanel.colMusButton.setEnabled(newList[0]);
+            statusPanel.msScarButton.setEnabled(newList[1]);
+            statusPanel.profPlumButton.setEnabled(newList[2]);
+            statusPanel.mrGreenButton.setEnabled(newList[3]);
+            statusPanel.mrsWhiteButton.setEnabled(newList[4]);
+            statusPanel.mrsPeaButton.setEnabled(newList[5]);
          }
       });
 
