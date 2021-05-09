@@ -11,6 +11,8 @@ public class ActionPanel extends JPanel
     public JButton accuseButton;
     public JButton suggestButton;
     public JButton endTurnButton;
+    public JButton detectivePadButton;
+
 
     public ActionPanel()
     {
@@ -38,7 +40,7 @@ public class ActionPanel extends JPanel
                                            10, 60, 10, 10,
                                            10, 60, 10, 10,
                                            10, 60, 10, 10};*/
-        gbl_this.columnWidths = new int[] {10, 60, 10, 60, 10, 60, 10, 60, 10 };
+        gbl_this.columnWidths = new int[] {10, 50, 10, 50, 10, 50, 10, 50, 10, 50, 5 };
         this.setLayout( gbl_this );
 
         // Dpad
@@ -97,5 +99,22 @@ public class ActionPanel extends JPanel
         gbc_endTurnButton.insets = new Insets( 0, 0, 0, 0 );
         gbc_endTurnButton.fill = GridBagConstraints.BOTH;
         this.add( endTurnButton, gbc_endTurnButton );
+        
+        
+        // Detective Pad Button
+        detectivePadButton     = new JButton( "Detective Pad" );
+        GridBagConstraints gbc_detectivePadButton = new GridBagConstraints();
+        gbc_detectivePadButton.gridheight = 1;
+        gbc_detectivePadButton.gridwidth = 1;
+        gbc_detectivePadButton.anchor = GridBagConstraints.NORTHWEST;
+        gbc_detectivePadButton.ipady = 0;
+        gbc_detectivePadButton.ipadx = 0;
+        gbc_detectivePadButton.gridx = 9;
+        gbc_detectivePadButton.gridy = 1;
+        gbc_detectivePadButton.insets = new Insets( 0, 0, 0, 0 );
+        gbc_detectivePadButton.fill = GridBagConstraints.BOTH;
+        this.add( detectivePadButton, gbc_detectivePadButton );
+        
+        
     }
 }
