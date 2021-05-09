@@ -586,6 +586,11 @@ public class ClueLessClient extends Thread
         csc.send(new ChatFromClient(UserPlayer.PlayerName, to, msg, toAll));
     }
 
+    public void sendCharacterSelect(CharacterName character)
+    {
+        csc.send(new SelectCharacterRequest(UserPlayer.PlayerName, character));
+    }
+
     /**
      * Process status updates sent to the client
      *
@@ -707,8 +712,12 @@ public class ClueLessClient extends Thread
             String toAll = ((ChatToClient)statUp).ToAll ? " to all" : "";
             Log(Color.DARK_GRAY, "[" + ((ChatToClient)statUp).SendingPlayer + toAll + "] " + ((ChatToClient)statUp).ChatMessage);
         }
-
-
+        else if (statUp instanceof CharacterUpdate)
+        {
+            //System.out.println(((CharacterUpdate) statUp).charEnabled[0] + " " + ((CharacterUpdate) statUp).charEnabled[1] + " " +((CharacterUpdate) statUp).charEnabled[2] + " " +
+            //        ((CharacterUpdate) statUp).charEnabled[3] + " " + ((CharacterUpdate) statUp).charEnabled[4] + " " + ((CharacterUpdate) statUp).charEnabled[5]);
+            this.pcs.firePropertyChange("CharacterUpdate", null, ((CharacterUpdate) statUp).charEnabled);
+        }
         else  // Something else. Eventually this'll be an error case, but it's fine for now
         {
             System.out.println("\t[Server] Update Status: Received StatusUpdate");

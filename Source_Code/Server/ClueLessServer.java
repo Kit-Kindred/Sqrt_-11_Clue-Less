@@ -160,6 +160,12 @@ public class ClueLessServer extends Thread
     */
     private SuggestHand EnvelopeHand;
 
+
+    /**
+     * list of states for selectable characters
+     */
+    public boolean[] AvailableCharacters = {true, true, true, true, true, true};
+
     /**
      * Initialize the ClueLessServer. Set up game state
      */
@@ -306,6 +312,10 @@ public class ClueLessServer extends Thread
         {
             processConnectRequest((ConnectRequest) actionRequest);
         }
+        if(actionRequest instanceof SelectCharacterRequest)  // Process this one regardless of turn order
+        {
+            processCharacterSelectFromClient((SelectCharacterRequest) actionRequest);
+        }        
         if(actionRequest instanceof ChatFromClient)
         {
             processChatFromClient((ChatFromClient) actionRequest);
@@ -373,6 +383,32 @@ public class ClueLessServer extends Thread
         }
     }
 
+    public void processCharacterSelectFromClient(SelectCharacterRequest scr)
+    {
+        // convert from GUI item to character enum-like string
+        int availIndex = scr.RequestedCharacter.ordinal();
+
+
+        // assign character to player
+        for(Player p : PlayerList)
+        {
+            if (p.PlayerName.equals(scr.PlayerName))
+            {
+                if(p.charName != null)
+                {
+                    // add character back to list
+                    AvailableCharacters[p.charName.ordinal()] = true;
+                }
+                p.assignCharacter(scr.RequestedCharacter);
+                AvailableCharacters[p.charName.ordinal()] = false;
+            }
+        }
+        
+        // update available character list for all clients
+        sendToAllPlayers(new CharacterUpdate(AvailableCharacters));
+
+    }
+
     /**
      * A connected client wants to join the game
      *
@@ -393,6 +429,7 @@ public class ClueLessServer extends Thread
                             p.ClientID = cr.UniqueID;  // Assign the new client to the existing player
                             p.PlayerConnected = true;  // Player is connected again
                             sendToPlayer(p.PlayerName, new ConnectRequestStatus(true, p.PlayerName));  // Let player know they're in
+                            sendToAllPlayers(new CharacterUpdate(AvailableCharacters));
                         }
                         else
                         {
@@ -410,6 +447,7 @@ public class ClueLessServer extends Thread
                     sendToAllPlayers(new PlayerConnection(cr.PlayerName, true, PlayerList.size() > 0 ? PlayerList.get(0).PlayerName : cr.PlayerName, PlayerList.size()));  // Notify existing players
                     PlayerList.add(new Player(cr.PlayerName, cr.UniqueID));
                     sendToClient(cr.UniqueID, new ConnectRequestStatus(true, cr.PlayerName));  // Let player know they're in
+                    sendToAllPlayers(new CharacterUpdate(AvailableCharacters));
                     return;
                 }
             }
@@ -443,7 +481,20 @@ public class ClueLessServer extends Thread
                     System.out.println( EnvelopeHand.getCharacterName() + "\n" +
                        EnvelopeHand.getRoomName() + "\n" + 
                        EnvelopeHand.getWeaponType());
-                    
+
+                    // Game always starts with Miss Scarlet, so if a pc picked her, they're first
+                    for(int i = 0;  i < PlayerList.size(); i++)
+                    {
+                        if(PlayerList.get(i).charName == CharacterName.MISS_SCARLET)
+                        {
+                            if(!PlayerList.get(i).PlayerName.equals(""))
+                            {
+                                CurrentPlayerIndex = i;
+                                break;
+                            }
+                        }
+                    }
+
                     // Notify the players of the first turn
                     sendToAllPlayers( new TurnUpdate(PlayerList.get( CurrentPlayerIndex ).PlayerName) );
                     
@@ -483,9 +534,18 @@ public class ClueLessServer extends Thread
         {
             PlayerList.add(new Player("", -13, false, false));
         }
-        for(int i = 0; i < PlayerList.size(); i++)
-        {
-            PlayerList.get(i).assignCharacter(CharacterName.values()[i]);
+        int charEnumIndex = 0;
+        for (Player player : PlayerList) {
+            if (player.charName == null)  // Player doesn't have a character
+            {
+                while (!AvailableCharacters[charEnumIndex])  // Is this name taken?
+                {
+                    charEnumIndex++;
+                }
+                player.assignCharacter(CharacterName.values()[charEnumIndex]);
+                AvailableCharacters[charEnumIndex] = false;
+            }
+
         }
         System.out.println("Filled players " + PlayerList.size());
         board.putPlayers(PlayerList);
