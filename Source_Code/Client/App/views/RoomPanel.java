@@ -46,7 +46,7 @@ public class RoomPanel extends JComponent implements SelectablePanel
       this.room = new BoardRoom( name );
       this.roomName = name;
       setLayout( new BorderLayout(0, 0) );
-      setSize( 75, 90 );
+      setSize( 65, 90 );
       setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0) );
 
       pcs = new PropertyChangeSupport(this);
@@ -61,8 +61,6 @@ public class RoomPanel extends JComponent implements SelectablePanel
          try
          {
             root = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
-
-            //picture = ImageIO.read( new File( root, "../../../../Sqrt_-11_Clue-Less/Source_Code/Client/App/Resources/Cards/" + cardName + ".png") );
             picture = ImageIO.read( new File( root, "/../Source_Code/Client/App/Resources/Rooms/" + roomName + ".png") );
 
          }
@@ -102,21 +100,22 @@ public class RoomPanel extends JComponent implements SelectablePanel
             .addGroup(gl_cardContent.createSequentialGroup()
                .addGap(1)
                .addGroup(gl_cardContent.createParallelGroup(Alignment.TRAILING)
-                  .addComponent(label, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 73, Short.MAX_VALUE)
-                  .addComponent(roomPicture, Alignment.LEADING, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                  .addComponent(label, Alignment.CENTER, GroupLayout.PREFERRED_SIZE, 50, Short.MAX_VALUE)
+                  .addComponent(roomPicture, Alignment.CENTER, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                  .addPreferredGap(ComponentPlacement.RELATED, 0, Short.MAX_VALUE)
                .addGap(1))
       );
       gl_cardContent.setVerticalGroup(
-         gl_cardContent.createParallelGroup(Alignment.LEADING)
+         gl_cardContent.createParallelGroup(Alignment.CENTER)
             .addGroup(gl_cardContent.createSequentialGroup()
                .addGap(1)
-               .addComponent(roomPicture, GroupLayout.PREFERRED_SIZE, 84, GroupLayout.PREFERRED_SIZE)
+               .addComponent(roomPicture, GroupLayout.PREFERRED_SIZE, 80, GroupLayout.PREFERRED_SIZE)
                .addPreferredGap(ComponentPlacement.RELATED, 0, Short.MAX_VALUE)
                .addComponent(label)
                .addGap(1))
       );
 
-      Image dimg = picture.getScaledInstance( 75, 90,
+      Image dimg = picture.getScaledInstance( 80, 80,
          Image.SCALE_SMOOTH );
 
       roomPicture.setIcon( new ImageIcon( dimg ) );
@@ -183,7 +182,7 @@ public class RoomPanel extends JComponent implements SelectablePanel
               g2d_roomImage.dispose();
            }
 
-           Image dimg = this.picture.getScaledInstance( 75, 90, Image.SCALE_SMOOTH );
+           Image dimg = this.picture.getScaledInstance( 80, 80, Image.SCALE_SMOOTH );
            roomPicture.setIcon( new ImageIcon( dimg ) );
        }
        catch( Exception e )

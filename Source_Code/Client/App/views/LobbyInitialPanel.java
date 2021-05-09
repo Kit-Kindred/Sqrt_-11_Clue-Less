@@ -20,26 +20,26 @@ import javax.swing.border.TitledBorder;
  * when the client is started. This panel has a themes configuration option, a
  * player name text field and a join button. Clicking the join button should
  * change the panel to display the LobbyStatusPanel instead.
- * 
+ *
  * @author DavidC
  *
  */
 public class LobbyInitialPanel extends JPanel
 {
-   
-   JPanel playerPictureBorderPanel;
-   JPanel playerPicture;
-   JLabel tempPlayerPictureLabel;
-   JComboBox<String> selectCharacter;
+
+   // JPanel playerPictureBorderPanel;
+   // JPanel playerPicture;
+   // JLabel tempPlayerPictureLabel;
+   // JComboBox<String> selectCharacter;
    JLabel playerNameLabel;
    JLabel serverIPLabel;
    JLabel serverPortLabel;
    JTextField playerNameTextField;
    JTextField serverIPTextField;
    JTextField serverPortTextField;
-   JButton themeConfigButton;
+   // JButton themeConfigButton;
    JButton joinGameButton;
-   
+
 
    LobbyInitialPanel()
    {
@@ -47,7 +47,7 @@ public class LobbyInitialPanel extends JPanel
       /*
        * This adds a border around the controls. Once we decide to add some
        * sort of backdrop, we should probably remove this.
-       * 
+       *
        */
       this.setBorder( new TitledBorder( null, "", TitledBorder.LEADING,
          TitledBorder.TOP, null, null ) );
@@ -63,36 +63,36 @@ public class LobbyInitialPanel extends JPanel
       this.setLayout( gbl_this );
 
       // Basic Board that goes around the player picture
-      playerPictureBorderPanel = new JPanel();
-      playerPictureBorderPanel.setBorder( new TitledBorder( null, "",
-         TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
-      GridBagConstraints gbc_playerPictureBorderPanel = new GridBagConstraints();
-      gbc_playerPictureBorderPanel.gridheight = 5;
-      gbc_playerPictureBorderPanel.gridwidth = 1;
-      gbc_playerPictureBorderPanel.ipady = 0;
-      gbc_playerPictureBorderPanel.ipadx = 0;
-      gbc_playerPictureBorderPanel.insets = new Insets( 0, 0, 0, 0 );
-      gbc_playerPictureBorderPanel.gridx = 0;
-      gbc_playerPictureBorderPanel.gridy = 1;
-      gbc_playerPictureBorderPanel.anchor = GridBagConstraints.NORTHWEST;
-      gbc_playerPictureBorderPanel.fill = GridBagConstraints.BOTH;
-      this.add( playerPictureBorderPanel, gbc_playerPictureBorderPanel );
-      GridBagLayout gbl_playerPictureBorderPanel = new GridBagLayout();
-      playerPictureBorderPanel.setLayout( gbl_playerPictureBorderPanel );
-
-      // Generic JPanel to house the player picture that will go here
-      playerPicture     = new JPanel();
-      playerPictureBorderPanel.add( playerPicture );
+      // playerPictureBorderPanel = new JPanel();
+      // playerPictureBorderPanel.setBorder( new TitledBorder( null, "",
+      //    TitledBorder.LEADING, TitledBorder.TOP, null, null ) );
+      // GridBagConstraints gbc_playerPictureBorderPanel = new GridBagConstraints();
+      // gbc_playerPictureBorderPanel.gridheight = 5;
+      // gbc_playerPictureBorderPanel.gridwidth = 1;
+      // gbc_playerPictureBorderPanel.ipady = 0;
+      // gbc_playerPictureBorderPanel.ipadx = 0;
+      // gbc_playerPictureBorderPanel.insets = new Insets( 0, 0, 0, 0 );
+      // gbc_playerPictureBorderPanel.gridx = 0;
+      // gbc_playerPictureBorderPanel.gridy = 1;
+      // gbc_playerPictureBorderPanel.anchor = GridBagConstraints.NORTHWEST;
+      // gbc_playerPictureBorderPanel.fill = GridBagConstraints.BOTH;
+      // this.add( playerPictureBorderPanel, gbc_playerPictureBorderPanel );
+      // GridBagLayout gbl_playerPictureBorderPanel = new GridBagLayout();
+      // playerPictureBorderPanel.setLayout( gbl_playerPictureBorderPanel );
+      //
+      // // Generic JPanel to house the player picture that will go here
+      // playerPicture     = new JPanel();
+      // playerPictureBorderPanel.add( playerPicture );
 
       /*
        * Temporary text that goes inside the player picture field to test
        * sizing...
        */
-      tempPlayerPictureLabel = new JLabel(
-         "<html>Select Character</html>" );
-      playerPicture.add( tempPlayerPictureLabel );
+      // tempPlayerPictureLabel = new JLabel(
+      //    "<html>Select Character</html>" );
+      // playerPicture.add( tempPlayerPictureLabel );
 
-      // // Select character drop down    
+      // // Select character drop down
       // selectCharacter = new JComboBox<String>();
       // GridBagConstraints gbc_selectCharacter = new GridBagConstraints();
       // gbc_selectCharacter.gridheight = 1;
@@ -188,19 +188,19 @@ public class LobbyInitialPanel extends JPanel
       this.add( serverPortTextField, gbc_serverPortTextField );
 
       // Theme Config button
-      themeConfigButton     = new JButton( "Themes" );
-      GridBagConstraints gbc_themeConfigButton = new GridBagConstraints();
-      gbc_themeConfigButton.gridheight = 1;
-      gbc_themeConfigButton.gridwidth = 1;
-      //gbc_themeConfigButton.weightx = 0.1;
-      gbc_themeConfigButton.anchor = GridBagConstraints.NORTHWEST;
-      gbc_themeConfigButton.ipady = 10;
-      gbc_themeConfigButton.ipadx = 50;
-      gbc_themeConfigButton.insets = new Insets( 0, 0, 0, 0 );
-      gbc_themeConfigButton.gridx = 0;
-      gbc_themeConfigButton.gridy = 10;
-      gbc_themeConfigButton.fill = GridBagConstraints.BOTH;
-      this.add( themeConfigButton, gbc_themeConfigButton );
+      // themeConfigButton     = new JButton( "Themes" );
+      // GridBagConstraints gbc_themeConfigButton = new GridBagConstraints();
+      // gbc_themeConfigButton.gridheight = 1;
+      // gbc_themeConfigButton.gridwidth = 1;
+      // //gbc_themeConfigButton.weightx = 0.1;
+      // gbc_themeConfigButton.anchor = GridBagConstraints.NORTHWEST;
+      // gbc_themeConfigButton.ipady = 10;
+      // gbc_themeConfigButton.ipadx = 50;
+      // gbc_themeConfigButton.insets = new Insets( 0, 0, 0, 0 );
+      // gbc_themeConfigButton.gridx = 0;
+      // gbc_themeConfigButton.gridy = 10;
+      // gbc_themeConfigButton.fill = GridBagConstraints.BOTH;
+      // this.add( themeConfigButton, gbc_themeConfigButton );
 
       // Lobby Join Button
       joinGameButton     = new JButton( "Join Game" );
