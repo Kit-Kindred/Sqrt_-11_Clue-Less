@@ -16,11 +16,13 @@ import java.beans.PropertyChangeListener;
 public class RefuteDialog extends JDialog
 {
     HandPanel Cards;
+    JFrame parent;
 
     RefuteDialog(JFrame frame, String title, RefuteSuggestionPicker rs)
     {
         super(frame, title, true);
-
+        parent = frame;
+        
         GridBagLayout gbl_this = new GridBagLayout();
         gbl_this.columnWidths = new int[] { 500 };
         gbl_this.rowHeights = new int[] {115};
@@ -35,7 +37,8 @@ public class RefuteDialog extends JDialog
             }
         });
 
-        setSize(500,200);
+        setBounds( parent.getBounds().x + parent.getWidth()/4, 
+           parent.getBounds().y + parent.getHeight()/4, 500, 200);
 
         for (RoomCard rc : rs.getHand().getRooms())
         {
