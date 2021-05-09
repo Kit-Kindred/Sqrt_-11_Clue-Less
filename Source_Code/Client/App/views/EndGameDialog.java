@@ -10,13 +10,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.basic.BasicOptionPaneUI.ButtonActionListener;
-
-import Common.Player;
-import Common.RoomCard;
 import Common.SuggestHand;
-import Server.EnvelopeHand;
-
 import javax.swing.JLabel;
 
 

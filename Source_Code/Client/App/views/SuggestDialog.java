@@ -15,10 +15,12 @@ public class SuggestDialog extends JDialog
     HandPanel WeaponCards;
     HandPanel CharacterCards;
     RoomCard CurrentRoom;
+    private JFrame parent;
 
     SuggestDialog(JFrame frame, String title)
     {
         super(frame, title, true);
+        this.parent = frame;
 
         GridBagLayout gbl_this = new GridBagLayout();
         gbl_this.columnWidths = new int[] { 500, 500 };
@@ -39,6 +41,8 @@ public class SuggestDialog extends JDialog
     public void open(RoomCard currentRoom)
     {
         CurrentRoom = currentRoom;
+        setBounds( parent.getBounds().x + parent.getWidth()/4, 
+           parent.getBounds().y + parent.getHeight()/4, 1000, 400);
         setVisible(true);
     }
 

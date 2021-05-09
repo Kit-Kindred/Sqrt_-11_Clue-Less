@@ -18,12 +18,14 @@ public class AccuseDialog extends JDialog
     HandPanel RoomCards;
     HandPanel WeaponCards;
     HandPanel CharacterCards;
+    private JFrame parent;
 
     boolean pressedAccuse;
 
     AccuseDialog(JFrame frame, String title)
     {
         super(frame, title, true);
+        parent = frame;
 
         GridBagLayout gbl_this = new GridBagLayout();
         gbl_this.columnWidths = new int[] { 500, 500 };
@@ -52,6 +54,8 @@ public class AccuseDialog extends JDialog
 
     public void open()
     {
+        setBounds( parent.getBounds().x + parent.getWidth()/4, 
+          parent.getBounds().y + parent.getHeight()/4, 1000, 600);
         setVisible(true);
     }
 
