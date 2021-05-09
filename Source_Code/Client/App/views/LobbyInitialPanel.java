@@ -1,14 +1,19 @@
 package Client.App.views;
 
-import javax.swing.JPanel;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.border.TitledBorder;
+// import javax.swing.JPanel;
+// import java.awt.GridBagLayout;
+// import java.awt.GridBagConstraints;
+// import java.awt.Insets;
+// import javax.swing.JTextField;
+// import javax.swing.JButton;
+// import javax.swing.JLabel;
+// import javax.swing.border.TitledBorder;
+// import java.awt.JComboBox;
 
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import Server.ClueLessServer;
 
 /**
  * This is the initial panel that is displayed in the middle of the screen
@@ -25,6 +30,7 @@ public class LobbyInitialPanel extends JPanel
    JPanel playerPictureBorderPanel;
    JPanel playerPicture;
    JLabel tempPlayerPictureLabel;
+   JComboBox<String> selectCharacter;
    JLabel playerNameLabel;
    JLabel serverIPLabel;
    JLabel serverPortLabel;
@@ -83,8 +89,27 @@ public class LobbyInitialPanel extends JPanel
        * sizing...
        */
       tempPlayerPictureLabel = new JLabel(
-         "<html>PLAYER PICTURE</html>" );
+         "<html>Select Character</html>" );
       playerPicture.add( tempPlayerPictureLabel );
+
+      // // Select character drop down    
+      // selectCharacter = new JComboBox<String>();
+      // GridBagConstraints gbc_selectCharacter = new GridBagConstraints();
+      // gbc_selectCharacter.gridheight = 1;
+      // gbc_selectCharacter.ipady = 0;
+      // gbc_selectCharacter.ipadx = 0;
+      // gbc_selectCharacter.insets = new Insets( 0, 0, 0, 0 );
+      // gbc_selectCharacter.gridx = 0;
+      // gbc_selectCharacter.gridy = 6;
+      // gbc_selectCharacter.anchor = GridBagConstraints.NORTHWEST;
+      // gbc_selectCharacter.fill = GridBagConstraints.HORIZONTAL;
+      // this.add( selectCharacter, gbc_selectCharacter );
+
+      // // set default available character values
+      // for (String charName : ClueLessServer.AvailableCharacters)
+      // {
+      //    selectCharacter.addItem(charName);
+      // }
 
       // Label for the Player Name text field
       playerNameLabel     = new JLabel( "Player Name:" );

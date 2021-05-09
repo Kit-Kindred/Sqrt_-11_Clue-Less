@@ -1,13 +1,10 @@
 package Client.App.views;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import java.awt.*;
+import javax.swing.*;
+import java.awt.event.*;
 import javax.swing.border.TitledBorder;
+import Server.ClueLessServer;
 
 
 /**
@@ -27,8 +24,13 @@ public class LobbyStatusPanel extends JPanel
    JLabel tempPlayerPictureLabel;
    JLabel playerNameLabel;
    JButton startGameButton;
-   
-   
+   JRadioButton colMusButton;
+   JRadioButton msScarButton;
+   JRadioButton profPlumButton;
+   JRadioButton mrGreenButton;
+   JRadioButton mrsWhiteButton;
+   JRadioButton mrsPeaButton;
+
    public LobbyStatusPanel()
    {
       this.setFocusable( true );
@@ -74,14 +76,143 @@ public class LobbyStatusPanel extends JPanel
       playerPicture     = new JPanel();
       playerPictureBorderPanel.add( playerPicture );
 
-      /*
-       * Temporary text that goes inside the player picture field to test
-       * sizing...
-       */
+      // /*
+      //  * Temporary text that goes inside the player picture field to test
+      //  * sizing...
+      //  */
+      // tempPlayerPictureLabel = new JLabel(
+      //         "<html>PLAYER PICTURE</html>" );
+      // playerPicture.add( tempPlayerPictureLabel );
+
       tempPlayerPictureLabel = new JLabel(
-              "<html>PLAYER PICTURE</html>" );
+         "<html>Select Character</html>" );
       playerPicture.add( tempPlayerPictureLabel );
 
+      // // Select character drop down    
+      // selectCharacter = new JComboBox<String>();
+      // GridBagConstraints gbc_selectCharacter = new GridBagConstraints();
+      // gbc_selectCharacter.gridheight = 1;
+      // gbc_selectCharacter.ipady = 0;
+      // gbc_selectCharacter.ipadx = 0;
+      // gbc_selectCharacter.insets = new Insets( 0, 0, 0, 0 );
+      // gbc_selectCharacter.gridx = 0;
+      // gbc_selectCharacter.gridy = 6;
+      // gbc_selectCharacter.anchor = GridBagConstraints.NORTHWEST;
+      // gbc_selectCharacter.fill = GridBagConstraints.HORIZONTAL;
+      // this.add( selectCharacter, gbc_selectCharacter );
+
+      // // set default available character values
+      // for (String charName : ClueLessServer.AvailableCharacters)
+      // {
+      //    selectCharacter.addItem(charName);
+      // }
+      // set up character button names
+      String colMusString = "Colonel Mustard";
+      String msScarString = "Miss Scarlet";
+      String profPlumString = "Professor Plum";
+      String mrGreenString = "Mr. Green";
+      String mrsWhiteString = "Mrs. White";
+      String mrsPeaString = "Mrs. Peacock";
+
+      // create button for Colonel Mustard
+      colMusButton = new JRadioButton(colMusString);
+      //colMusButton.setEnabled(ClueLessServer.AvailableCharacters[0]);
+      colMusButton.setActionCommand(colMusString);
+      GridBagConstraints gbc_colMusButton = new GridBagConstraints();
+      gbc_colMusButton.gridheight = 1;
+      gbc_colMusButton.ipady = 0;
+      gbc_colMusButton.ipadx = 0;
+      gbc_colMusButton.insets = new Insets( 0, 0, 0, 0 );
+      gbc_colMusButton.gridx = 0;
+      gbc_colMusButton.gridy = 6;
+      gbc_colMusButton.anchor = GridBagConstraints.NORTHWEST;
+      gbc_colMusButton.fill = GridBagConstraints.HORIZONTAL;
+      this.add( colMusButton, gbc_colMusButton );
+
+      // create button for Miss Scarlet
+      msScarButton = new JRadioButton(msScarString);
+      //msScarButton.setEnabled(ClueLessServer.AvailableCharacters[1]);
+      msScarButton.setActionCommand(msScarString);
+      GridBagConstraints gbc_msScarButton = new GridBagConstraints();
+      gbc_msScarButton.gridheight = 1;
+      gbc_msScarButton.ipady = 0;
+      gbc_msScarButton.ipadx = 0;
+      gbc_msScarButton.insets = new Insets( 0, 0, 0, 0 );
+      gbc_msScarButton.gridx = 0;
+      gbc_msScarButton.gridy = 7;
+      gbc_msScarButton.anchor = GridBagConstraints.NORTHWEST;
+      gbc_msScarButton.fill = GridBagConstraints.HORIZONTAL;
+      this.add( msScarButton, gbc_msScarButton );
+
+      // create button for Professor Plum
+      profPlumButton = new JRadioButton(profPlumString);
+      //profPlumButton.setEnabled(ClueLessServer.AvailableCharacters[2]);
+      profPlumButton.setActionCommand(profPlumString);
+      GridBagConstraints gbc_profPlumButton = new GridBagConstraints();
+      gbc_profPlumButton.gridheight = 1;
+      gbc_profPlumButton.ipady = 0;
+      gbc_profPlumButton.ipadx = 0;
+      gbc_profPlumButton.insets = new Insets( 0, 0, 0, 0 );
+      gbc_profPlumButton.gridx = 0;
+      gbc_profPlumButton.gridy = 8;
+      gbc_profPlumButton.anchor = GridBagConstraints.NORTHWEST;
+      gbc_profPlumButton.fill = GridBagConstraints.HORIZONTAL;
+      this.add( profPlumButton, gbc_profPlumButton );
+
+      // create button for Mr Green
+      mrGreenButton = new JRadioButton(mrGreenString);
+      //mrGreenButton.setEnabled(ClueLessServer.AvailableCharacters[3]);
+      mrGreenButton.setActionCommand(mrGreenString);
+      GridBagConstraints gbc_mrGreenButton = new GridBagConstraints();
+      gbc_mrGreenButton.gridheight = 1;
+      gbc_mrGreenButton.ipady = 0;
+      gbc_mrGreenButton.ipadx = 0;
+      gbc_mrGreenButton.insets = new Insets( 0, 0, 0, 0 );
+      gbc_mrGreenButton.gridx = 0;
+      gbc_mrGreenButton.gridy = 9;
+      gbc_mrGreenButton.anchor = GridBagConstraints.NORTHWEST;
+      gbc_mrGreenButton.fill = GridBagConstraints.HORIZONTAL;
+      this.add( mrGreenButton, gbc_mrGreenButton );
+
+      // create button for Mrs White
+      mrsWhiteButton = new JRadioButton(mrsWhiteString);
+      //mrsWhiteButton.setEnabled(ClueLessServer.AvailableCharacters[4]);
+      mrsWhiteButton.setActionCommand(mrsWhiteString);
+      GridBagConstraints gbc_mrsWhiteButton = new GridBagConstraints();
+      gbc_mrsWhiteButton.gridheight = 1;
+      gbc_mrsWhiteButton.ipady = 0;
+      gbc_mrsWhiteButton.ipadx = 0;
+      gbc_mrsWhiteButton.insets = new Insets( 0, 0, 0, 0 );
+      gbc_mrsWhiteButton.gridx = 0;
+      gbc_mrsWhiteButton.gridy = 10;
+      gbc_mrsWhiteButton.anchor = GridBagConstraints.NORTHWEST;
+      gbc_mrsWhiteButton.fill = GridBagConstraints.HORIZONTAL;
+      this.add( mrsWhiteButton, gbc_mrsWhiteButton );
+
+      // create button for Mrs Peacock
+      mrsPeaButton = new JRadioButton(mrsPeaString);
+      //mrsPeaButton.setEnabled(ClueLessServer.AvailableCharacters[5]);
+      mrsPeaButton.setActionCommand(mrsPeaString);
+      GridBagConstraints gbc_mrsPeaButton = new GridBagConstraints();
+      gbc_mrsPeaButton.gridheight = 1;
+      gbc_mrsPeaButton.ipady = 0;
+      gbc_mrsPeaButton.ipadx = 0;
+      gbc_mrsPeaButton.insets = new Insets( 0, 0, 0, 0 );
+      gbc_mrsPeaButton.gridx = 0;
+      gbc_mrsPeaButton.gridy = 11;
+      gbc_mrsPeaButton.anchor = GridBagConstraints.NORTHWEST;
+      gbc_mrsPeaButton.fill = GridBagConstraints.HORIZONTAL;
+      this.add( mrsPeaButton, gbc_mrsPeaButton );
+
+      // group the radio buttons so only one is active at a time
+      ButtonGroup characterButtons = new ButtonGroup();
+      characterButtons.add(colMusButton);
+      characterButtons.add(msScarButton);
+      characterButtons.add(profPlumButton);
+      characterButtons.add(mrGreenButton);
+      characterButtons.add(mrsWhiteButton);
+      characterButtons.add(mrsPeaButton);
+      
       // Label for the Player Name text field
       playerNameDescription     = new JLabel( "Player Name:" );
       GridBagConstraints gbc_playerNameDescription = new GridBagConstraints();
@@ -121,7 +252,5 @@ public class LobbyStatusPanel extends JPanel
       this.add( startGameButton, gbc_startGameButton );
       
       
-   }
-   
-   
+   }         
 }
