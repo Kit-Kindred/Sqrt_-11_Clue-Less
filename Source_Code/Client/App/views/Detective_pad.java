@@ -9,22 +9,27 @@ import java.awt.event.ItemListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
-public class Detective_pad extends JFrame {
+public class Detective_pad extends JDialog {
   /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private JFrame parent;
+	
+	
 JTabbedPane config = new JTabbedPane(JTabbedPane.TOP,JTabbedPane.WRAP_TAB_LAYOUT);
 
-  public Detective_pad() {
-    super("Clue-Less: Detective Notebook");
-    setSize(400, 350);
-    setDefaultCloseOperation(EXIT_ON_CLOSE);
+  public Detective_pad( JFrame frame, String title ) {
+    super( frame, title, true);
+    this.parent = frame;
+
 
     JPanel SusPane = new JPanel();
     SusPane.setLayout(new BoxLayout(SusPane, BoxLayout.Y_AXIS));
@@ -143,11 +148,19 @@ JTabbedPane config = new JTabbedPane(JTabbedPane.TOP,JTabbedPane.WRAP_TAB_LAYOUT
       Detective_pad.this.repaint();
     }
   }
-
-  public static void main(String args[]) {
-    Detective_pad sc = new Detective_pad();
-    sc.setVisible(true);
+  
+  
+  public void open()
+  {
+     setBounds( parent.getBounds().x + parent.getWidth()/4, 
+        parent.getBounds().y + parent.getHeight()/4, 400, 350);
+     setVisible( true );
   }
+
+//  public static void main(String args[]) {
+//    Detective_pad sc = new Detective_pad();
+//    sc.setVisible(true);
+//  }
 }
 
            
