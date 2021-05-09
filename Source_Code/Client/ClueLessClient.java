@@ -24,10 +24,10 @@ public class ClueLessClient extends Thread
      * then allow the user to run some test commands
      *
      * @param args - Unused
-    * @throws IOException
-    * @throws NumberFormatException
-    * @throws TimeoutException
-    * @throws InterruptedException
+     * @throws IOException
+     * @throws NumberFormatException
+     * @throws TimeoutException
+     * @throws InterruptedException
      *
      */
     public static void main(String[] args) throws NumberFormatException, IOException, TimeoutException, InterruptedException

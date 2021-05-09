@@ -54,8 +54,8 @@ public class EndGameDialog extends JDialog
    public void setContent()
    {
 
-      setBounds( parent.getBounds().x + parent.getWidth()/2, 
-         parent.getBounds().y + parent.getHeight()/2, 600, 300 );
+      setBounds( parent.getBounds().x + parent.getWidth()/4, 
+         parent.getBounds().y + parent.getHeight()/4, 600, 300 );
       contentPanel.setLayout( new FlowLayout() );
       contentPanel.setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
       getContentPane().add( contentPanel, BorderLayout.CENTER );
@@ -64,10 +64,11 @@ public class EndGameDialog extends JDialog
          gameOverText.setText( "<html>" + player + " has correctly accused "
             + hand.getCharacterName() + " of committing the murder in the "
             + hand.getRoomName() + " using the " + hand.getWeaponType()
-            + "!" +
-            "\n\nThe game is now over." + "</html>");
-         ;
+            + "!" + "</html>" );
+         
+         JLabel gameOverText2 = new JLabel( "\n\nThe game is now over." );
          contentPanel.add( gameOverText );
+         contentPanel.add( gameOverText2 );
       }
 
       {
