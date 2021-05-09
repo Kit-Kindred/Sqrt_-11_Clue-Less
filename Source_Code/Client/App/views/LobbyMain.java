@@ -30,11 +30,7 @@ public class LobbyMain extends JFrame
 
    private AccuseDialog accuseDialog;
    private SuggestDialog suggestDialog;
-<<<<<<< HEAD
    private Detective_pad detectivePad;
-=======
-
->>>>>>> refs/remotes/origin/master
    private EndGameDialog endDialog;
 
    private final ClueLessClient client;
@@ -131,10 +127,8 @@ public class LobbyMain extends JFrame
       accuseDialog = new AccuseDialog(this, "Accuse");
       suggestDialog = new SuggestDialog(this, "Suggest");
       endDialog = new EndGameDialog( this, "Game Over!");
-<<<<<<< HEAD
       detectivePad = new Detective_pad( this, "Detective Pad");
-=======
->>>>>>> refs/remotes/origin/master
+
 
    }
 
@@ -252,7 +246,6 @@ public class LobbyMain extends JFrame
             move(MoveRequest.Move.SHORTCUT);
         }
     });
-<<<<<<< HEAD
     
     mainPanel.actionPanel.detectivePadButton.addActionListener( new ActionListener() {
 
@@ -262,8 +255,6 @@ public class LobbyMain extends JFrame
          detectivePad.open();
       }       
     });
-=======
->>>>>>> refs/remotes/origin/master
 
     // Ok button will change GUI back to start game frame
     endDialog.addButtonListener( new ActionListener()

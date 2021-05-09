@@ -22,8 +22,6 @@ public class AccuseDialog extends JDialog
 
     boolean pressedAccuse;
 
-    boolean pressedAccuse;
-
     AccuseDialog(JFrame frame, String title)
     {
         super(frame, title, true);
