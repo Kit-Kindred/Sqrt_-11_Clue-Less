@@ -294,6 +294,7 @@ public class LobbyMain extends JFrame
             if ((boolean) evt.getNewValue())  // Server started game
             {
                setSize( 1200, 900 );
+               setTitle( "ClueLess - " + client.getPlayerName() );
                ( (CardLayout) contentPane.getLayout() )
                        .next( contentPane );
             }
