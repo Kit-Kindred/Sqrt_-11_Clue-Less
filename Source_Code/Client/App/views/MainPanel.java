@@ -63,21 +63,6 @@ public class MainPanel extends JPanel
 
         boardPicture = new GameBoardPanel();
         this.add( boardPicture, gbc_boardPictureBorderPanel );
-//        GridBagLayout gbl_playerPictureBorderPanel = new GridBagLayout();
-//        boardPictureBorderPanel.setLayout( gbl_playerPictureBorderPanel );
-
-        // Generic JPanel to house the player picture that will go here
-//        boardPicture     = new JPanel();
-//        boardPictureBorderPanel.add( boardPicture );
-
-        /*
-         * Temporary text that goes inside the player picture field to test
-         * sizing...
-         */
-//        tempBoardPictureLabel = new JLabel(
-//                "<html>BOARD PICTURE</html>" );
-//        boardPicture.add( tempBoardPictureLabel );
-
 
         // Basic Board that goes around the player picture
         cardsPictureBorderPanel = new HandPanel();
