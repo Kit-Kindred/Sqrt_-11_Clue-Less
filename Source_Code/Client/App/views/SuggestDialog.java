@@ -35,7 +35,7 @@ public class SuggestDialog extends JDialog
 
         //add( new JLabel ("Click button to continue."));
 
-        setSize(1000,350);
+        setSize(1000,400);
     }
 
     public void open(RoomCard currentRoom)

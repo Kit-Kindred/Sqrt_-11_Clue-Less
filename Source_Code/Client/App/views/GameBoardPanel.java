@@ -74,24 +74,26 @@ public class GameBoardPanel extends JPanel
 
 
    /**
-    * Updates the internal Board object to the passed board instance
+    * Updates the internal Board object to the passed board instance.
+    * Does this by iterating through each RoomPanel and passing it the updateBoard
+    * BoardRoom from the board passed
     *
     * @param board
     */
    public void updateBoard( Board b )
    {
-       System.out.println("called GameBoardPannel.updateBoard()");
-      // pcs.firePropertyChange(
-      //    new PropertyChangeEvent( board, "GameBoard", this.board, board ) );
       this.board = b;
       this.updateRooms();
       repaint();
 
    }
 
+   /* Iterates through each of the RoomPanels and updates according to the current
+   * board
+   *
+   */
    public void updateRooms()
    {
-       System.out.println("called GameBoardPannel.updateRooms()");
        for( int i = 0; i <= 4; i++ )
        {
           for( int j = 0; j <= 4; j++ )
@@ -103,21 +105,6 @@ public class GameBoardPanel extends JPanel
           }
       }
    }
-
-
-   /**
-    * We redraw the board layout after being given a new board object.
-    *
-    * @param board
-    *        The specific Board instance to draw.
-    * @return
-    */
-   // public void drawBoard( Board board )
-   // {
-   //
-   // }
-
-
 
    /*
     * Test main method.
@@ -146,27 +133,3 @@ public class GameBoardPanel extends JPanel
 
 
 }
-
-
-/**
- * Listen for any board changes. If we get a new board, we draw it!
- *
- * @author DavidC
- *
- */
-// class GameBoardListener implements PropertyChangeListener
-// {
-//
-//    @Override
-//    public void propertyChange( PropertyChangeEvent evt )
-//    {
-//
-//       if( evt.getPropertyName().equals( "GameBoard" ) )
-//       {
-//          ( (GameBoardPanel) evt.getSource() )
-//             .drawBoard( (Board) evt.getNewValue() );
-//       }
-//
-//    }
-//
-// }

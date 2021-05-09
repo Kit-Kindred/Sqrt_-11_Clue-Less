@@ -330,18 +330,10 @@ public class LobbyMain extends JFrame
             }
 
             mainPanel.boardPicture.updateBoard(client.getBoard());
-            
+
             tryEnableSuggestButton();
          }
       });
-
-      // client.addPropertyChangeListener("GameBoard", new PropertyChangeListener() {
-      //    @Override
-      //    public void propertyChange(PropertyChangeEvent evt) {
-      //        System.out.println("got the GameBoard");
-      //       mainPanel.boardPicture.updateBoard((Board) evt.getNewValue());
-      //    }
-      // });
 
       client.addPropertyChangeListener("PlayerHand", new PropertyChangeListener() {
          @Override

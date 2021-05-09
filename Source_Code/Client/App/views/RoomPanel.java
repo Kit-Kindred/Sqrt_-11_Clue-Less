@@ -164,6 +164,8 @@ public class RoomPanel extends JComponent implements SelectablePanel
        this.room = br;
        File root = null;
 
+       //use this bad boy to control how much space between each character piece when pasted on a room
+       int GAP_WIDTH = 7;
        try
        {
            root = new File(Thread.currentThread().getContextClassLoader().getResource("").toURI());
@@ -172,12 +174,12 @@ public class RoomPanel extends JComponent implements SelectablePanel
            for (int ii = 0; ii < br.players.size(); ii++)
            {
               BufferedImage pieceImage = ImageIO.read( new File( root, "/../Source_Code/Client/App/Resources/Pieces/" + br.players.get(ii).charName + ".png") );
-              pieceImage = resizeImage(pieceImage, this.picture.getWidth() / 2 , this.picture.getHeight() / 3 );
+              pieceImage = resizeImage(pieceImage, (this.picture.getWidth() - 4*GAP_WIDTH) / 2 , (this.picture.getHeight() - 4*GAP_WIDTH) / 3);
 
               // paste it on the correct spot
               Graphics2D g2d_roomImage = this.picture.createGraphics();
               g2d_roomImage.drawImage(this.picture, 0, 0, null);
-              g2d_roomImage.drawImage(pieceImage, (ii / 3) * this.picture.getWidth() / 2, (ii % 3) * this.picture.getHeight() / 3, null);
+              g2d_roomImage.drawImage(pieceImage, GAP_WIDTH * (ii / 3 + 1) + (ii / 3) * (this.picture.getWidth() - 3*GAP_WIDTH) / 2, GAP_WIDTH * (ii % 3 + 1) + (ii % 3) * (this.picture.getHeight() - 4*GAP_WIDTH) / 3, null);
               g2d_roomImage.dispose();
            }
 

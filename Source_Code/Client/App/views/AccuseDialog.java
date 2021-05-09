@@ -49,7 +49,7 @@ public class AccuseDialog extends JDialog
 
         pressedAccuse = false;
 
-        setSize(1000,500);
+        setSize(1000,600);
     }
 
     public void open()
