@@ -41,7 +41,7 @@ public class MainPanel extends JPanel
          */
         GridBagLayout gbl_this = new GridBagLayout();
         gbl_this.rowHeights = new int[] { 10, 400, 10, 10, 23, 115, 30};
-        gbl_this.columnWidths = new int[] {10, 650, 50, 175, 150, 10, 30 };
+        gbl_this.columnWidths = new int[] {10, 400, 50, 175, 150, 10, 30 };
         this.setLayout( gbl_this );
 
         //setBackground(Color.GREEN);
@@ -63,6 +63,21 @@ public class MainPanel extends JPanel
 
         boardPicture = new GameBoardPanel();
         this.add( boardPicture, gbc_boardPictureBorderPanel );
+//        GridBagLayout gbl_playerPictureBorderPanel = new GridBagLayout();
+//        boardPictureBorderPanel.setLayout( gbl_playerPictureBorderPanel );
+
+        // Generic JPanel to house the player picture that will go here
+//        boardPicture     = new JPanel();
+//        boardPictureBorderPanel.add( boardPicture );
+
+        /*
+         * Temporary text that goes inside the player picture field to test
+         * sizing...
+         */
+//        tempBoardPictureLabel = new JLabel(
+//                "<html>BOARD PICTURE</html>" );
+//        boardPicture.add( tempBoardPictureLabel );
+
 
         // Basic Board that goes around the player picture
         cardsPictureBorderPanel = new HandPanel();

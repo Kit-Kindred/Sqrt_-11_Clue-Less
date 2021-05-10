@@ -122,7 +122,7 @@ public class GameBoardPanel extends JPanel
                JFrame frame = new JFrame();
 
                frame.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-               frame.setBounds( 243, 156, 875, 420 );
+               frame.setBounds( 0, 0, 400, 400 );
                frame.add( new GameBoardPanel() );
                frame.setVisible( true );
             } catch( Exception e )

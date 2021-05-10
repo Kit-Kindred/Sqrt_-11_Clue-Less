@@ -23,12 +23,12 @@ public class EndGameDialog extends JDialog
    private SuggestHand hand;
    private JButton okButton;
    private JLabel gameOverText;
-   
+
 
    /**
     * Slightly fancier constructor that takes the player who won, and the
     * winning cards. We use these in the printed end game text.
-    * 
+    *
     * @param player
     * @param cards
     */
@@ -40,16 +40,16 @@ public class EndGameDialog extends JDialog
       okButton = new JButton( "OK" );
       getContentPane().setLayout( new BorderLayout() );
    }
-   
-   
+
+
    /**
     * We set these once we figure out who made the correct accusation.
     */
    public void setContent()
    {
 
-      setBounds( parent.getBounds().x + parent.getWidth()/4, 
-         parent.getBounds().y + parent.getHeight()/4, 600, 300 );
+      setBounds( parent.getBounds().x + parent.getWidth()/2,
+         parent.getBounds().y + parent.getHeight()/2, 600, 300 );
       contentPanel.setLayout( new FlowLayout() );
       contentPanel.setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
       getContentPane().add( contentPanel, BorderLayout.CENTER );
@@ -59,7 +59,7 @@ public class EndGameDialog extends JDialog
             + hand.getCharacterName() + " of committing the murder in the "
             + hand.getRoomName() + " using the " + hand.getWeaponType()
             + "!" + "</html>" );
-         
+
          JLabel gameOverText2 = new JLabel( "\n\nThe game is now over." );
          contentPanel.add( gameOverText );
          contentPanel.add( gameOverText2 );
@@ -74,7 +74,7 @@ public class EndGameDialog extends JDialog
             buttonPane.add( okButton );
             getRootPane().setDefaultButton( okButton );
          }
-         
+
          okButton.addActionListener( new ActionListener() {
 
             @Override
@@ -82,29 +82,29 @@ public class EndGameDialog extends JDialog
             {
                setVisible(false);
             }
-            
+
          });
 
       }
    }
-   
-   
+
+
    public void addPlayer( String player )
    {
       this.player = player;
    }
-   
-   
+
+
    public void addSolution( SuggestHand hand )
    {
       this.hand = hand;
    }
-   
+
    public void open()
    {
        setVisible(true);
    }
-   
+
    public void addButtonListener( ActionListener actionListener )
    {
       this.okButton.addActionListener( actionListener );
