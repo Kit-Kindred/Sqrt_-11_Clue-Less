@@ -100,7 +100,7 @@ public class RoomPanel extends JComponent implements SelectablePanel
             .addGroup(gl_cardContent.createSequentialGroup()
                .addGap(1)
                .addGroup(gl_cardContent.createParallelGroup(Alignment.TRAILING)
-                  .addComponent(label, Alignment.CENTER, GroupLayout.PREFERRED_SIZE, 50, Short.MAX_VALUE)
+                  .addComponent(label, Alignment.CENTER, GroupLayout.PREFERRED_SIZE, 80, Short.MAX_VALUE)
                   .addComponent(roomPicture, Alignment.CENTER, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                   .addPreferredGap(ComponentPlacement.RELATED, 0, Short.MAX_VALUE)
                .addGap(1))
